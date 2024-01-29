@@ -1,0 +1,25 @@
+*{
+  margin:0;
+  padding: 0;
+}
+
+:root{
+  --background-primary:white;
+  --color-primary:black;
+  --color-border-primary:black;
+  --backgroundButton-primary:blue;
+  --background-second:black;
+  --color-second:white;
+  --color-border-second:white;
+  --backgroundButton-second:blue;
+}
+.main{
+  background-color: var(--background-primary);
+  color:var(--color-primary);
+  border-color: var(--color-border-primary);
+}
+.dark{
+  background-color: var(--background-second);
+  color:var(--color-second);
+  border-color: var(--color-border-second);
+}
