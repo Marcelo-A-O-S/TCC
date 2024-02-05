@@ -36,13 +36,13 @@ namespace Api.Controllers
                         {
                             var userview = new UserViewModel();
                             userview.email = user.email;
-                            userview.username = user.username;
+                            userview.name = user.username;
                             return Ok(userview);
                         }
                         return BadRequest("Dados inválidos, corrija e tente novamente!");
 
                     }
-                    return BadRequest("Email não corresponde a nenhum usuário, corrija o email e tente novamente ou registre-se!");
+                    return BadRequest("Dados inválidos, corrija e tente novamente!");
                 }
                 var erros = ModelState.Values.SelectMany(x => x.Errors);
                 return BadRequest(erros);
@@ -68,7 +68,7 @@ namespace Api.Controllers
                         await this.userServices.Save(user);
                         return Ok("Registro realizado com sucesso");
                     }
-                    return BadRequest("Dados Inválidos!");
+                    return BadRequest("Parece que já temos uma conta associada a este e-mail. Entre em contato com o suporte.");
                 }
                 var erros = ModelState.Values.SelectMany(x => x.Errors);
                 return BadRequest(erros);

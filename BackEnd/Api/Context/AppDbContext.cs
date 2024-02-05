@@ -10,5 +10,8 @@ namespace Api.Context
 
         }
         public DbSet<User> users { get; set; }
+        public DbSet<Posts> posts { get; set; }
+        public DbSet<Comment> comments { get; set; }
+        public DbSet<Answer> answers { get; set; }
     }
 }

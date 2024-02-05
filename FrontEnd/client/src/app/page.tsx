@@ -1,4 +1,4 @@
-import ImgHome from "../assets/tcc2.jpg";
+import ImgHome from "../assets/HomeTcc.jpg";
 import Image from "next/image";
 import Style from "../styles/home.module.css"
 
@@ -13,7 +13,7 @@ export default function Home() {
             <p className="">Encontre informações sobre as suas peças aqui!</p>
           </div>
           <div className="">
-            <Image src={ImgHome} alt="" className="rounded-circle" />
+            <Image src={ImgHome} alt="" className="rounded" />
           </div>
         </div>
       </section>

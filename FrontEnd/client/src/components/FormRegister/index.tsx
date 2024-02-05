@@ -1,29 +1,26 @@
 "use client"
-import { ChangeEvent, useEffect, useState, useRef, LegacyRef } from "react"
+import { ChangeEvent, useEffect, useState, useRef, LegacyRef, FormEventHandler, FormEvent } from "react"
 import Style from "../../styles/register.module.css"
-import { register } from "module";
-interface FormRegister{
-    name:string;
-    email:string;
-    password:string;
-    confirmPassword:string;
-}
-interface ErroRegister{
-    erroName:string;
-    erroEmail:string;
-    erroPassword:string;
-    erroConfirmPassword:string;
-}
-export default function FormRegister(){
 
+import { IFormRegister } from "@/models/interfaces/IFormRegister";
+import { IErroRegister } from "@/models/interfaces/IErroRegister";
+import { PostRegister } from "@/api/authentication";
+import { AxiosError, AxiosResponse } from "axios";
+import { IMessageResponse } from "@/models/interfaces/IMessageResponse";
+import Link from "next/link";
+export default function FormRegister(){
+    const [responseErro, setResponseErro ] = useState<IMessageResponse>({
+        status:0,
+        message:""
+    });
     const [disabled, setDisabled] = useState(true);
-    const [formRegister, setFormRegister] = useState<FormRegister>({
-        name:"",
+    const [formRegister, setFormRegister] = useState<IFormRegister>({
+        username:"",
         email:"",
         password:"",
-        confirmPassword:""
+        passwordConfirm:""
     })
-    const [erroRegister, setErroRegister] = useState<ErroRegister>({
+    const [erroRegister, setErroRegister] = useState<IErroRegister>({
         erroConfirmPassword: "",
         erroEmail:"",
         erroName: "",
@@ -32,7 +29,7 @@ export default function FormRegister(){
 
     useEffect(()=>{
         setDisabled(true);
-        if(formRegister.name == ""){
+        if(formRegister.username == ""){
             setErroRegister((prevState)=>{
                 return{
                     ...prevState,
@@ -56,7 +53,7 @@ export default function FormRegister(){
                 }
             })
         }
-        if(formRegister.confirmPassword == ""){
+        if(formRegister.passwordConfirm == ""){
             setErroRegister((prevState)=>{
                 return{
                     ...prevState,
@@ -64,7 +61,7 @@ export default function FormRegister(){
                 }
             })
         }
-        if(formRegister.name != "" && formRegister.email != "" && formRegister.password != "" && formRegister.confirmPassword != ""){
+        if(formRegister.username != "" && formRegister.email != "" && formRegister.password != "" && formRegister.passwordConfirm != ""){
             if(erroRegister.erroName == "" && erroRegister.erroEmail == "" && erroRegister.erroPassword == "" && erroRegister.erroConfirmPassword == ""){
                 setDisabled(false);
             }
@@ -75,7 +72,7 @@ export default function FormRegister(){
         e.target.classList.remove("is-valid")
         setFormRegister((prevState)=>{
             return {
-                ...prevState, name: e.target.value
+                ...prevState, username: e.target.value
             }
         })
 
@@ -154,7 +151,7 @@ export default function FormRegister(){
         e.target.classList.remove("is-valid")
         setFormRegister((prevState)=>{
             return {
-                ...prevState, confirmPassword: e.target.value
+                ...prevState, passwordConfirm: e.target.value
             }
         })
 
@@ -182,13 +179,40 @@ export default function FormRegister(){
             e.target.classList.add("is-invalid")
         }
     }
+    async function FormSubmit(e : FormEvent<HTMLFormElement>){
+        e.preventDefault();
+
+        try{
+            const response = await PostRegister(formRegister);
+            if(response.status == 200){
+                setResponseErro({
+                    message: response.data,
+                    status:response.status
+                })
+            }
+        }catch(erro: any){
+            const error : AxiosResponse = erro.response;
+            if(error.status == 400){
+                setResponseErro({
+                    message: error.data,
+                    status: error.status
+                })
+            }
+        }
+    }
     return(
         <>
-        <form className={`${Style.form}`}>
+        <form onSubmit={(e)=>FormSubmit(e)}  className={`${Style.form}`}>
+                    {responseErro.status == 400?(<div className="alert alert-danger" role="alert">
+                        {responseErro.message}
+                    </div>):""}
+                    {responseErro.status == 200?(<div className="alert alert-success" role="alert">
+                        {responseErro.message}, clique <Link href={"/login"}>aqui para acessar</Link>
+                    </div>):""}
                     <div className={`${Style.input_list}`}>
                         <div className="col-md-6">
                             <label form="validationServer01" className="form-label">Name</label>
-                            <input type="text" onChange={(e)=> ValidateName(e)} className="form-control is-invalid" id="validationServer01" value={formRegister.name} required/>
+                            <input type="text" onChange={(e)=> ValidateName(e)} className="form-control is-invalid" id="validationServer01" value={formRegister.username} />
                             <div className="invalid-feedback">
                                 {erroRegister.erroName}
                             </div>
@@ -198,7 +222,7 @@ export default function FormRegister(){
                         </div>
                         <div className="col-md-6">
                             <label form="validationServer02" className="form-label">Email</label>
-                            <input type="text" onChange={(e)=> ValidateEmail(e)} className="form-control is-invalid" id="validationServer02" value={formRegister.email} required/>
+                            <input type="text" onChange={(e)=> ValidateEmail(e)} className="form-control is-invalid" id="validationServer02" value={formRegister.email} />
                             <div className="invalid-feedback">
                                 {erroRegister.erroEmail}
                             </div>
@@ -210,7 +234,7 @@ export default function FormRegister(){
                     <div className={`${Style.input_list}`}>
                         <div className="col-md-6">
                             <label form="validationServer01" className="form-label">Password</label>
-                            <input type="text" onChange={(e)=> ValidatePassword(e)}  className="form-control is-invalid" id="validationServer01" value={formRegister.password} required/>
+                            <input type="text" onChange={(e)=> ValidatePassword(e)}  className="form-control is-invalid" id="validationServer01" value={formRegister.password} />
                             <div className="invalid-feedback">
                                 {erroRegister.erroPassword}
                             </div>
@@ -220,7 +244,7 @@ export default function FormRegister(){
                         </div>
                         <div className="col-md-6">
                             <label form="validationServer02" className="form-label">Confirm Password</label>
-                            <input type="text" onChange={(e)=> ValidateConfirmPassword(e)} className="form-control is-invalid" id="validationServer02" value={formRegister.confirmPassword} required/>
+                            <input type="text" onChange={(e)=> ValidateConfirmPassword(e)} className="form-control is-invalid" id="validationServer02" value={formRegister.passwordConfirm}/>
                             <div className="invalid-feedback">
                                 {erroRegister.erroConfirmPassword}
                             </div>

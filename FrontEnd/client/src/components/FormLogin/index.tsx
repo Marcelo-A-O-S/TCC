@@ -1,21 +1,27 @@
 "use client"
-import { ChangeEvent, useEffect, useState } from "react";
-
-interface FormLogin{
-    email: string;
-    password:string;
-}
-interface ErroLogin{
-    erroEmail:string;
-    erroPassword:string;
-}
+import { ChangeEvent, FormEvent, useEffect, useState, useContext } from "react";
+import { IFormLogin } from "@/models/interfaces/IFormLogin";
+import { IErroLogin } from "@/models/interfaces/IErroLogin";
+import { PostLogin } from "@/api/authentication";
+import { IMessageResponse } from "@/models/interfaces/IMessageResponse";
+import { AxiosResponse } from "axios";
+import Link from "next/link";
+import { UserContext } from "@/context/UserContext";
+import { User } from "@/models/User";
+import { useRouter } from "next/navigation";
 export default function FormLogin(){
+    const router = useRouter();
+    const { user,login } = useContext(UserContext)
+    const [messageResponse, setMessageResponse ]= useState<IMessageResponse>({
+        status: 0,
+        message: ""
+    })
     const [ disabled, setDisabled] = useState(true);
-    const [formLogin, setFormLogin] = useState<FormLogin>({
+    const [formLogin, setFormLogin] = useState<IFormLogin>({
         email:"",
         password:""
     })
-    const [erroLogin, setErroLogin] = useState<ErroLogin>({
+    const [erroLogin, setErroLogin] = useState<IErroLogin>({
         erroEmail:"",
         erroPassword:""
     })
@@ -98,11 +104,33 @@ export default function FormLogin(){
             e.target.classList.add("is-invalid")
         }
     }
+    async function HandleLogin(e : FormEvent<HTMLFormElement>){
+        e.preventDefault();
+        try{
+            const response = await PostLogin(formLogin);
+            if(response.status == 200){
+                const user: User = response.data;
+                await login(user)
+                router.push("/dashboard")
+            }
+        }catch(err: any){
+            const responseErro : AxiosResponse = err.response;
+            if(responseErro.status == 400){
+                setMessageResponse({
+                    message: responseErro.data,
+                    status: responseErro.status
+                })
+            }
+        }
+    }
     return(
         <>
-        <form className="p-5">
+        <form onSubmit={HandleLogin} className="p-2">
+                {messageResponse.status == 400?(<div className="alert alert-danger" role="alert">
+                        {messageResponse.message}
+                    </div>):""}
             <div className="form-floating mb-3">
-                <input type="email" onChange={(e)=> ValidateEmail(e)} className="form-control is-invalid" id="floatingInput" placeholder="name@example.com"/>
+                <input type="email" onChange={(e)=> ValidateEmail(e)} className="form-control  is-invalid" id="floatingInput" placeholder="name@example.com"/>
                 <label form="floatingInput">Email address</label>
                 <div className="invalid-feedback">
                     {erroLogin.erroEmail}
@@ -111,8 +139,8 @@ export default function FormLogin(){
                     Pode prosseguir!
                 </div>
             </div>
-            <div className="form-floating">
-                <input type="password" onChange={(e)=> ValidatePassword(e)} className="form-control is-invalid" id="floatingPassword" placeholder="Password"/>
+            <div className="form-floating w-100">
+                <input type="password" onChange={(e)=> ValidatePassword(e)} className="form-control w-auto is-invalid" id="floatingPassword" placeholder="Password"/>
                 <label form="floatingPassword">Password</label>
                 <div className="invalid-feedback">
                     {erroLogin.erroPassword}
