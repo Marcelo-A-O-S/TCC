@@ -18,9 +18,10 @@ export default function register(){
 
                 <div>
                 <h1>Register</h1>
+                <p>Registre-se para desvendar os mistérios nesse universo!</p>
                 <FormRegister/>
                 </div>
-                    <Image src={Img} alt="" width={300} height={300} className="rounded-circle"/>
+                    <Image src={Img} alt="teste"  className="rounded-circle img-fluid"/>
                 </div>
             </section>
         </main>

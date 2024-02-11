@@ -2,12 +2,9 @@
 
 namespace Api.Services.Interfaces
 {
-    public interface IPostServices
+    public interface IPostServices : IServices<Posts>
     {
-        Task Save(Posts post);
-        Task Delete(Posts post);
-        Task DeleteById(int Id);
         Task<Posts> FindByUserId(int Userid);
-        Task<List<Posts>> GetAll();
+        
     }
 }

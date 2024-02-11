@@ -2,6 +2,7 @@
 using Api.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240210160751_UpdateModels")]
+    partial class UpdateModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,7 +42,7 @@ namespace Api.Migrations
 
                     b.HasIndex("userId");
 
-                    b.ToTable("answers", (string)null);
+                    b.ToTable("answers");
                 });
 
             modelBuilder.Entity("Api.Models.Comment", b =>
@@ -65,7 +67,7 @@ namespace Api.Migrations
 
                     b.HasIndex("userId");
 
-                    b.ToTable("comments", (string)null);
+                    b.ToTable("comments");
                 });
 
             modelBuilder.Entity("Api.Models.Posts", b =>
@@ -93,7 +95,7 @@ namespace Api.Migrations
 
                     b.HasIndex("userId");
 
-                    b.ToTable("posts", (string)null);
+                    b.ToTable("posts");
                 });
 
             modelBuilder.Entity("Api.Models.User", b =>
@@ -116,7 +118,7 @@ namespace Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("users", (string)null);
+                    b.ToTable("users");
                 });
 
             modelBuilder.Entity("Api.Models.Answer", b =>

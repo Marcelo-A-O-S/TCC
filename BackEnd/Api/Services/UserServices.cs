@@ -23,10 +23,25 @@ namespace Api.Services
             await this.repository.DeleteById(id);
         }
 
+        public async Task<List<User>> FindAll()
+        {
+            return await this.repository.List();
+        }
+
+        public async Task<User> FindById(int Id)
+        {
+            return await this.repository.GetById(Id);
+        }
+
         public async Task<User> GetByEmail(string email)
         {
             var user = await this.repository.FindBy(x => x.email == email);
             return user;
+        }
+
+        public async Task<List<User>> List()
+        {
+            return await this.repository.List();
         }
 
         public async Task Save(User user)
@@ -45,6 +60,11 @@ namespace Api.Services
             {
 
             }
+        }
+
+        public async Task Update(User entidade)
+        {
+            await this.repository.Update(entidade);
         }
 
         public async Task<bool> VerifyUserExistsByEmail(string email)

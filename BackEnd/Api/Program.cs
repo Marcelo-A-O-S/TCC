@@ -18,11 +18,22 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(configuration.GetConnectionString("DefaultConnection"), ServerVersion.Parse("8.0.32-mysql")));
-
+//Serviços
 builder.Services.AddScoped<IUserServices, UserServices>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IGenerics<User>, Generics<User>>();
 builder.Services.AddScoped<IInitializeUsers, InitializeUsers>();
+builder.Services.AddScoped<IPostServices, PostServices>();
+builder.Services.AddScoped<IAnswerServices, AnswerServices>();
+builder.Services.AddScoped<ICommentServices, CommentServices>();
+//Repositorios
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+
+
+builder.Services.AddScoped<IGenerics<User>, Generics<User>>();
+
+
 var app = builder.Build();
 InitializeProgram(app);
 // Configure the HTTP request pipeline.
