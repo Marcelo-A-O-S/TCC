@@ -2,14 +2,16 @@
 import { ChangeEvent, FormEvent, useEffect, useState, useContext } from "react";
 import { IFormLogin } from "@/models/interfaces/IFormLogin";
 import { IErroLogin } from "@/models/interfaces/IErroLogin";
-import { PostLogin } from "@/api/authentication";
+
 import { IMessageResponse } from "@/models/interfaces/IMessageResponse";
 import { AxiosResponse } from "axios";
 import Link from "next/link";
 import { UserContext } from "@/context/UserContext";
 import { User } from "@/models/User";
 import { useRouter } from "next/navigation";
+import { ApiAuthentication } from "@/api/authentication";
 export default function FormLogin(){
+    const apiAuthentication = new ApiAuthentication();
     const router = useRouter();
     const { user,login } = useContext(UserContext)
     const [messageResponse, setMessageResponse ]= useState<IMessageResponse>({
@@ -107,7 +109,7 @@ export default function FormLogin(){
     async function HandleLogin(e : FormEvent<HTMLFormElement>){
         e.preventDefault();
         try{
-            const response = await PostLogin(formLogin);
+            const response = await apiAuthentication.Login(formLogin);
             if(response.status == 200){
                 const user: User = response.data;
                 await login(user)

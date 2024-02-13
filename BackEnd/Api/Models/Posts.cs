@@ -9,9 +9,10 @@ namespace Api.Models
         public int Id { get; set; }
         public string title { get; set; }
         public string description { get; set; }
-        public string image { get; set; }
+        public List<Image> images { get; set; }
 
         public User user { get; set; }
+        [ForeignKey("User")]
         public int userId { get; set; }
 
         public List<Comment> comments { get; set; }

@@ -1,14 +1,15 @@
 "use client"
 import { ChangeEvent, useEffect, useState, useRef, LegacyRef, FormEventHandler, FormEvent } from "react"
 import Style from "../../styles/register.module.css"
-
+import { ApiAuthentication } from "@/api/authentication";
 import { IFormRegister } from "@/models/interfaces/IFormRegister";
 import { IErroRegister } from "@/models/interfaces/IErroRegister";
-import { PostRegister } from "@/api/authentication";
+
 import { AxiosError, AxiosResponse } from "axios";
 import { IMessageResponse } from "@/models/interfaces/IMessageResponse";
 import Link from "next/link";
 export default function FormRegister(){
+    const apiAuthentication = new ApiAuthentication();
     const [responseErro, setResponseErro ] = useState<IMessageResponse>({
         status:0,
         message:""
@@ -183,7 +184,7 @@ export default function FormRegister(){
         e.preventDefault();
 
         try{
-            const response = await PostRegister(formRegister);
+            const response = await apiAuthentication.Register(formRegister);
             if(response.status == 200){
                 setResponseErro({
                     message: response.data,

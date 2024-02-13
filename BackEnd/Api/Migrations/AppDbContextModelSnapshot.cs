@@ -40,7 +40,7 @@ namespace Api.Migrations
 
                     b.HasIndex("userId");
 
-                    b.ToTable("answers", (string)null);
+                    b.ToTable("answers");
                 });
 
             modelBuilder.Entity("Api.Models.Comment", b =>
@@ -65,7 +65,30 @@ namespace Api.Migrations
 
                     b.HasIndex("userId");
 
-                    b.ToTable("comments", (string)null);
+                    b.ToTable("comments");
+                });
+
+            modelBuilder.Entity("Api.Models.Image", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("postId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("postId");
+
+                    b.ToTable("images");
                 });
 
             modelBuilder.Entity("Api.Models.Posts", b =>
@@ -75,10 +98,6 @@ namespace Api.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("description")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("image")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -93,7 +112,7 @@ namespace Api.Migrations
 
                     b.HasIndex("userId");
 
-                    b.ToTable("posts", (string)null);
+                    b.ToTable("posts");
                 });
 
             modelBuilder.Entity("Api.Models.User", b =>
@@ -116,13 +135,13 @@ namespace Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("users", (string)null);
+                    b.ToTable("users");
                 });
 
             modelBuilder.Entity("Api.Models.Answer", b =>
                 {
                     b.HasOne("Api.Models.Comment", "comment")
-                        .WithMany()
+                        .WithMany("answers")
                         .HasForeignKey("commentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -157,6 +176,17 @@ namespace Api.Migrations
                     b.Navigation("user");
                 });
 
+            modelBuilder.Entity("Api.Models.Image", b =>
+                {
+                    b.HasOne("Api.Models.Posts", "post")
+                        .WithMany("images")
+                        .HasForeignKey("postId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("post");
+                });
+
             modelBuilder.Entity("Api.Models.Posts", b =>
                 {
                     b.HasOne("Api.Models.User", "user")
@@ -168,9 +198,16 @@ namespace Api.Migrations
                     b.Navigation("user");
                 });
 
+            modelBuilder.Entity("Api.Models.Comment", b =>
+                {
+                    b.Navigation("answers");
+                });
+
             modelBuilder.Entity("Api.Models.Posts", b =>
                 {
                     b.Navigation("comments");
+
+                    b.Navigation("images");
                 });
 #pragma warning restore 612, 618
         }

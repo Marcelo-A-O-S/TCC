@@ -22,6 +22,7 @@ namespace Api.Controllers
         [Route("GetByPostId")]
         public async Task<ActionResult> GetAllByPostId(int postId)
         {
+            
             return Ok();
         }
     }

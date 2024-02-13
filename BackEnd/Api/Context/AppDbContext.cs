@@ -13,5 +13,6 @@ namespace Api.Context
         public DbSet<Posts> posts { get; set; }
         public DbSet<Comment> comments { get; set; }
         public DbSet<Answer> answers { get; set; }
+        public DbSet<Image> images { get; set; }
     }
 }

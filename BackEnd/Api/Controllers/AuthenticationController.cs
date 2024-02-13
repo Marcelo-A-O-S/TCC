@@ -11,10 +11,12 @@ namespace Api.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IUserServices userServices;
+        private readonly IJwtBearerServices jwtServices;
 
-        public AuthenticationController(IUserServices userServices)
+        public AuthenticationController(IUserServices userServices, IJwtBearerServices jwtServices)
         {
             this.userServices = userServices;
+            this.jwtServices = jwtServices;
         }
         [HttpGet]
         public ActionResult Get()
@@ -37,6 +39,7 @@ namespace Api.Controllers
                             var userview = new UserViewModel();
                             userview.email = user.email;
                             userview.name = user.username;
+                            userview.token = await this.jwtServices.GenerateJwtToken(user);
                             return Ok(userview);
                         }
                         return BadRequest("Dados inválidos, corrija e tente novamente!");

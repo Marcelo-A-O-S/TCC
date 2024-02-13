@@ -35,3 +35,15 @@ C:\TCC\BackEnd\Api\obj\Debug\net6.0\refint\Api.dll
 C:\TCC\BackEnd\Api\obj\Debug\net6.0\Api.pdb
 C:\TCC\BackEnd\Api\obj\Debug\net6.0\Api.genruntimeconfig.cache
 C:\TCC\BackEnd\Api\obj\Debug\net6.0\ref\Api.dll
+C:\TCC\BackEnd\Api\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\TCC\BackEnd\Api\bin\Debug\net6.0\Microsoft.IdentityModel.Abstractions.dll
+C:\TCC\BackEnd\Api\bin\Debug\net6.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\TCC\BackEnd\Api\bin\Debug\net6.0\Microsoft.IdentityModel.Logging.dll
+C:\TCC\BackEnd\Api\bin\Debug\net6.0\Microsoft.IdentityModel.Protocols.dll
+C:\TCC\BackEnd\Api\bin\Debug\net6.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\TCC\BackEnd\Api\bin\Debug\net6.0\Microsoft.IdentityModel.Tokens.dll
+C:\TCC\BackEnd\Api\bin\Debug\net6.0\System.IdentityModel.Tokens.Jwt.dll
+C:\TCC\BackEnd\Api\bin\Debug\net6.0\Microsoft.Extensions.DependencyModel.dll
+C:\TCC\BackEnd\Api\bin\Debug\net6.0\Scrutor.dll
+C:\TCC\BackEnd\Api\bin\Debug\net6.0\Swashbuckle.AspNetCore.Filters.dll
+C:\TCC\BackEnd\Api\bin\Debug\net6.0\Swashbuckle.AspNetCore.Filters.Abstractions.dll
