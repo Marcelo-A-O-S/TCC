@@ -13,12 +13,12 @@ namespace Api.Services
         }
         public async Task createUsers()
         {
-            if(await this.userServices.GetByEmail("usuario@usuario.com.br") == null)
+            if(await this.userServices.GetByEmail("usuario@usuario.com") == null)
             {
                 var user = new User();
                 user.username = "usuario";
                 user.password = "123";
-                user.email = "usuario@usuario.com.br";
+                user.email = "usuario@usuario.com";
                 await this.userServices.Save(user);
             }
         }

@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import Link from "next/link"
 
 export const metadata: Metadata ={
     title:"My Posts",
@@ -7,8 +8,15 @@ export const metadata: Metadata ={
 export default function posts(){
     return(
         <>
-        <h1>Posts</h1>
-        <button>Create Post</button>
+        <section className="w-100 vh-100">
+            <div className="">
+                <h1>Posts</h1>
+                <button className={` btn border `}>
+                        <Link className={`nav-link`} href={"/dashboard/create"}>Create Post</Link>
+                </button>
+            </div>
+        </section>
+
         </>
     )
 }
