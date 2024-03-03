@@ -3,9 +3,8 @@ import CreatePost from "@/components/CreatePost"
 export default function create(){
     return(
         <>
-        <section>
-            <div>
-
+        <section className="p-4">
+            <div className="border rounded-3 p-4 ">
                 <h1>Create Post</h1>
                 <CreatePost/>
             </div>

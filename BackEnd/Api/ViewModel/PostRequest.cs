@@ -2,10 +2,10 @@
 {
     public class PostRequest
     {
-        public int Id { get; set; }
+        public int id { get; set; }
         public string title { get; set; }
         public string description { get; set; }
-        public List<ImageViewModel> imagesViews { get; set; }
+        public List<ImageViewModel> images { get; set; }
         public int userId { get; set; }
     }
 }

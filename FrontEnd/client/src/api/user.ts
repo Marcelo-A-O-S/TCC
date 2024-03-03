@@ -1,10 +1,10 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios"
-import { Post } from "@/models/Post";
+import axios, { AxiosInstance } from "axios"
 import Cookies from "js-cookie";
-import { PostCreateView } from "@/ViewModel/PostCreateView";
-export class ApiPost{
+import { AxiosBasicCredentials } from "axios";
+
+export class ApiUser{
     private host:AxiosInstance;
-    private token:string;
+    private token: string;
     constructor(){
         const userCookie = Cookies.get("user")
         if(userCookie != undefined){
@@ -20,10 +20,7 @@ export class ApiPost{
                 }
             })
     }
-    public async createPost(post : PostCreateView){
-        this.host.post("/api/Post/Create",post)
-    }
-    public async GetAll() : Promise<AxiosResponse<any, any>>{
-        return this.host.get("/api/Post/List")
+    public async GetEmail(email: string){
+        return this.host.get(`/api/User/GetByEmail?email=${email}`)
     }
 }

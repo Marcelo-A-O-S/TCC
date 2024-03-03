@@ -44,7 +44,6 @@ namespace Api.Controllers
                     {
                         var imageview = new ImageViewModel();
                         imageview.Id = image.Id;
-                        imageview.postId = image.postId;
                         imageview.Description = image.Description;
                         postview.imagesViews.Add(imageview);
                     }
@@ -62,7 +61,7 @@ namespace Api.Controllers
                         commentview.comment = comment.comment;
                         commentview.postId = comment.postId;
                         commentview.userId = comment.userId;
-                        if(commentview.answerViews != null)
+                        if(commentview.answers != null)
                         {
                             foreach (var answer in comment.answers)
                             {
@@ -71,7 +70,7 @@ namespace Api.Controllers
                                 answerview.answer = answer.answer;
                                 answerview.userId = answer.userId;
                                 answerview.commentId = answer.commentId;
-                                commentview.answerViews.Add(answerview);
+                                commentview.answers.Add(answerview);
                             }
                         }
                         postview.commentViews.Add(commentview);
@@ -94,7 +93,6 @@ namespace Api.Controllers
                 {
                     var imageview = new ImageViewModel();
                     imageview.Id = image.Id;
-                    imageview.postId = image.postId;
                     imageview.Description = image.Description;
                     postview.imagesViews.Add(imageview);
                 }
@@ -112,7 +110,7 @@ namespace Api.Controllers
                     commentview.comment = comment.comment;
                     commentview.postId = comment.postId;
                     commentview.userId = comment.userId;
-                    if (commentview.answerViews != null)
+                    if (commentview.answers != null)
                     {
                         foreach (var answer in comment.answers)
                         {
@@ -121,7 +119,7 @@ namespace Api.Controllers
                             answerview.answer = answer.answer;
                             answerview.userId = answer.userId;
                             answerview.commentId = answer.commentId;
-                            commentview.answerViews.Add(answerview);
+                            commentview.answers.Add(answerview);
                         }
                     }
                     postview.commentViews.Add(commentview);
@@ -142,7 +140,6 @@ namespace Api.Controllers
                 {
                     var imageview = new ImageViewModel();
                     imageview.Id = image.Id;
-                    imageview.postId = image.postId;
                     imageview.Description = image.Description;
                     postview.imagesViews.Add(imageview);
                 }
@@ -160,7 +157,7 @@ namespace Api.Controllers
                     commentview.comment = comment.comment;
                     commentview.postId = comment.postId;
                     commentview.userId = comment.userId;
-                    if (commentview.answerViews != null)
+                    if (commentview.answers != null)
                     {
                         foreach (var answer in comment.answers)
                         {
@@ -169,7 +166,7 @@ namespace Api.Controllers
                             answerview.answer = answer.answer;
                             answerview.userId = answer.userId;
                             answerview.commentId = answer.commentId;
-                            commentview.answerViews.Add(answerview);
+                            commentview.answers.Add(answerview);
                         }
                     }
                     postview.commentViews.Add(commentview);
@@ -186,19 +183,20 @@ namespace Api.Controllers
             post.title = postRequest.title;
             post.description = postRequest.description;
             ;
-            if (postRequest.imagesViews != null)
+            if (postRequest.images != null)
             {
-                foreach (var imageview in postRequest.imagesViews)
+                foreach (var imageview in postRequest.images)
                 {
                     var image = new Image();
                     image.Id = imageview.Id;
                     image.Description = imageview.Description;
-                    image.post = await this.postServices.FindById(imageview.postId);
+                    await image.CreateImage(imageview.image);
                     post.images.Add(image);
                 }
 
             }
             post.user = await this.userServices.FindById(postRequest.userId);
+            post.userId = post.user.Id;
             await this.postServices.Save(post);
             return Ok("Salvo com sucesso");
         }

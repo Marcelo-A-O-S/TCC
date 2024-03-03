@@ -1,20 +1,34 @@
 "use client"
 import { ImagePost } from "@/models/ImagePost";
 import { IImagepost } from "@/models/interfaces/IImagePost";
-import {  ChangeEvent, FormEvent, MouseEvent, useEffect, useState } from "react";
+import {  ChangeEvent, FormEvent, LegacyRef, MouseEvent, useEffect, useRef, useState } from "react";
 interface IInputImage{
     images: Array<IImagepost>
     setImages:(e:Array<IImagepost>) => void
 }
 export default function InputImage(props :IInputImage){
+    const modal = useRef<HTMLDialogElement>(null);
+    const [ openModal , setOpenModal] = useState(false);
+    const [isLoadingImages, setIsLoadingImages] = useState(false);
     const [imageState, setImageState] = useState<IImagepost>({
         description: "",
         image: "",
         Id:0
     })
-    useEffect(()=>{
-        console.log(props.images.length)
-    },[props.images])
+    const ModalShow = () =>{
+        modal.current?.showModal();
+        setOpenModal(true);
+    }
+    const ModalClose = () =>{
+        setImageState({
+            description:"",
+            image:"",
+            Id:0
+        })
+        modal.current?.close()
+        setOpenModal(false);
+
+    }
     const handleImageUpload = (event: ChangeEvent<HTMLInputElement>)=>{
         const files = event.target.files;
         if(files != null){
@@ -34,7 +48,7 @@ export default function InputImage(props :IInputImage){
             reader.readAsDataURL(file);
         }
     }
-    const handleDescription = (e: ChangeEvent<HTMLTextAreaElement>)=>{
+    const handleDescriptionImage = (e: ChangeEvent<HTMLTextAreaElement>)=>{
         const description = e.target.value;
         if(description != null){
             setImageState(prevState=>{
@@ -45,92 +59,120 @@ export default function InputImage(props :IInputImage){
             })
         }
     }
-    const handleClose = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> ) =>{
-        setImageState({
-            description:"",
-            image:"",
-            Id:0
-        })
-    }
-    const handleAdicionarImagem = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> ) =>{
-        const image = new ImagePost();
-        image.Id = props.images.length + 1;
-        image.SetDescription = imageState.description;
-        image.SetImage = imageState.image;
-        props.images.push(image);
-        props.setImages(props.images)
+    const handleAdicionarImagem = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>, Id: number) =>{
+        setIsLoadingImages(true);
+        if(Id == 0 ){
+            const image = new ImagePost();
+            image.Id = props.images.length + 1;
+            image.SetDescription = imageState.description;
+            image.SetImage = imageState.image;
+            props.images.push(image);
+            props.setImages(props.images)
+            setImageState({
+                description:"",
+                image:"",
+                Id:0
+            })
+
+        }else{
+            const image = props.images.find(x=> x.Id)
+            if(image != undefined){
+                image.Id = imageState.Id;
+                image.description = imageState.description;
+                image.image = imageState.image;
+                const updatedImages = props.images.map(item => (item.Id === image.Id ? image : item));
+                props.setImages(updatedImages);
+            }
+        }
+        ModalClose()
+        setIsLoadingImages(false);
+
     }
     const handleRemoverImagem = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>, Id: number)=>{
         console.log("Remover")
-        console.log(props.images)
-        const images = props.images;
-        const newArray = images.filter(x => x.Id != Id);
-        newArray.map(item =>{
-            images.push(item);
-        })
-        props.setImages(images);
+        setIsLoadingImages(true);
+        const newImages = props.images.filter(x=> x.Id !== Id);
+        if(newImages != undefined){
+            props.setImages(newImages)
+        }
+        setIsLoadingImages(false);
 
 
     }
-    const handleSubmitCardImage = (e: FormEvent<HTMLFormElement>)=>{
-        e.preventDefault();
-        console.log(e)
-        const card = new FormData(e.currentTarget);
-        console.log(card)
+    const handleAtualizarImagem = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>, Id: number) =>{
+        const image = props.images.find(x=> x.Id == x.Id)
+        if(image != undefined){
+            setImageState({
+                description: image.description,
+                image: image.image,
+                Id: image.Id
+            })
+        }
+        modal.current?.showModal();
+        setOpenModal(true);
+
     }
     return(
         <>
-        <div className="modal fade" id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div className="modal-dialog">
-            <div className="modal-content container-fluid">
-                <div className="modal-header">
-                    <h5 className="modal-title" id="exampleModalLabel">Adicionar Imagem</h5>
-                    <button type="button" onClick={(e) => handleClose(e)} className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div className="modal-body">
-                <div className="mb-3">
+        <dialog className="w-75 h-75 position-absolute  top-50 start-50 translate-middle border modal-dialog modal-dialog-scrollable p-3 rounded-3" tabIndex={-1} ref={modal}>
+            <div className="modal-content position-relative">
+            <div className="modal-header">
+                <h5 className="modal-title" >Adicionar Imagem</h5>
+                <button onClick={ModalClose} type="button" className="btn-close" ></button>
+            </div>
+            <hr/>
+            <div className="modal-body ">
+                <div className="mb-3 ">
                     <input type="file" onChange={(e)=>handleImageUpload(e)} className="form-control" aria-label="file example" required/>
                     <div className="invalid-feedback">Example invalid form file feedback</div>
                 </div>
-                <div>
-                    <img src={imageState.image} alt={""} className="img-fluid"/>
+                <div className="h-100 modal-dialog-scrollable">
+                    <img src={imageState.image} alt={""} className="img-fluid h-100 rounded"/>
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="validationTextarea" className="form-label">Descrição</label>
-                    <textarea className="form-control" id="validationTextarea" value={imageState.description} onChange={(e)=>handleDescription(e)} placeholder="Redija uma descrição da imagem!" required></textarea>
+                    <label htmlFor="validationTextareaImage" className="form-label">Descrição</label>
+                    <textarea className="form-control" name="image" id="validationTextareaImage" value={imageState.description} onChange={(e)=>handleDescriptionImage(e)} placeholder="Redija uma descrição da imagem!"></textarea>
                     <div className="invalid-feedback">
                          Please enter a message in the textarea.
                     </div>
                 </div>
-                </div>
-                <div className="modal-footer">
-                    <button type="button" onClick={(e) => handleClose(e)} className="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" onClick={(e) => handleAdicionarImagem(e)} className="btn btn-primary">Adicionar Imagem</button>
-                </div>
+            </div>
+            <hr/>
+            <div className="modal-footer w-100 position-relative top-100 end-0">
+                <button type="button" onClick={ModalClose} className="btn btn-danger" >Cancelar</button>
+                <button type="button" className="btn btn-primary" onClick={(e) => handleAdicionarImagem(e, imageState.Id)} >Adicionar</button>
+            </div>
+            </div>
+        </dialog>
+        <div className="border rounded-2 p-2">
+            <div className="d-flex justify-content-end">
+                <button type="button" className="btn btn-primary" onClick={ModalShow}>
+                    Adicionar Imagem
+                </button>
+            </div>
+            <hr/>
+            <div className="row row-cols-1 row-cols-md-3 p-1 gap-1">
+                {isLoadingImages? <p>Loading...</p>:
+                props.images.length > 0?props.images.map(item =>{
+                    return(
+                        <>
+                        <div key={item.Id} className="col" style={{width:"20rem"}}>
+                            <div className="card p-2 h-100">
+                            <img src={item.image} className="card-img-top img-fluid" style={{height:"300px"}} alt="..."/>
+                            <div className="card-body w-100" >
+                                <p className="card-text" >{item.description}</p>
+                            </div>
+                            <div className="card-footer d-flex gap-2">
+                                <button type="button" onClick={(e)=>handleAtualizarImagem(e,item.Id)}  className="btn btn-primary">Atualizar</button>
+                                <button type="button" onClick={(e)=>handleRemoverImagem(e,item.Id)} className="btn btn-danger">Remover</button>
+                            </div>
+                            </div>
+                        </div>
+                        </>
+                    )
+                }):<p className="w-100 text-center">Não foi adicionada nenhuma imagem! :(</p>}
             </div>
         </div>
-        </div>
-        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            Inserir Imagem
-        </button>
-        <div>
-            {props.images != null?props.images.map(item =>{
-                return(
-                    <>
-                    <form  className="border p-2">
-                        <input value={item.Id} name="cardid" readOnly/>
-                        <img src={item.image} alt="" className="img-fluid"/>
-                        <p>{item.description}</p>
-                        <div className="d-flex">
-                            <button type="button"  className="btn btn-primary">Atualizar Imagem</button>
-                            <button type="button" onClick={(e)=>handleRemoverImagem(e,item.Id)}  className="btn btn-danger">Remover Imagem</button>
-                        </div>
-                    </form>
-                    </>
-                )
-            }):""}
-        </div>
-
         </>
     )
 }

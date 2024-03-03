@@ -9,7 +9,8 @@ namespace Api.Models
         public int Id { get; set; }
         public string title { get; set; }
         public string description { get; set; }
-        public List<Image> images { get; set; }
+        public DateTime dateCreate { get; set; } = DateTime.Now;
+        public List<Image> images { get; set; } = new List<Image>();
 
         public User user { get; set; }
         [ForeignKey("User")]

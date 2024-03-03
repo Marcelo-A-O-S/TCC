@@ -25,6 +25,7 @@ namespace Api.Controllers
             var userview = new UserViewModel();
             userview.name = user.username;
             userview.email = user.email;
+            userview.Id = user.Id;
             return Ok(userview);
         }
     }

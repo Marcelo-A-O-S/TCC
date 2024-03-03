@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Api.Migrations
 {
-    public partial class initial : Migration
+    public partial class UpdateInitial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -88,23 +88,22 @@ namespace Api.Migrations
                 name: "images",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Path = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Description = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    postId = table.Column<int>(type: "int", nullable: false)
+                    PostsId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_images", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_images_posts_postId",
-                        column: x => x.postId,
+                        name: "FK_images_posts_PostsId",
+                        column: x => x.PostsId,
                         principalTable: "posts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -158,9 +157,9 @@ namespace Api.Migrations
                 column: "userId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_images_postId",
+                name: "IX_images_PostsId",
                 table: "images",
-                column: "postId");
+                column: "PostsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_posts_userId",
