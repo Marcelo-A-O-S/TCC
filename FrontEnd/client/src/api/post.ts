@@ -20,8 +20,8 @@ export class ApiPost{
                 }
             })
     }
-    public async createPost(post : PostCreateView){
-        this.host.post("/api/Post/Create",post)
+    public async createPost(post : PostCreateView) : Promise<AxiosResponse<any, any>>{
+        return this.host.post("/api/Post/Create",post)
     }
     public async GetAll() : Promise<AxiosResponse<any, any>>{
         return this.host.get("/api/Post/List")

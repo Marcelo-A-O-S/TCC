@@ -47,12 +47,17 @@ namespace Api.Generics
             }
         }
 
+        public async Task<List<T>> FindAllBy(Expression<Func<T, bool>> predicate)
+        {
+            return await this.context.Set<T>().Where(predicate).ToListAsync(); 
+        }
+
         public async Task<T> FindBy(Expression<Func<T, bool>> predicate)
         {
             var entity = await this.context.Set<T>().Where(predicate).FirstOrDefaultAsync();
             return entity;
-        }
 
+        }
         public async Task<T> GetById(int id)
         {
             var entity = await this.context.Set<T>().FindAsync(id);

@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Api.Migrations
 {
-    public partial class UpdateInitial : Migration
+    public partial class AddPostsId : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -41,6 +42,7 @@ namespace Api.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     description = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    dateCreate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     userId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -90,20 +92,25 @@ namespace Api.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    imageGuid = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    type = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Path = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Description = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    PostsId = table.Column<int>(type: "int", nullable: true)
+                    postsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_images", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_images_posts_PostsId",
-                        column: x => x.PostsId,
+                        name: "FK_images_posts_postsId",
+                        column: x => x.postsId,
                         principalTable: "posts",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -157,9 +164,9 @@ namespace Api.Migrations
                 column: "userId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_images_PostsId",
+                name: "IX_images_postsId",
                 table: "images",
-                column: "PostsId");
+                column: "postsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_posts_userId",

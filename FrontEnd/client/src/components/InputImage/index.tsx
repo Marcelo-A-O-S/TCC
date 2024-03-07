@@ -13,6 +13,7 @@ export default function InputImage(props :IInputImage){
     const [imageState, setImageState] = useState<IImagepost>({
         description: "",
         image: "",
+        type:"",
         Id:0
     })
     const ModalShow = () =>{
@@ -23,6 +24,7 @@ export default function InputImage(props :IInputImage){
         setImageState({
             description:"",
             image:"",
+            type:"",
             Id:0
         })
         modal.current?.close()
@@ -33,6 +35,7 @@ export default function InputImage(props :IInputImage){
         const files = event.target.files;
         if(files != null){
             const file = files[0]
+
             const reader = new FileReader()
             reader.onload = function(e){
                 const image = e.target?.result;
@@ -40,7 +43,8 @@ export default function InputImage(props :IInputImage){
                     setImageState(prevState =>{
                         return {
                             ...prevState,
-                            image: image.toString()
+                            image: image.toString(),
+                            type: file.type
                         }
                     })
                 }
@@ -66,11 +70,13 @@ export default function InputImage(props :IInputImage){
             image.Id = props.images.length + 1;
             image.SetDescription = imageState.description;
             image.SetImage = imageState.image;
+            image.type = imageState.type;
             props.images.push(image);
             props.setImages(props.images)
             setImageState({
                 description:"",
                 image:"",
+                type:"",
                 Id:0
             })
 
@@ -105,6 +111,7 @@ export default function InputImage(props :IInputImage){
             setImageState({
                 description: image.description,
                 image: image.image,
+                type:image.type,
                 Id: image.Id
             })
         }

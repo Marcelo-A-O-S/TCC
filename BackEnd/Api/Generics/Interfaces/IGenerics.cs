@@ -12,5 +12,6 @@ namespace Api.Generics.Interfaces
         Task<T> GetById(int id);
         Task<T> FindBy(Expression<Func<T, bool>> predicate);
         Task<bool> VerifyExists(Expression<Func<T, bool>> predicate);
+        Task<List<T>> FindAllBy(Expression<Func<T, bool>> predicate);  
     }
 }

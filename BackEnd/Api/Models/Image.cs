@@ -7,9 +7,28 @@ namespace Api.Models
     {
         [Key]
         public int Id { get; set; }
+        public string imageGuid { get; set; }
+        public string type { get; set; }
         public string Path { get; set; }
         public string Description { get; set; }
-
+        public Posts posts { get; set; }
+        public int postsId { get; set; }
+        public async Task<string> ReadImage()
+        {
+            try
+            {
+                if (File.Exists(this.Path))
+                {
+                    byte[] imageBytes = File.ReadAllBytes(this.Path);
+                    return Convert.ToBase64String(imageBytes);
+                }
+                return "";
+            }
+            catch(Exception ex)
+            {
+                return "";
+            }
+        }
         public async Task CreateImage(string image)
         {
             string filePath = "";
@@ -21,14 +40,14 @@ namespace Api.Models
                 {
                     Directory.CreateDirectory(PathImages);
                 }
-                var imageBytes = Convert.FromBase64String(image.Replace("data:image/png;base64,", ""));
+                var imageBytes = Convert.FromBase64String(image.Replace($"data:{this.type};base64,", ""));
                 if(this.Description.Length > 15)
                 {
-                    filePath = @$"{PathImages}\{this.Description.Substring(0,14)}-{new Guid()}-{this.Id}.png";
+                    filePath = @$"{PathImages}\{this.Description.Substring(0,14)}-{this.imageGuid}-{this.Id}.png";
                 }
                 else
                 {
-                    filePath = @$"{PathImages}\{this.Description}-{new Guid()}-{this.Id}.png";
+                    filePath = @$"{PathImages}\{this.Description}-{this.imageGuid}-{this.Id}.png";
                 }
                 
                 try

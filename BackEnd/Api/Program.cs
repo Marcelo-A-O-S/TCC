@@ -66,11 +66,13 @@ builder.Services.AddScoped<IPostServices, PostServices>();
 builder.Services.AddScoped<IAnswerServices, AnswerServices>();
 builder.Services.AddScoped<ICommentServices, CommentServices>();
 builder.Services.AddScoped<IJwtBearerServices, JwtBearerServices>();
+builder.Services.AddScoped<IImageServices, ImageServices>();
 //Repositorios
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IImageRepository, ImageRepository>();
 
 
 builder.Services.AddScoped<IGenerics<User>, Generics<User>>();

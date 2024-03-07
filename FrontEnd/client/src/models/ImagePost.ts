@@ -1,13 +1,13 @@
 export class ImagePost{
     public Id: number;
-    public postId: number;
     public description: string;
     public image: string;
+    public type: string;
     constructor(){
         this.Id = 0;
-        this.postId = 0;
         this.description = "";
         this.image = ""
+        this.type = ""
     }
     get GetDescription(): string{
         return this.description;

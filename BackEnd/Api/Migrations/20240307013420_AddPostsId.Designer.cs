@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240303030717_addDateCreatePost")]
-    partial class addDateCreatePost
+    [Migration("20240307013420_AddPostsId")]
+    partial class AddPostsId
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -85,12 +85,20 @@ namespace Api.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("PostsId")
+                    b.Property<string>("imageGuid")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("postsId")
                         .HasColumnType("int");
+
+                    b.Property<string>("type")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PostsId");
+                    b.HasIndex("postsId");
 
                     b.ToTable("images");
                 });
@@ -185,9 +193,13 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Image", b =>
                 {
-                    b.HasOne("Api.Models.Posts", null)
+                    b.HasOne("Api.Models.Posts", "posts")
                         .WithMany("images")
-                        .HasForeignKey("PostsId");
+                        .HasForeignKey("postsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("posts");
                 });
 
             modelBuilder.Entity("Api.Models.Posts", b =>

@@ -15,18 +15,21 @@ namespace Api.Controllers
         private readonly IUserServices userServices;
         private readonly ICommentServices commentServices;
         private readonly IAnswerServices answerServices;
+        private readonly IImageServices imageServices;
 
         public PostController(
             IPostServices postServices, 
             IUserServices userServices, 
             ICommentServices commentServices,
-            IAnswerServices answerServices
+            IAnswerServices answerServices,
+            IImageServices imageServices
             )
         {
             this.postServices = postServices;
             this.userServices = userServices;
             this.commentServices = commentServices;
             this.answerServices = answerServices;
+            this.imageServices = imageServices;
         }
         [Authorize]
         [HttpGet, Route("List")]
@@ -38,13 +41,17 @@ namespace Api.Controllers
             {
                 var postview = new PostViewModel();
                 postview.Id = item.Id;
-                if(item.images != null)
+                List<Image> images = await this.imageServices.FindImagesByPostId(item.Id);
+                if(images.Count > 0)
                 {
-                    foreach (var image in item.images)
+                    foreach (var image in images)
                     {
                         var imageview = new ImageViewModel();
                         imageview.Id = image.Id;
+                        imageview.type = image.type;
                         imageview.Description = image.Description;
+                        imageview.imageGuid = image.imageGuid;
+                        imageview.image = await image.ReadImage();
                         postview.imagesViews.Add(imageview);
                     }
 
@@ -182,14 +189,15 @@ namespace Api.Controllers
             post.Id = 0;
             post.title = postRequest.title;
             post.description = postRequest.description;
-            ;
             if (postRequest.images != null)
             {
                 foreach (var imageview in postRequest.images)
                 {
                     var image = new Image();
                     image.Id = imageview.Id;
+                    image.imageGuid = imageview.imageGuid;
                     image.Description = imageview.Description;
+                    image.type = imageview.type;
                     await image.CreateImage(imageview.image);
                     post.images.Add(image);
                 }
