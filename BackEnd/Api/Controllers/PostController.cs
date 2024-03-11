@@ -35,8 +35,8 @@ namespace Api.Controllers
         [HttpGet, Route("List")]
         public async Task<ActionResult<List<PostViewModel>>> List()
         {
-            List<Posts> posts = await this.postServices.List();
-            List<PostViewModel> postsViews = new List<PostViewModel>();
+            var posts = await this.postServices.List();
+            var postsViews = new List<PostViewModel>();
             foreach (var item in posts)
             {
                 var postview = new PostViewModel();
