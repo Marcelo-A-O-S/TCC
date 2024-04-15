@@ -54,9 +54,8 @@ namespace Api.Generics
 
         public async Task<T> FindBy(Expression<Func<T, bool>> predicate)
         {
-            var entity = await this.context.Set<T>().Where(predicate).FirstOrDefaultAsync();
-            return entity;
-
+            return await this.context.Set<T>().Where(predicate).FirstOrDefaultAsync();
+            
         }
         public async Task<T> GetById(int id)
         {

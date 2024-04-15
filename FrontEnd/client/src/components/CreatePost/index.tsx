@@ -2,6 +2,7 @@
 import { IPost } from "@/models/interfaces/IPost"
 import InputImage from "../InputImage"
 import { ChangeEvent, FormEvent, useContext, useEffect, useRef, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { ImagePost } from "@/models/ImagePost"
 import { IImagepost } from "@/models/interfaces/IImagePost"
 import { Post } from "@/models/Post"
@@ -11,9 +12,12 @@ import { AxiosError, AxiosResponse } from "axios"
 import { ApiPost } from "@/api/post"
 import { PostCreateView } from "@/ViewModel/PostCreateView"
 import { ImageCreateView } from "@/ViewModel/ImageCreateView"
+import { useRouter } from "next/navigation"
 export default  function CreatePost(){
-
+    const router = useRouter()
+    const searchParams = useSearchParams()
     const buttonPublish = useRef<HTMLButtonElement>(null)
+    let postId = searchParams.get('postId');
     const apiUser = new ApiUser();
     const apiPost = new ApiPost();
     const [messageReturn, setMessageReturn ] = useState({
@@ -31,8 +35,32 @@ export default  function CreatePost(){
                 buttonPublish.current.disabled = false
             }
         }
+        
     },[postState])
-
+    useEffect(()=>{  
+        if(postId != null){
+            UpdateParam(parseInt(postId))
+        }
+    },[postId])
+    const UpdateParam = async (postId: number) =>{
+        let response: AxiosResponse;
+        response = await apiPost.findPostById(postId);
+        let postrequest = response.data;
+        setPostState({
+            description: postrequest.description,
+            title: postrequest.title
+        })
+        const updatedImages = postrequest.imagesViews.map((element:any) => {
+            const image = new ImagePost();
+            image.Id = element.id;
+            image.description = element.description;
+            image.image = element.image;
+            image.type = element.type;
+            image.imageGuid = element.imageGuid;
+            return image;
+        })
+        setImages(updatedImages);
+    }
     const handleDescription = (e: ChangeEvent<HTMLTextAreaElement>)=>{
         const descriptionValue = e.target.value;
         if(descriptionValue != null){
@@ -43,7 +71,6 @@ export default  function CreatePost(){
                 }
             })
         }
-        console.log(postState.description)
     }
     const handleTitle = (e:ChangeEvent<HTMLInputElement>) =>{
         const titleValue = e.target.value;
@@ -60,31 +87,55 @@ export default  function CreatePost(){
         e.preventDefault();
         let response: AxiosResponse<any, any>;
         const post = new PostCreateView()
-        post.title = postState.title;
-        post.description = postState.description;
-        if(images.length > 0 ){
-            images.map(item =>{
-                const image = new ImageCreateView();
-                image.id = item.Id;
-                image.description = item.description;
-                image.image = item.image;
-                image.type = item.type;
-                post.images.push(image);
-            })
+        if(postId !== null){
+            console.log("Atualizando")
+            post.id = parseInt(postId);
+            post.title = postState.title;
+            post.description = postState.description;
+            if(images.length > 0 ){
+                images.map(item =>{
+                    console.log(item);
+                    const image = new ImageCreateView();
+                    image.id = 0;
+                    image.description = item.description;
+                    image.image = item.image;
+                    image.type = item.type;
+                    image.imageGuid = item.imageGuid;
+                    post.images.push(image);
+                })
+            }
+        }else{
+            post.title = postState.title;
+            post.description = postState.description;
+            if(images.length > 0 ){
+                images.map(item =>{
+                    console.log(item)
+                    const image = new ImageCreateView();
+                    image.id = 0;
+                    image.description = item.description;
+                    image.image = item.image;
+                    image.type = item.type;
+                    image.imageGuid = item.imageGuid;
+                    post.images.push(image);
+                })
+            }
         }
         const userCookie = Cookies.get("user");
         if(userCookie != undefined){
             const user = JSON.parse(userCookie);
-
             try{
                 response = await apiUser.GetEmail(user.email);
                 const userData = response.data;
-                console.log(userData)
                 post.userId = userData.id;
             }catch(error: AxiosError | any){
                 response = error.response;
                 if(response.status == 401){
-
+                    setMessageReturn(() =>{
+                        return {
+                            message:response.data,
+                            status:response.status
+                        }
+                    });
                 }
                 if(response.status == 500){
                     setMessageReturn(() =>{
@@ -107,11 +158,18 @@ export default  function CreatePost(){
                         status:response.status
                     }
                 });
+                console.log(response.data)
+                router.push(`/dashboard/posts?success=${response.data}`)
             }
         }catch(error: AxiosError | any){
             response = error.response;
             if(response.status == 401){
-
+                setMessageReturn(() =>{
+                    return {
+                        message:response.data,
+                        status:response.status
+                    }
+                });
             }
             if(response.status == 500){
                 setMessageReturn(() =>{
@@ -125,6 +183,7 @@ export default  function CreatePost(){
     }
     return(
         <>
+        <h1>Create Post</h1>
         <form onSubmit={(e)=>HandleFormSubmit(e)}>
         <div className="mb-3">
             {messageReturn.status == 401 || messageReturn.status == 500?

@@ -23,4 +23,7 @@ export class ApiUser{
     public async GetEmail(email: string){
         return this.host.get(`/api/User/GetByEmail?email=${email}`)
     }
+    public async GetById(userId: number){
+        return this.host.get(`/api/User/GetById?id=${userId}`)
+    }
 }

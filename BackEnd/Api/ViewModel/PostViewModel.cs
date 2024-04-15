@@ -8,5 +8,6 @@
         public List<ImageViewModel> imagesViews { get; set; } = new List<ImageViewModel>();
         public int userId { get; set; }
         public List<CommentViewModel> commentViews { get; set; } = new List<CommentViewModel>();
+        public DateTime dateCreate {get; set;}
     }
 }

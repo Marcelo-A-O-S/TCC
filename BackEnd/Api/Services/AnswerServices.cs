@@ -1,4 +1,5 @@
-﻿using Api.Models;
+﻿using System.Linq.Expressions;
+using Api.Models;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces;
 
@@ -25,6 +26,11 @@ namespace Api.Services
         public async Task<List<Answer>> FindAll()
         {
             return await this.answerRepository.List();
+        }
+
+        public async Task<Answer> FindBy(Expression<Func<Answer, bool>> predicate)
+        {
+            return await this.answerRepository.FindBy(predicate);
         }
 
         public async Task<Answer> FindByCommentId(int commentId)

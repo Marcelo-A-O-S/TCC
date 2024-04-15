@@ -2,6 +2,7 @@
 import { ImagePost } from "@/models/ImagePost";
 import { IImagepost } from "@/models/interfaces/IImagePost";
 import {  ChangeEvent, FormEvent, LegacyRef, MouseEvent, useEffect, useRef, useState } from "react";
+
 interface IInputImage{
     images: Array<IImagepost>
     setImages:(e:Array<IImagepost>) => void
@@ -14,6 +15,7 @@ export default function InputImage(props :IInputImage){
         description: "",
         image: "",
         type:"",
+        imageGuid: "",
         Id:0
     })
     const ModalShow = () =>{
@@ -25,6 +27,7 @@ export default function InputImage(props :IInputImage){
             description:"",
             image:"",
             type:"",
+            imageGuid:"",
             Id:0
         })
         modal.current?.close()
@@ -68,25 +71,29 @@ export default function InputImage(props :IInputImage){
         if(Id == 0 ){
             const image = new ImagePost();
             image.Id = props.images.length + 1;
-            image.SetDescription = imageState.description;
-            image.SetImage = imageState.image;
+            image.description = imageState.description;
+            image.image = imageState.image;
             image.type = imageState.type;
+            image.GenerateGuid();
             props.images.push(image);
             props.setImages(props.images)
             setImageState({
                 description:"",
                 image:"",
                 type:"",
+                imageGuid:"",
                 Id:0
             })
 
         }else{
-            const image = props.images.find(x=> x.Id)
+            const image = props.images.find(x=> x.Id === Id)
             if(image != undefined){
                 image.Id = imageState.Id;
                 image.description = imageState.description;
                 image.image = imageState.image;
+                image.imageGuid = imageState.imageGuid;
                 const updatedImages = props.images.map(item => (item.Id === image.Id ? image : item));
+                console.log(updatedImages)
                 props.setImages(updatedImages);
             }
         }
@@ -94,10 +101,10 @@ export default function InputImage(props :IInputImage){
         setIsLoadingImages(false);
 
     }
-    const handleRemoverImagem = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>, Id: number)=>{
+    const handleRemoverImagem = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>, Guid: string)=>{
         console.log("Remover")
         setIsLoadingImages(true);
-        const newImages = props.images.filter(x=> x.Id !== Id);
+        const newImages = props.images.filter(x=> x.imageGuid !== Guid);
         if(newImages != undefined){
             props.setImages(newImages)
         }
@@ -105,13 +112,14 @@ export default function InputImage(props :IInputImage){
 
 
     }
-    const handleAtualizarImagem = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>, Id: number) =>{
-        const image = props.images.find(x=> x.Id == x.Id)
+    const handleAtualizarImagem = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>, Guid: string) =>{
+        const image = props.images.find(x=> x.imageGuid == Guid)
         if(image != undefined){
             setImageState({
                 description: image.description,
                 image: image.image,
                 type:image.type,
+                imageGuid: image.imageGuid,
                 Id: image.Id
             })
         }
@@ -130,7 +138,7 @@ export default function InputImage(props :IInputImage){
             <hr/>
             <div className="modal-body ">
                 <div className="mb-3 ">
-                    <input type="file" onChange={(e)=>handleImageUpload(e)} className="form-control" aria-label="file example" required/>
+                    <input name="file" type="file"  onChange={(e)=>handleImageUpload(e)} className="form-control" aria-label="file example" />
                     <div className="invalid-feedback">Example invalid form file feedback</div>
                 </div>
                 <div className="h-100 modal-dialog-scrollable">
@@ -170,8 +178,8 @@ export default function InputImage(props :IInputImage){
                                 <p className="card-text" >{item.description}</p>
                             </div>
                             <div className="card-footer d-flex gap-2">
-                                <button type="button" onClick={(e)=>handleAtualizarImagem(e,item.Id)}  className="btn btn-primary">Atualizar</button>
-                                <button type="button" onClick={(e)=>handleRemoverImagem(e,item.Id)} className="btn btn-danger">Remover</button>
+                                <button type="button" onClick={(e)=>handleAtualizarImagem(e,item.imageGuid)}  className="btn btn-primary">Atualizar</button>
+                                <button type="button" onClick={(e)=>handleRemoverImagem(e,item.imageGuid)} className="btn btn-danger">Remover</button>
                             </div>
                             </div>
                         </div>

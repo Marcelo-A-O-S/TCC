@@ -7,7 +7,7 @@ namespace Api.Context
     {
         public AppDbContext(DbContextOptions<AppDbContext> options ): base(options) 
         {
-
+            
         }
         public DbSet<User> users { get; set; }
         public DbSet<Posts> posts { get; set; }

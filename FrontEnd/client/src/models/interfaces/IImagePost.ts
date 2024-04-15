@@ -3,4 +3,5 @@ export interface IImagepost{
     image:string;
     description:string;
     type:string;
+    imageGuid:string;
 }

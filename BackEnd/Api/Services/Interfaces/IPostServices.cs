@@ -4,7 +4,7 @@ namespace Api.Services.Interfaces
 {
     public interface IPostServices : IServices<Posts>
     {
-        Task<Posts> FindByUserId(int Userid);
+        Task<List<Posts>> FindByUserId(int Userid);
         
     }
 }

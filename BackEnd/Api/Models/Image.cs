@@ -9,11 +9,11 @@ namespace Api.Models
         public int Id { get; set; }
         public string imageGuid { get; set; }
         public string type { get; set; }
-        public string Path { get; set; }
+        public string image { get; set; }
         public string Description { get; set; }
         public Posts posts { get; set; }
         public int postsId { get; set; }
-        public async Task<string> ReadImage()
+        /* public async Task<string> ReadImage()
         {
             try
             {
@@ -70,5 +70,6 @@ namespace Api.Models
                 Console.WriteLine(ex);
             }
         }
+    } */
     }
 }

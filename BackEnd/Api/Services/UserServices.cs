@@ -1,4 +1,5 @@
-﻿using Api.Models;
+﻿using System.Linq.Expressions;
+using Api.Models;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces;
 
@@ -26,6 +27,11 @@ namespace Api.Services
         public async Task<List<User>> FindAll()
         {
             return await this.repository.List();
+        }
+
+        public async Task<User> FindBy(Expression<Func<User, bool>> predicate)
+        {
+            return await this.repository.FindBy(predicate);
         }
 
         public async Task<User> FindById(int Id)

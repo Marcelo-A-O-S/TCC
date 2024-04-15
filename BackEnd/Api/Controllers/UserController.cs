@@ -28,5 +28,15 @@ namespace Api.Controllers
             userview.Id = user.Id;
             return Ok(userview);
         }
+        [Authorize]
+        [HttpGet, Route("GetById")]
+        public async Task<ActionResult<UserViewModel>> GetById(int id){
+            User user = await this.userServices.FindById(id);
+            var userview = new UserViewModel();
+            userview.name = user.username;
+            userview.email = user.email;
+            userview.Id = user.Id;
+            return Ok(userview);
+        }
     }
 }

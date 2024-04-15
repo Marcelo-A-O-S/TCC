@@ -79,7 +79,7 @@ namespace Api.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Path")
+                    b.Property<string>("image")
                         .IsRequired()
                         .HasColumnType("longtext");
 

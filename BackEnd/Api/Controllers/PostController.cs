@@ -50,18 +50,20 @@ namespace Api.Controllers
                         imageview.Id = image.Id;
                         imageview.type = image.type;
                         imageview.Description = image.Description;
+                        imageview.image = image.image;
                         imageview.imageGuid = image.imageGuid;
-                        imageview.image = await image.ReadImage();
                         postview.imagesViews.Add(imageview);
                     }
 
                 }
                 postview.description = item.description;
+                postview.dateCreate = item.dateCreate;
                 postview.title = item.title;
                 postview.userId = item.userId;
-                if(item.comments != null)
+                List<Comment> comments  = await this.commentServices.FindyCommentsByPostId(item.Id);
+                if(comments.Count > 0)
                 {
-                    foreach (var comment in item.comments)
+                    foreach (var comment in comments)
                     {
                         var commentview = new CommentViewModel();
                         commentview.Id = comment.Id;
@@ -94,6 +96,7 @@ namespace Api.Controllers
             Posts post = await this.postServices.FindById(id);
             var postview = new PostViewModel();
             postview.Id = post.Id;
+            post.images = await this.imageServices.FindImagesByPostId(post.Id);
             if (post.images != null)
             {
                 foreach (var image in post.images)
@@ -101,11 +104,15 @@ namespace Api.Controllers
                     var imageview = new ImageViewModel();
                     imageview.Id = image.Id;
                     imageview.Description = image.Description;
+                    imageview.imageGuid = image.imageGuid;
+                    imageview.image = image.image;
+                    imageview.type = image.type;
                     postview.imagesViews.Add(imageview);
                 }
 
             }
             postview.description = post.description;
+            postview.dateCreate = post.dateCreate;
             postview.title = post.title;
             postview.userId = post.userId;
             if (post.comments != null)
@@ -136,77 +143,144 @@ namespace Api.Controllers
         }
         [Authorize]
         [HttpGet, Route("FindByUserId")]
-        public async Task<ActionResult<PostViewModel>> GetPostUserId(int UserId)
+        public async Task<ActionResult<List<PostViewModel>>> GetPostUserId(int UserId)
         {
-            Posts post = await this.postServices.FindByUserId(UserId);
-            var postview = new PostViewModel();
-            postview.Id = post.Id;
-            if (post.images != null)
-            {
-                foreach (var image in post.images)
+            var posts = await this.postServices.FindByUserId(UserId);
+            var postsViews = new List<PostViewModel>();
+            foreach (var post in posts){
+                var postview = new PostViewModel();
+                postview.Id = post.Id;
+                postview.description = post.description;
+                postview.title = post.title;
+                postview.userId = post.userId;
+                postview.dateCreate = post.dateCreate;
+                post.images = await this.imageServices.FindImagesByPostId(post.Id);
+                if (post.images.Count > 0)
                 {
-                    var imageview = new ImageViewModel();
-                    imageview.Id = image.Id;
-                    imageview.Description = image.Description;
-                    postview.imagesViews.Add(imageview);
-                }
-
-            }
-            postview.description = post.description;
-            postview.title = post.title;
-            postview.userId = post.userId;
-            if (post.comments != null)
-            {
-                foreach (var comment in post.comments)
-                {
-                    var commentview = new CommentViewModel();
-                    commentview.Id = comment.Id;
-                    commentview.comment = comment.comment;
-                    commentview.postId = comment.postId;
-                    commentview.userId = comment.userId;
-                    if (commentview.answers != null)
+                    foreach (var image in post.images)
                     {
-                        foreach (var answer in comment.answers)
-                        {
-                            var answerview = new AnswerViewModel();
-                            answerview.Id = answer.Id;
-                            answerview.answer = answer.answer;
-                            answerview.userId = answer.userId;
-                            answerview.commentId = answer.commentId;
-                            commentview.answers.Add(answerview);
-                        }
+                        var imageview = new ImageViewModel();
+                        imageview.Id = image.Id;
+                        imageview.Description = image.Description;
+                        imageview.image = image.image;
+                        imageview.imageGuid = image.imageGuid;
+                        imageview.type = image.type;
+                        postview.imagesViews.Add(imageview);
                     }
-                    postview.commentViews.Add(commentview);
                 }
+                post.comments = await this.commentServices.FindyCommentsByPostId(post.Id);
+                if (post.comments.Count > 0)
+                {
+                    foreach (var comment in post.comments)
+                    {
+                        var commentview = new CommentViewModel();
+                        commentview.Id = comment.Id;
+                        commentview.comment = comment.comment;
+                        commentview.postId = comment.postId;
+                        commentview.userId = comment.userId;
+                        if (commentview.answers != null)
+                        {
+                            foreach (var answer in comment.answers)
+                            {
+                                var answerview = new AnswerViewModel();
+                                answerview.Id = answer.Id;
+                                answerview.answer = answer.answer;
+                                answerview.userId = answer.userId;
+                                answerview.commentId = answer.commentId;
+                                commentview.answers.Add(answerview);
+                            }
+                        }
+                        postview.commentViews.Add(commentview);
+                    }
+                }
+                postsViews.Add(postview);
             }
-            return Ok(postview);
+            return Ok(postsViews);
         }
         [Authorize]
         [HttpPost, Route("Create")]
         public async Task<ActionResult> CreatePost(PostRequest postRequest)
         {
             Posts post = new Posts();
-            post.Id = 0;
-            post.title = postRequest.title;
-            post.description = postRequest.description;
-            if (postRequest.images != null)
-            {
-                foreach (var imageview in postRequest.images)
+            if(postRequest.id == 0){
+                post.Id = 0;
+                post.title = postRequest.title;
+                post.description = postRequest.description;
+                post.images = new List<Image>();
+                if (postRequest.images != null)
                 {
-                    var image = new Image();
-                    image.Id = imageview.Id;
-                    image.imageGuid = imageview.imageGuid;
-                    image.Description = imageview.Description;
-                    image.type = imageview.type;
-                    await image.CreateImage(imageview.image);
-                    post.images.Add(image);
+                    foreach (var imageview in postRequest.images)
+                    {
+                        var image = new Image();
+                        image.Id = imageview.Id;
+                        image.Description = imageview.Description;
+                        image.type = imageview.type;
+                        image.image = imageview.image;
+                        image.imageGuid = imageview.imageGuid;
+                        post.images.Add(image);
+                    }
                 }
+                var user = await this.userServices.FindById(postRequest.userId);
+                if (user == null)
+                {
+                    return BadRequest("Usuário inválido.");
+                }
+                post.userId = user.Id;
+                try{
+                    await this.postServices.Save(post);
+                    return Ok("Salvo com sucesso");
+                }catch(Exception err){
+                    return BadRequest(err.Message);
+                }
+                
+            }else{
+                post.Id = postRequest.id;
+                post.title = postRequest.title;
+                post.description = postRequest.description;
+                if (postRequest.images != null)
+                {
+                    //Responsavel por deletar as ocorrencias deletadas no front end
+                    var imagesPost = await this.imageServices.FindImagesByPostId(postRequest.id);
+                    for (int i = 0; i < imagesPost.Count; i++){
+                        var imagepost = imagesPost[i];
+                        var imageview = postRequest.images.Find(x=> x.imageGuid == imagepost.imageGuid);
+                        if(imageview == null){
+                            await this.imageServices.DeleteById(imagepost.Id);
+                        }
+                    }
+                    //Responsavel por atualizar ou salvar ocorrencias de imagens na lista 
+                    foreach (var imageview in postRequest.images){
+                        var image = await this.imageServices.FindBy(x=> x.imageGuid == imageview.imageGuid);
+                        if(image == null){
+                            image = new Image();
+                            image.Id = 0;
+                            image.Description = imageview.Description;
+                            image.type = imageview.type;
+                            image.image = imageview.image;
+                            image.imageGuid = imageview.imageGuid;
+                            image.posts = post;
+                            image.postsId = post.Id;
+                            await this.imageServices.Save(image);
+                            image = await this.imageServices.FindBy(x=> x.imageGuid == imageview.imageGuid);
+                        }else{
+                            image.Description = imageview.Description;
+                            image.type = imageview.type;
+                            image.image = imageview.image;
+                            image.imageGuid = imageview.imageGuid;
+                            image.posts = post;
+                            image.postsId = post.Id;
+                        }
+                        post.images.Add(image);
+                    }
+                   
 
+                }
+                post.user = await this.userServices.FindById(postRequest.userId);
+                post.userId = post.user.Id;
+                await this.postServices.Save(post);
+                return Ok("Atualizado com sucesso");
             }
-            post.user = await this.userServices.FindById(postRequest.userId);
-            post.userId = post.user.Id;
-            await this.postServices.Save(post);
-            return Ok("Salvo com sucesso");
+           
         }
         [Authorize]
         [HttpDelete, Route("DeleteById")]
@@ -218,17 +292,20 @@ namespace Api.Controllers
         }
         [Authorize]
         [HttpPost, Route("AddComment")]
-        public async Task<ActionResult> AddComent(CommentRequest commentRequest)
+        public async Task<ActionResult> AddComent(CommentViewModel commentRequest)
         {
             Posts post = await this.postServices.FindById(commentRequest.postId);
             Comment comment = new Comment();
             comment.Id = 0;
             comment.comment = commentRequest.comment;
-            comment.user = await this.userServices.FindById(commentRequest.userId);
-            comment.post = await this.postServices.FindById(post.Id);
-            post.comments.Add(comment);
-            await this.postServices.Save(post);
-            return Ok();
+            var user = await this.userServices.FindById(commentRequest.userId);
+            if(user == null){
+                return BadRequest("Usuário não encontrado");
+            }   
+            comment.userId = user.Id; 
+            comment.postId = post.Id;
+            await this.commentServices.Save(comment);
+            return Ok("Comentário salvo com sucesso!");
         }
         [Authorize]
         [HttpPut, Route("UpdateComment")]

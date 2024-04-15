@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+
 export class ImageCreateView{
     public id: number;
     public description: string;
@@ -9,8 +9,9 @@ export class ImageCreateView{
         this.id = 0;
         this.description = "";
         this.image = "";
-        this.imageGuid = uuidv4();
+        this.imageGuid = "";
         this.type = ""
 
     }
+
 }

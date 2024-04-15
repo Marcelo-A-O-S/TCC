@@ -1,24 +1,18 @@
+import { v4 as uuidv4 } from 'uuid';
 export class ImagePost{
     public Id: number;
     public description: string;
     public image: string;
     public type: string;
+    public imageGuid: string;
     constructor(){
         this.Id = 0;
         this.description = "";
-        this.image = ""
-        this.type = ""
+        this.image = "";
+        this.type = "";
+        this.imageGuid = ""
     }
-    get GetDescription(): string{
-        return this.description;
-    }
-    set SetDescription(description: string){
-        this.description = description;
-    }
-    get GetImage(): string{
-        return this.image;
-    }
-    set SetImage(image: string){
-        this.image = image;
+    GenerateGuid(){
+        this.imageGuid = uuidv4()
     }
 }

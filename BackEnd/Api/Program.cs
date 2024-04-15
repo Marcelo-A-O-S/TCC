@@ -28,7 +28,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "TCC",
         Version = "v1",
-        Description = "Api feita gerenciamento de dados de uma aplicação.",
+        Description = "Api feita gerenciamento de dados de uma aplicaï¿½ï¿½o.",
         Contact = new OpenApiContact()
         {
 
@@ -38,8 +38,8 @@ builder.Services.AddSwaggerGen(options =>
     });
     options.AddSecurityDefinition("Authentication", new OpenApiSecurityScheme()
     {
-        Description = "Para realizar testes de autenticação na api",
-        Name = "Autenticação",
+        Description = "Para realizar testes de autenticaï¿½ï¿½o na api",
+        Name = "Autenticaï¿½ï¿½o",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey
     });
@@ -58,8 +58,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("JwtKey:Key").Value))
         };
     });
-builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(configuration.GetConnectionString("DefaultConnection"), ServerVersion.Parse("8.0.32-mysql")));
-//Serviços
+builder.Services.AddDbContext<AppDbContext>(options => 
+{
+    options.UseMySql(configuration.GetConnectionString("DefaultConnection"), ServerVersion.Parse("8.0.32-mysql"));
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+}
+);
+//Serviï¿½os
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<IInitializeUsers, InitializeUsers>();
 builder.Services.AddScoped<IPostServices, PostServices>();
