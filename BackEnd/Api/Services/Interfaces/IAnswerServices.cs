@@ -6,5 +6,6 @@ namespace Api.Services.Interfaces
     {
         Task<Answer> FindByUserId(int userId);
         Task<Answer> FindByCommentId(int commentId);
+        Task<List<Answer>> FindAnswersByCommentId(int commentId);
     }
 }

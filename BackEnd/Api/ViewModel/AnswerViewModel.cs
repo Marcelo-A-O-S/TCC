@@ -4,6 +4,7 @@
     {
         public int Id { get; set; }
         public string answer { get; set; }
+        public string answerGuid {get; set;}
         public int userId { get; set; }
         public int commentId { get; set; }
     }

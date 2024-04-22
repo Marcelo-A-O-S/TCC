@@ -7,7 +7,7 @@ export const metadata: Metadata ={
 export default function dashboard(){
     return(
     <>
-        <section className="container p-2">
+        <section className="container p-2 border rounded-3 p-4">
             <h1>Dashboard</h1>
             <div className="d-flex flex-column">
                 <Timeline/>

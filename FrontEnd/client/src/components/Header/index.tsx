@@ -90,9 +90,12 @@ export default function Header(){
                 <a className={`nav-link ${Style.title}`} href="/">Conecta Peças</a>
                 <div className={`${Style.nav_menu} gap-2`}>
 
-                    <div className="d-flex align-items-center gap-2 p-2">
+                    <div className="d-flex align-items-center gap-2 p-2 m-0">
 
-                        {user?.name}
+                        <div className="">
+                            <p className="m-0">{user?.name}</p>
+                            {/* <small className="text-muted">{user?.email}</small> */}
+                        </div>
                         <Image src="" alt="perfil" className="rounded-circle"/>
                     </div>
                     <button className="navbar-toggler dark"

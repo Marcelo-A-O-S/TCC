@@ -8,6 +8,7 @@ namespace Api.Models
         [Key]
         public int Id { get; set; }
         public string answer { get; set; }
+        //public string answerGuid {get;set;}
         public User user { get; set; }
         [ForeignKey("User")]
         public int userId { get; set; }

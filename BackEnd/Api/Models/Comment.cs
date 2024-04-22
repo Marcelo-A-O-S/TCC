@@ -8,7 +8,7 @@ namespace Api.Models
         [Key]
         public int Id { get; set; }
         public string comment { get; set; }
-
+        //public string commentGuid {get; set;}
         public User user { get; set; }
         [ForeignKey("User")]
         public int userId { get; set; }

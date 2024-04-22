@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import { PostCreateView } from "@/ViewModel/PostCreateView";
 import { CommentPost } from "@/models/CommentPost";
 import { Comment } from "@/ViewModel/CommentView";
+import { AnswerPost } from "@/models/AnswerPost";
 export class ApiPost{
     private host:AxiosInstance;
     private token:string;
@@ -38,5 +39,11 @@ export class ApiPost{
     }
     public async AddComment(comment: CommentPost): Promise<AxiosResponse<any, any>>{
         return this.host.post(`/api/Post/AddComment`,comment);
+    }
+    public async FindCommentsByPostId(postId: number): Promise<AxiosResponse<any, any>>{
+        return this.host.get(`/api`)
+    }
+    public async AddAnswer(answer: AnswerPost): Promise<AxiosResponse<any, any>>{
+        return this.host.post(`/api/Post/AddAnswer`,answer)
     }
 }

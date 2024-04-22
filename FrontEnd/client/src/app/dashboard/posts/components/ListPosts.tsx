@@ -2,10 +2,12 @@
 import { ApiPost } from "@/api/post";
 import { ApiUser } from "@/api/user";
 import { AxiosResponse } from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { UserContext } from "@/context/UserContext";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 export default function ListPosts(){
+    const {user} = useContext(UserContext)
     const router = useRouter();
     const [posts, setPosts] = useState<any>([]);
     const api = new ApiPost();
@@ -15,17 +17,15 @@ export default function ListPosts(){
     },[])
     const getPosts = async () =>{
         let response: AxiosResponse
-        let user;
-        const userCookie = Cookies.get("user");
-        if(userCookie != null){
-            const userJson = JSON.parse(userCookie);
-            response = await apiUser.GetEmail(userJson.email);
+        let userData;
+        if(user != null){
+            response = await apiUser.GetEmail(user.email);
             if(response.status == 200){
-                user = response.data;
+                userData = response.data;
             }
         }
         try{
-            response = await api.findByUserId(user.id);
+            response = await api.findByUserId(userData.id);
             if(response.status == 200){
                 let data = response.data;
                 console.log(data)

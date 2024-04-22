@@ -41,6 +41,8 @@ namespace Api.Controllers
             {
                 var postview = new PostViewModel();
                 postview.Id = item.Id;
+                postview.imagesViews = new List<ImageViewModel>(); // Inicializa imagesViews como uma lista vazia
+                postview.commentViews = new List<CommentViewModel>();
                 List<Image> images = await this.imageServices.FindImagesByPostId(item.Id);
                 if(images.Count > 0)
                 {
@@ -60,7 +62,8 @@ namespace Api.Controllers
                 postview.dateCreate = item.dateCreate;
                 postview.title = item.title;
                 postview.userId = item.userId;
-                List<Comment> comments  = await this.commentServices.FindyCommentsByPostId(item.Id);
+                List<Comment> comments = new List<Comment>();
+                comments  = await this.commentServices.FindyCommentsByPostId(item.Id);
                 if(comments.Count > 0)
                 {
                     foreach (var comment in comments)
@@ -70,9 +73,12 @@ namespace Api.Controllers
                         commentview.comment = comment.comment;
                         commentview.postId = comment.postId;
                         commentview.userId = comment.userId;
-                        if(commentview.answers != null)
+                        commentview.answers = new List<AnswerViewModel>();
+                        List<Answer> answers = new List<Answer>();
+                        answers = await this.answerServices.FindAnswersByCommentId(comment.Id);
+                        if(answers.Count > 0)
                         {
-                            foreach (var answer in comment.answers)
+                            foreach (var answer in answers)
                             {
                                 var answerview = new AnswerViewModel();
                                 answerview.Id = answer.Id;
@@ -96,6 +102,8 @@ namespace Api.Controllers
             Posts post = await this.postServices.FindById(id);
             var postview = new PostViewModel();
             postview.Id = post.Id;
+            postview.imagesViews = new List<ImageViewModel>(); // Inicializa imagesViews como uma lista vazia
+            postview.commentViews = new List<CommentViewModel>();
             post.images = await this.imageServices.FindImagesByPostId(post.Id);
             if (post.images != null)
             {
@@ -115,7 +123,8 @@ namespace Api.Controllers
             postview.dateCreate = post.dateCreate;
             postview.title = post.title;
             postview.userId = post.userId;
-            if (post.comments != null)
+            post.comments = await this.commentServices.FindyCommentsByPostId(post.Id);
+            if (post.comments.Count > 0)
             {
                 foreach (var comment in post.comments)
                 {
@@ -124,7 +133,10 @@ namespace Api.Controllers
                     commentview.comment = comment.comment;
                     commentview.postId = comment.postId;
                     commentview.userId = comment.userId;
-                    if (commentview.answers != null)
+                    commentview.answers = new List<AnswerViewModel>();
+                    List<Answer> answers = new List<Answer>();
+                    answers = await this.answerServices.FindAnswersByCommentId(comment.Id);
+                    if (answers.Count > 0)
                     {
                         foreach (var answer in comment.answers)
                         {
@@ -178,6 +190,7 @@ namespace Api.Controllers
                         commentview.comment = comment.comment;
                         commentview.postId = comment.postId;
                         commentview.userId = comment.userId;
+                        //commentview.commentGuid = comment.commentGuid;
                         if (commentview.answers != null)
                         {
                             foreach (var answer in comment.answers)
@@ -187,6 +200,7 @@ namespace Api.Controllers
                                 answerview.answer = answer.answer;
                                 answerview.userId = answer.userId;
                                 answerview.commentId = answer.commentId;
+                                //answerview.answerGuid = answer.answerGuid;
                                 commentview.answers.Add(answerview);
                             }
                         }
@@ -297,6 +311,7 @@ namespace Api.Controllers
             Posts post = await this.postServices.FindById(commentRequest.postId);
             Comment comment = new Comment();
             comment.Id = 0;
+            //comment.commentGuid = new Guid().ToString();
             comment.comment = commentRequest.comment;
             var user = await this.userServices.FindById(commentRequest.userId);
             if(user == null){
@@ -333,10 +348,16 @@ namespace Api.Controllers
             Answer answer = new Answer();
             answer.Id = 0;
             answer.answer = answerRequest.answer;
-            answer.user = await this.userServices.FindById(answerRequest.userId);
-            answer.comment = await this.commentServices.FindById(answerRequest.commentId);
-            comment.answers.Add(answer);
-            await this.commentServices.Save(comment);
+            var user = await this.userServices.FindById(answerRequest.userId);
+            if(user != null){
+                answer.userId = user.Id;
+            }
+            var commentCurrent = await this.commentServices.FindById(answerRequest.commentId);
+            if(commentCurrent != null ){
+                answer.commentId = commentCurrent.Id;
+            }
+            await this.answerServices.Save(answer);
+            //await this.commentServices.Save(comment);
             return Ok("Salvo com sucesso!");
         }
         [Authorize]

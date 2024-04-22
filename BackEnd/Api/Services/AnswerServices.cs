@@ -28,6 +28,11 @@ namespace Api.Services
             return await this.answerRepository.List();
         }
 
+        public async Task<List<Answer>> FindAnswersByCommentId(int commentId)
+        {
+            return await this.answerRepository.FindAllBy(x=> x.commentId == commentId);
+        }
+
         public async Task<Answer> FindBy(Expression<Func<Answer, bool>> predicate)
         {
             return await this.answerRepository.FindBy(predicate);
