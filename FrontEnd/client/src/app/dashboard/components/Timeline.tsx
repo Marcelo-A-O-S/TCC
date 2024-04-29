@@ -9,6 +9,7 @@ import { UserContext } from "@/context/UserContext"
 import { Console } from "console"
 import { AnswerPost } from "@/models/AnswerPost"
 interface Answer{
+    Id:number,
     commentId: number,
     postId: number,
     answer:string,
@@ -18,7 +19,6 @@ interface Answer{
         email:string
     },
 }
-
 interface Comment{
     Id:number,
     user:{
@@ -74,11 +74,16 @@ export default function Timeline(){
         console.log(post)
     }
     const PostComment = async () =>{
-        if(comment.answer !== true){
+        if(comment.answer == true){
             let answerpost = new AnswerPost();
             answerpost.answer = comment.commentUser;
             answerpost.commentId = comment.commentId;
-            answerpost.userId = comment.user.id;
+            if(user !== null){
+                let responseuser = await apiuser.GetEmail(user?.email)
+                if(responseuser.status == 200){
+                    answerpost.userId = responseuser.data.id;
+                }
+            }
             answerpost.id = 0;
             console.log(answerpost)
             let response = await apipost.AddAnswer(answerpost)
@@ -96,24 +101,49 @@ export default function Timeline(){
                         commentUser: ""
                     }
                 })
-                onloadPost(post.Id)
+                getPostId(post.Id)
             }
 
         }else{
             let commentpost = new CommentPost();
-            commentpost.id = 0;
-            commentpost.comment = comment.commentUser;
-            commentpost.postId = post.Id;
-            commentpost.userId = post.user.id;
+            if(comment.commentId !== 0 ){
+                commentpost.id = comment.commentId;
+                commentpost.comment = comment.commentUser;
+                commentpost.postId = post.Id;
+                if(user !== null){
+                    let responseuser = await apiuser.GetEmail(user?.email)
+                    if(responseuser.status == 200){
+                        commentpost.userId = responseuser.data.id;
+                    }
+                }
+            }else{
+                commentpost.id = 0;
+                commentpost.comment = comment.commentUser;
+                commentpost.postId = post.Id;
+                if(user !== null){
+                    let responseuser = await apiuser.GetEmail(user?.email)
+                    if(responseuser.status == 200){
+                        commentpost.userId = responseuser.data.id;
+                    }
+                }
+            }
             setComment(prevState =>{
-                return {
+                return{
                     ...prevState,
+                    user:{
+                        name: "",
+                        email:"",
+                        id:0
+                    },
+                    commentId: 0,
+                    answer: false,
                     commentUser: ""
                 }
             });
+            console.log(commentpost)
             let response = await apipost.AddComment(commentpost);
             if(response.status == 200){
-                onloadPost(post.Id)
+                getPostId(post.Id)
             }
         }
         
@@ -122,17 +152,25 @@ export default function Timeline(){
     const ResponseComment = async (commentId: number) =>{
         let commentCurrent = post.commentViews.find(x=> x.Id == commentId)
         if(commentCurrent !== undefined){
-            setComment(prevState=>{
-                return{
-                    ...prevState,
-                    commentId: commentCurrent.Id,
-                    user: commentCurrent.user,
-
+            if(user !== null){
+                let responseuser = await apiuser.GetEmail(user.email);
+                if(responseuser.status === 200){
+                    responseuser.data;
+                    setComment(prevState=>{
+                        return{
+                            ...prevState,
+                            commentId: commentCurrent.Id,
+                            user:commentCurrent.user,
+                            answer:true
+        
+                        }
+                    })
+                    
                 }
-            })
+            }
+            
         }
        
-        console.log(commentCurrent)
     }
     const RemoveResponse = async () =>{
         setComment(prevState=>{
@@ -214,26 +252,32 @@ export default function Timeline(){
             let fetchComments = await Promise.all(dataPost.commentViews.map(async(element: any) => {
                 let responseUserComment = await apiuser.GetById(element.userId);
                 if(responseUserComment.status == 200){
-                    console.log(element.answers)
                     let fetchAnswer = await Promise.all(element.answers.map(async (itemAnswer:any)=>{
+                        
                         let responseUserAnswer = await apiuser.GetById(itemAnswer.userId)
                         if(responseUserAnswer.status == 200){
+                            console.log(itemAnswer);
                             let answer: Answer = {
+                                Id: itemAnswer.id,
                                 answer: itemAnswer.answer,
                                 commentId: itemAnswer.commentId,
                                 postId: itemAnswer.postId,
                                 user:responseUserAnswer.data
                             }
+                            
+                            return answer;
                         }
                         
                     }))
+                    let answers = fetchAnswer.filter(Boolean);
+                    
                     let userComment: Comment = {
                         Id: element.id,
                         user: responseUserComment.data,
                         comment:element.comment,
-                        answers: fetchAnswer.filter(Boolean)
+                        answers: answers
                     }
-                    return userComment
+                    return userComment;
                 }
             }));
             let comments = fetchComments.filter(Boolean);
@@ -248,42 +292,41 @@ export default function Timeline(){
             }
             setPost(postbody)
         }
-        ModalShow()
-        console.log(post)
+        if(openModal == false){
+            ModalShow()
+        }
+        
+        
     }
-    const onloadPost = async (postId: number) =>{
-        let response: AxiosResponse
-        response = await apipost.findPostById(postId)
-        let dataPost = response.data;
-        let responseuser = await apiuser.GetById(dataPost.userId);
-        if(response.status == 200 && responseuser.status == 200){
-            let user = responseuser.data;
-            let fetchComments = await Promise.all(dataPost.commentViews.map( async(element: any) => {
-                let responseUserComment = await apiuser.GetById(element.userId);
-                if(responseUserComment.status == 200){
-                    let userComment: Comment = {
-                        Id: element.id,
-                        user: responseUserComment.data,
-                        comment:element.comment,
-                        answers:element.answers
-                    }
-                    return userComment
-                }
-            }));
-            let comments = fetchComments.filter(Boolean);
-            let postbody: Posts = {
-                Id:dataPost.id,
-                title:dataPost.title,
-                description: dataPost.description,
-                user:user,
-                commentViews: comments,
-                imagesViews: dataPost.imagesViews,
-                dateCreate: dataPost.dateCreate,
-                
-            }
-            setPost(postbody)
+    const deleteComment = async (commentId: number)=>{
+        let response: AxiosResponse = await apipost.DeleteCommentById(commentId)
+        if(response.status == 200){
+            getPostId(post.Id)
         }
     }
+    const updateComment = async (comment:Comment)=>{
+        console.log(comment)
+        setComment(prevstate=>{
+            return{
+                ...prevstate,
+                commentId: comment.Id,
+                commentUser: comment.comment,
+                user:{
+                    id: comment.user.id,
+                    email: comment.user.email,
+                    name:comment.user.name
+                },
+                answer:false
+            }
+        })
+    }
+    const deleteAnswer = async (answerId: number)=>{
+        let response: AxiosResponse = await apipost.DeleteAnswerById(answerId);
+        if(response.status == 200){
+            getPostId(post.Id)
+        }
+    }
+    
     const FormatedDate = (dateCreate: string) => {
         const date = new Date(dateCreate);
         return date.toLocaleDateString()
@@ -324,14 +367,21 @@ export default function Timeline(){
                                             <p>{item.comment}</p>
                                             <div className="d-flex gap-2">
                                                 <div role="button" onClick={(e)=>ResponseComment(item.Id)}>Responder</div>
-                                                {user?.email == item.user?.email ||user?.email == post.user?.email?<div role="button">Excluir</div>:""}
+                                                {user?.email == item.user?.email ||user?.email == post.user?.email?<div onClick={(e)=> deleteComment(item.Id)} role="button">Excluir</div>:""}
+                                                {user?.email == item.user?.email?<div onClick={(e)=> updateComment(item)} role="button">Editar</div>:""}
                                             </div>
                                             {item.answers && item.answers.length !== 0?
                                             item.answers.map((answer: Answer)=>{
                                                 return(
                                                 <div>
                                                     <hr/>
+                                                    <label>{answer.user?.name} <small className="text-muted">{answer.user?.email}</small></label>
                                                     <p>{answer.answer}</p>
+                                                    <div className="d-flex gap-2">
+                                                        <div role="button" onClick={(e)=>ResponseComment(item.Id)}>Responder</div>
+                                                        {user?.email == answer.user?.email ||user?.email == post.user?.email?<div onClick={(e)=> deleteAnswer(answer.Id)} role="button">Excluir</div>:""}
+                                                        {user?.email == answer.user?.email?<div onClick={(e)=> deleteAnswer(answer.Id)} role="button">Editar</div>:""}
+                                                    </div>
                                                 </div>)
                                             }):""}
                                         </div>
@@ -344,13 +394,21 @@ export default function Timeline(){
                     </div>
                     <div className="modal-footer">
                         <div className="d-flex flex-column" style={{width:"100%"}}>
-                            {comment.user.name !== ""?
+                            {comment.answer == true?
                             <div className="d-flex gap-4">
                                 <label>
                                     Você está respondendo: {comment.user?.name} <small className="text-muted">{comment.user?.email}</small>
                                 </label>
                                 <div role="button" onClick={RemoveResponse}>Cancelar</div>
                             </div>:""}
+                            {comment.commentId !== 0 && comment.commentUser !== ""?
+                            <div className="d-flex gap-4">
+                                <label>
+                                    Você está editando: 
+                                </label>
+                                <div role="button" onClick={RemoveResponse}>Cancelar</div>
+                            </div>:""
+                            }
                             <textarea onChange={(e)=>InsertComment(e)} className="form-control" id="exampleFormControlTextarea1" placeholder="Escreva um comentário" value={comment.commentUser} ></textarea>
                         </div>
                         {comment.commentUser !== ""?<button onClick={PostComment} className="btn btn-primary">

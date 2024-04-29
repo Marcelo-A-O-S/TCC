@@ -138,7 +138,7 @@ namespace Api.Controllers
                     answers = await this.answerServices.FindAnswersByCommentId(comment.Id);
                     if (answers.Count > 0)
                     {
-                        foreach (var answer in comment.answers)
+                        foreach (var answer in answers)
                         {
                             var answerview = new AnswerViewModel();
                             answerview.Id = answer.Id;
@@ -310,17 +310,35 @@ namespace Api.Controllers
         {
             Posts post = await this.postServices.FindById(commentRequest.postId);
             Comment comment = new Comment();
-            comment.Id = 0;
-            //comment.commentGuid = new Guid().ToString();
-            comment.comment = commentRequest.comment;
-            var user = await this.userServices.FindById(commentRequest.userId);
-            if(user == null){
-                return BadRequest("Usuário não encontrado");
-            }   
-            comment.userId = user.Id; 
-            comment.postId = post.Id;
+            if(commentRequest.Id != 0){
+                comment.Id = commentRequest.Id;
+                //comment.commentGuid = new Guid().ToString();
+                comment.comment = commentRequest.comment;
+                var user = await this.userServices.FindById(commentRequest.userId);
+                if(user == null){
+                    return BadRequest("Usuário não encontrado");
+                }   
+                comment.userId = user.Id; 
+                comment.postId = post.Id;
+            }else{
+                comment.Id = 0;
+                //comment.commentGuid = new Guid().ToString();
+                comment.comment = commentRequest.comment;
+                var user = await this.userServices.FindById(commentRequest.userId);
+                if(user == null){
+                    return BadRequest("Usuário não encontrado");
+                }   
+                comment.userId = user.Id; 
+                comment.postId = post.Id;
+            }
+            
             await this.commentServices.Save(comment);
-            return Ok("Comentário salvo com sucesso!");
+            if(comment.Id != 0){
+                return Ok("Comentário atualizado com sucesso!");
+            }else{
+                return Ok("Comentário salvo com sucesso!");
+            }
+            
         }
         [Authorize]
         [HttpPut, Route("UpdateComment")]
@@ -339,7 +357,13 @@ namespace Api.Controllers
             await this.commentServices.Delete(comment);
             return Ok("Comentário deletado com sucesso!");
         }
-
+        [Authorize]
+        [HttpDelete, Route("DeleteCommentById")]
+        public async Task<ActionResult> DeleteCommentById(int commentId){
+            Comment comment = await this.commentServices.FindById(commentId);
+            await this.commentServices.Delete(comment);
+            return Ok("Comentário deletado com sucesso!");
+        }
         [Authorize]
         [HttpPost, Route("AddAnswer")]
         public async Task<ActionResult> AddAnswer(AnswerRequest answerRequest)
@@ -374,6 +398,13 @@ namespace Api.Controllers
         public async Task<ActionResult> DeleteAnswer(AnswerRequest answerRequest)
         {
             Answer answer = await this.answerServices.FindById(answerRequest.Id);
+            await this.answerServices.Delete(answer);
+            return Ok("Comentário deletado com sucesso");
+        }
+        [Authorize]
+        [HttpDelete,Route("DeleteAnswerById")]
+        public async Task<ActionResult> DeleteAnswerById(int answerId){
+            Answer answer = await this.answerServices.FindById(answerId);
             await this.answerServices.Delete(answer);
             return Ok("Comentário deletado com sucesso");
         }

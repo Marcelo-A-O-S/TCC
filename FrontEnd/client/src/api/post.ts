@@ -40,10 +40,26 @@ export class ApiPost{
     public async AddComment(comment: CommentPost): Promise<AxiosResponse<any, any>>{
         return this.host.post(`/api/Post/AddComment`,comment);
     }
+    public async DeleteComment(comment: CommentPost): Promise<AxiosResponse<any,any>>{
+        return this.host.delete(`/api/Post/DeleteComment`,{
+            data: comment
+        })
+    }
+    public async DeleteCommentById(commentId:number):Promise<AxiosResponse<any,any>>{
+        return this.host.delete(`/api/Post/DeleteCommentById?commentId=${commentId}`)
+    }
     public async FindCommentsByPostId(postId: number): Promise<AxiosResponse<any, any>>{
         return this.host.get(`/api`)
     }
     public async AddAnswer(answer: AnswerPost): Promise<AxiosResponse<any, any>>{
         return this.host.post(`/api/Post/AddAnswer`,answer)
+    }
+    public async DeleteAnswer(answer:AnswerPost):Promise<AxiosResponse<any, any>>{
+        return this.host.delete(`/api/Post/DeleteAnswer`,{
+            data: answer
+        })
+    }
+    public async DeleteAnswerById(answerId:number): Promise<AxiosResponse<any,any>>{
+        return this.host.delete(`/api/Post/DeleteAnswerById?answerId=${answerId}`)
     }
 }
