@@ -52,6 +52,7 @@ export default function Timeline(){
     const [comment, setComment] = useState({
         commentId:0,
         commentUser: "",
+        answerId:0,
         user:{
             id:0,
             name:"",
@@ -71,11 +72,31 @@ export default function Timeline(){
                 commentUser: e.target.value
             }
         });
-        console.log(post)
+    }
+    const ResetStateComment = () =>{
+        setComment(prevState=>{
+            return{
+                ...prevState,
+                user:{
+                    name: "",
+                    email:"",
+                    id:0
+                },
+                answerId:0,
+                commentId: 0,
+                answer: false,
+                commentUser: ""
+            }
+        })
     }
     const PostComment = async () =>{
         if(comment.answer == true){
             let answerpost = new AnswerPost();
+            if(comment.answerId != 0 ){
+                answerpost.id = comment.answerId;
+            }else{
+                answerpost.id = 0;
+            }
             answerpost.answer = comment.commentUser;
             answerpost.commentId = comment.commentId;
             if(user !== null){
@@ -84,23 +105,10 @@ export default function Timeline(){
                     answerpost.userId = responseuser.data.id;
                 }
             }
-            answerpost.id = 0;
             console.log(answerpost)
             let response = await apipost.AddAnswer(answerpost)
             if(response.status == 200){
-                setComment(prevState=>{
-                    return{
-                        ...prevState,
-                        user:{
-                            name: "",
-                            email:"",
-                            id:0
-                        },
-                        commentId: 0,
-                        answer: false,
-                        commentUser: ""
-                    }
-                })
+                ResetStateComment()
                 getPostId(post.Id)
             }
 
@@ -127,19 +135,7 @@ export default function Timeline(){
                     }
                 }
             }
-            setComment(prevState =>{
-                return{
-                    ...prevState,
-                    user:{
-                        name: "",
-                        email:"",
-                        id:0
-                    },
-                    commentId: 0,
-                    answer: false,
-                    commentUser: ""
-                }
-            });
+            ResetStateComment()
             console.log(commentpost)
             let response = await apipost.AddComment(commentpost);
             if(response.status == 200){
@@ -173,19 +169,7 @@ export default function Timeline(){
        
     }
     const RemoveResponse = async () =>{
-        setComment(prevState=>{
-            return{
-                ...prevState,
-                user:{
-                    name: "",
-                    email:"",
-                    id:0
-                },
-                commentId: 0,
-                answer: false,
-                commentUser: ""
-            }
-        })
+        ResetStateComment()
     }
     const ModalShow = () =>{
         modal.current?.showModal();
@@ -305,7 +289,6 @@ export default function Timeline(){
         }
     }
     const updateComment = async (comment:Comment)=>{
-        console.log(comment)
         setComment(prevstate=>{
             return{
                 ...prevstate,
@@ -316,6 +299,7 @@ export default function Timeline(){
                     email: comment.user.email,
                     name:comment.user.name
                 },
+                answerId:0,
                 answer:false
             }
         })
@@ -325,6 +309,23 @@ export default function Timeline(){
         if(response.status == 200){
             getPostId(post.Id)
         }
+    }
+    const updateAnswer = async( answer: Answer)=>{
+        console.log(answer)
+        setComment(prevstate=>{
+            return{
+                ...prevstate,
+                commentId: answer.commentId,
+                commentUser: answer.answer,
+                user:{
+                    id: answer.user.id,
+                    email: answer.user.email,
+                    name:answer.user.name
+                },
+                answerId: answer.Id,
+                answer:true
+            }
+        })
     }
     
     const FormatedDate = (dateCreate: string) => {
@@ -380,7 +381,7 @@ export default function Timeline(){
                                                     <div className="d-flex gap-2">
                                                         <div role="button" onClick={(e)=>ResponseComment(item.Id)}>Responder</div>
                                                         {user?.email == answer.user?.email ||user?.email == post.user?.email?<div onClick={(e)=> deleteAnswer(answer.Id)} role="button">Excluir</div>:""}
-                                                        {user?.email == answer.user?.email?<div onClick={(e)=> deleteAnswer(answer.Id)} role="button">Editar</div>:""}
+                                                        {user?.email == answer.user?.email?<div onClick={(e)=> updateAnswer(answer)} role="button">Editar</div>:""}
                                                     </div>
                                                 </div>)
                                             }):""}
@@ -394,7 +395,7 @@ export default function Timeline(){
                     </div>
                     <div className="modal-footer">
                         <div className="d-flex flex-column" style={{width:"100%"}}>
-                            {comment.answer == true?
+                            {comment.answer == true && comment.answerId == 0?
                             <div className="d-flex gap-4">
                                 <label>
                                     Você está respondendo: {comment.user?.name} <small className="text-muted">{comment.user?.email}</small>

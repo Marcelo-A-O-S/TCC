@@ -370,16 +370,30 @@ namespace Api.Controllers
         {
             Comment comment = await this.commentServices.FindById(answerRequest.commentId);
             Answer answer = new Answer();
-            answer.Id = 0;
-            answer.answer = answerRequest.answer;
-            var user = await this.userServices.FindById(answerRequest.userId);
-            if(user != null){
-                answer.userId = user.Id;
+            if(answerRequest.Id != 0){
+                answer.Id = answerRequest.Id;
+                answer.answer = answerRequest.answer;
+                var user = await this.userServices.FindById(answerRequest.userId);
+                if(user != null){
+                    answer.userId = user.Id;
+                }
+                var commentCurrent = await this.commentServices.FindById(answerRequest.commentId);
+                if(commentCurrent != null ){
+                    answer.commentId = commentCurrent.Id;
+                }
+            }else{
+                answer.Id = 0;
+                answer.answer = answerRequest.answer;
+                var user = await this.userServices.FindById(answerRequest.userId);
+                if(user != null){
+                    answer.userId = user.Id;
+                }
+                var commentCurrent = await this.commentServices.FindById(answerRequest.commentId);
+                if(commentCurrent != null ){
+                    answer.commentId = commentCurrent.Id;
+                }
             }
-            var commentCurrent = await this.commentServices.FindById(answerRequest.commentId);
-            if(commentCurrent != null ){
-                answer.commentId = commentCurrent.Id;
-            }
+            
             await this.answerServices.Save(answer);
             //await this.commentServices.Save(comment);
             return Ok("Salvo com sucesso!");
