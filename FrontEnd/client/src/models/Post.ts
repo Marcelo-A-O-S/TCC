@@ -1,7 +1,8 @@
 import { CommentPost } from "./CommentPost";
 import { ImagePost } from "./ImagePost";
+import { IPost } from "./interfaces/IPost";
 
-export class Post{
+export class Post implements IPost{
     public Id: number;
     public userId: number;
     public title: string;
@@ -18,3 +19,7 @@ export class Post{
     }
 
 }
+/* export interface IPost{
+    title: string;
+    description: string;
+} */

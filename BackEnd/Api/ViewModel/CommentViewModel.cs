@@ -7,6 +7,6 @@
         public string commentGuid { get; set; }
         public int userId { get; set; }
         public int postId { get; set; }
-        public List<AnswerViewModel> answers { get; set; }
+        public List<AnswerViewModel> answers { get; set; } = new List<AnswerViewModel>();
     }
 }

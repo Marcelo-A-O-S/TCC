@@ -115,6 +115,33 @@ namespace Api.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "likes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    userId = table.Column<int>(type: "int", nullable: false),
+                    postId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_likes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_likes_posts_postId",
+                        column: x => x.postId,
+                        principalTable: "posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_likes_users_userId",
+                        column: x => x.userId,
+                        principalTable: "users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "answers",
                 columns: table => new
                 {
@@ -169,6 +196,16 @@ namespace Api.Migrations
                 column: "postsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_likes_postId",
+                table: "likes",
+                column: "postId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_likes_userId",
+                table: "likes",
+                column: "userId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_posts_userId",
                 table: "posts",
                 column: "userId");
@@ -181,6 +218,9 @@ namespace Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "images");
+
+            migrationBuilder.DropTable(
+                name: "likes");
 
             migrationBuilder.DropTable(
                 name: "comments");

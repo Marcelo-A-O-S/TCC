@@ -72,14 +72,16 @@ builder.Services.AddScoped<IAnswerServices, AnswerServices>();
 builder.Services.AddScoped<ICommentServices, CommentServices>();
 builder.Services.AddScoped<IJwtBearerServices, JwtBearerServices>();
 builder.Services.AddScoped<IImageServices, ImageServices>();
+builder.Services.AddScoped<ILikeServices, LikeServices>();
 //Repositorios
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IImageRepository, ImageRepository>();
+builder.Services.AddScoped<ILikeRepository, LikeRepository>();
 
-
+//Utilitários
 builder.Services.AddScoped<IGenerics<User>, Generics<User>>();
 
 

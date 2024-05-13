@@ -1,4 +1,5 @@
 ﻿using Api.Models;
+using Api.Services;
 using Api.Services.Interfaces;
 using Api.ViewModel;
 using Microsoft.AspNetCore.Authorization;
@@ -16,13 +17,15 @@ namespace Api.Controllers
         private readonly ICommentServices commentServices;
         private readonly IAnswerServices answerServices;
         private readonly IImageServices imageServices;
+        private readonly ILikeServices likeServices;
 
         public PostController(
             IPostServices postServices, 
             IUserServices userServices, 
             ICommentServices commentServices,
             IAnswerServices answerServices,
-            IImageServices imageServices
+            IImageServices imageServices,
+            ILikeServices likeServices
             )
         {
             this.postServices = postServices;
@@ -30,6 +33,7 @@ namespace Api.Controllers
             this.commentServices = commentServices;
             this.answerServices = answerServices;
             this.imageServices = imageServices;
+            this.likeServices = likeServices;
         }
         [Authorize]
         [HttpGet, Route("List")]
@@ -412,16 +416,51 @@ namespace Api.Controllers
         public async Task<ActionResult> DeleteAnswer(AnswerRequest answerRequest)
         {
             Answer answer = await this.answerServices.FindById(answerRequest.Id);
-            await this.answerServices.Delete(answer);
-            return Ok("Comentário deletado com sucesso");
+            try{
+                await this.answerServices.Delete(answer);
+                return Ok("Comentário deletado com sucesso");
+            }catch(Exception err){
+                return BadRequest(err.Message);
+            }
         }
         [Authorize]
         [HttpDelete,Route("DeleteAnswerById")]
         public async Task<ActionResult> DeleteAnswerById(int answerId){
             Answer answer = await this.answerServices.FindById(answerId);
-            await this.answerServices.Delete(answer);
-            return Ok("Comentário deletado com sucesso");
+            try{
+                await this.answerServices.Delete(answer);
+                return Ok("Comentário deletado com sucesso");
+            }catch(Exception err){
+                return BadRequest(err.Message);
+            }
+            
+        }
+        [Authorize]
+        [HttpPost, Route("AddLike")]
+        public async Task<ActionResult> AddLikePost(LikeRequest likeRequest){
+            if (likeRequest == null){
+                return BadRequest("Campos inválidos!");
+            }
+            var like = new Like();
+            like.postId = likeRequest.postId;
+            like.userId = likeRequest.userId;
+            like.Guid = likeRequest.Guid;
+            like.Id = 0;
+            try{
+                await this.likeServices.Save(like);
+                return Ok();
+            }catch(Exception err){
+                return BadRequest(err.Message);
+            }
+        }
+        [Authorize]
+        [HttpGet, Route("ListLikes")]
+        public async Task<ActionResult> ListLikes(){
+
+            return Ok();
         }
 
     }
+
+    
 }

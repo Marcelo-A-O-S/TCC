@@ -4,6 +4,7 @@ import { PostCreateView } from "@/ViewModel/PostCreateView";
 import { CommentPost } from "@/models/CommentPost";
 import { Comment } from "@/ViewModel/CommentView";
 import { AnswerPost } from "@/models/AnswerPost";
+import { LikeView } from "@/ViewModel/LikeView";
 export class ApiPost{
     private host:AxiosInstance;
     private token:string;
@@ -61,5 +62,8 @@ export class ApiPost{
     }
     public async DeleteAnswerById(answerId:number): Promise<AxiosResponse<any,any>>{
         return this.host.delete(`/api/Post/DeleteAnswerById?answerId=${answerId}`)
+    }
+    public async AddLike(like: LikeView): Promise<AxiosResponse<any,any>>{
+        return this.host.post(`/api/Post/AddLike`, like);
     }
 }

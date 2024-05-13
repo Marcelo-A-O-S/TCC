@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-export class ImagePost{
+import { IImagepost } from './interfaces/IImagePost';
+export class ImagePost implements IImagepost{
     public Id: number;
     public description: string;
     public image: string;

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240414161256_Initial")]
+    [Migration("20240512202341_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,6 +101,27 @@ namespace Api.Migrations
                     b.HasIndex("postsId");
 
                     b.ToTable("images");
+                });
+
+            modelBuilder.Entity("Api.Models.Like", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("postId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("userId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("postId");
+
+                    b.HasIndex("userId");
+
+                    b.ToTable("likes");
                 });
 
             modelBuilder.Entity("Api.Models.Posts", b =>
@@ -200,6 +221,25 @@ namespace Api.Migrations
                         .IsRequired();
 
                     b.Navigation("posts");
+                });
+
+            modelBuilder.Entity("Api.Models.Like", b =>
+                {
+                    b.HasOne("Api.Models.Posts", "post")
+                        .WithMany()
+                        .HasForeignKey("postId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Api.Models.User", "user")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("post");
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("Api.Models.Posts", b =>

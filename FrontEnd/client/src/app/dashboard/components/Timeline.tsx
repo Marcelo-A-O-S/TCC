@@ -5,43 +5,14 @@ import { useState, useEffect, useRef, ChangeEvent, useContext } from "react"
 import { ApiUser } from "@/api/user"
 import { CommentPost } from "@/models/CommentPost"
 import { UserContext } from "@/context/UserContext"
-//import { Comment } from "@/ViewModel/CommentView"
-import { Console } from "console"
 import { AnswerPost } from "@/models/AnswerPost"
-interface Answer{
-    Id:number,
-    commentId: number,
-    postId: number,
-    answer:string,
-    user:{
-        id:number,
-        name:string,
-        email:string
-    },
-}
-interface Comment{
-    Id:number,
-    user:{
-        id:number,
-        name:string,
-        email:string
-    },
-    comment:string,
-    answers:Answer[]
-}
-interface Posts {
-    Id:number,
-    title:string,
-    description:string,
-    user:{
-        id:number,
-        name:string,
-        email:string
-    },
-    commentViews: Comment[],
-    imagesViews: Array<any>,
-    dateCreate:string
-}
+import { IUserView } from "@/ViewModel/interfaces/IUserView"
+import { IAnswerView } from "@/ViewModel/interfaces/IAnswerView"
+import { ICommentView } from "@/ViewModel/interfaces/ICommentView"
+import { IPostsView } from "@/ViewModel/interfaces/IPostsView"
+import { ICommentState } from "@/ViewModel/utils/ICommentState"
+import { ILikeView } from "@/ViewModel/interfaces/ILikeView"
+import { LikeView } from "@/ViewModel/LikeView"
 export default function Timeline(){
     const {user} = useContext(UserContext)
     const modal = useRef<HTMLDialogElement>(null);
@@ -49,7 +20,7 @@ export default function Timeline(){
     const apiuser = new ApiUser()
     const [ openModal , setOpenModal] = useState(false);
 
-    const [comment, setComment] = useState({
+    const [comment, setComment] = useState<ICommentState>({
         commentId:0,
         commentUser: "",
         answerId:0,
@@ -60,8 +31,11 @@ export default function Timeline(){
         },
         answer: false
     });
-    const [post, setPost] = useState<Posts>({} as Posts)
-    const [posts, setPosts] = useState<Array<Posts>>([])
+    const [like, setLike] = useState({
+
+    })
+    const [post, setPost] = useState<IPostsView>({} as IPostsView)
+    const [posts, setPosts] = useState<Array<IPostsView>>([])
     useEffect(()=>{
         getPosts()
     },[])
@@ -188,14 +162,14 @@ export default function Timeline(){
             let data = response.data;
             console.log("getall:", data)
             setPosts([]);
-            let items: Array<Posts> = []
+            let items: Array<IPostsView> = []
             let fetchPosts = await Promise.all(data.map( async (item:any)=>{
                 let responseuser = await apiuser.GetById(item.userId);
                 if(response.status == 200 && responseuser.status == 200){
                     let fetchComments = await Promise.all(item.commentViews.map( async(element: any) => {
                         let responseUserComment = await apiuser.GetById(element.userId);
                         if(responseUserComment.status == 200){
-                            let userComment: Comment = {
+                            let userComment: ICommentView = {
                                 Id: element.id,
                                 user: responseUserComment.data,
                                 comment:element.comment,
@@ -206,11 +180,12 @@ export default function Timeline(){
                     }));
                     let comments = fetchComments.filter(Boolean);
                     let user = responseuser.data;
-                    let postbody: Posts = {
+                    let postbody: IPostsView = {
                         Id:item.id,
                         title:item.title,
                         description: item.description,
                         user:user,
+                        likeViews: item.likeViews,
                         commentViews: comments,
                         imagesViews: item.imagesViews,
                         dateCreate: item.dateCreate
@@ -241,7 +216,7 @@ export default function Timeline(){
                         let responseUserAnswer = await apiuser.GetById(itemAnswer.userId)
                         if(responseUserAnswer.status == 200){
                             console.log(itemAnswer);
-                            let answer: Answer = {
+                            let answer: IAnswerView = {
                                 Id: itemAnswer.id,
                                 answer: itemAnswer.answer,
                                 commentId: itemAnswer.commentId,
@@ -255,7 +230,7 @@ export default function Timeline(){
                     }))
                     let answers = fetchAnswer.filter(Boolean);
                     
-                    let userComment: Comment = {
+                    let userComment: ICommentView = {
                         Id: element.id,
                         user: responseUserComment.data,
                         comment:element.comment,
@@ -265,11 +240,12 @@ export default function Timeline(){
                 }
             }));
             let comments = fetchComments.filter(Boolean);
-            let postbody: Posts = {
+            let postbody: IPostsView = {
                 Id:dataPost.id,
                 title:dataPost.title,
                 description: dataPost.description,
                 user:user,
+                likeViews: dataPost.likeViews,
                 commentViews: comments,
                 imagesViews: dataPost.imagesViews,
                 dateCreate: dataPost.dateCreate
@@ -288,7 +264,7 @@ export default function Timeline(){
             getPostId(post.Id)
         }
     }
-    const updateComment = async (comment:Comment)=>{
+    const updateComment = async (comment:ICommentView)=>{
         setComment(prevstate=>{
             return{
                 ...prevstate,
@@ -310,7 +286,7 @@ export default function Timeline(){
             getPostId(post.Id)
         }
     }
-    const updateAnswer = async( answer: Answer)=>{
+    const updateAnswer = async( answer: IAnswerView)=>{
         console.log(answer)
         setComment(prevstate=>{
             return{
@@ -331,6 +307,22 @@ export default function Timeline(){
     const FormatedDate = (dateCreate: string) => {
         const date = new Date(dateCreate);
         return date.toLocaleDateString()
+    }
+    const LikeState = async (postId:number) =>{
+        console.log(postId)
+        if(user != null){
+           let responseuser = await apiuser.GetEmail(user?.email)
+           if(responseuser.status === 200){
+                let userData = responseuser.data;
+                let likeview = new LikeView();
+                likeview.postId = postId;
+                likeview.userId = userData.Id;
+                likeview.GenerateGuid()
+                await apipost.AddLike(likeview);
+                await getPosts();
+           }
+        }
+        
     }
     return(
         <><dialog className="border modal-dialog modal-xl modal-dialog-scrollable p-3 rounded-3" aria-modal="true" tabIndex={-1} ref={modal}>
@@ -361,7 +353,7 @@ export default function Timeline(){
                         <div className="card border">
                             <div className="card-body">
                                 {post.commentViews && post.commentViews.length == 0?<p className="w-100 text-center">Não foi adicionado nenhum comentário até o momento! :(</p>:
-                                post.commentViews?.map((item: Comment)=>{
+                                post.commentViews?.map((item: ICommentView)=>{
                                     return(
                                         <div className="d-flex flex-column border rounded p-2 m-1">
                                             <label>{item.user?.name} <small className="text-muted">{item.user?.email}</small></label>
@@ -372,7 +364,7 @@ export default function Timeline(){
                                                 {user?.email == item.user?.email?<div onClick={(e)=> updateComment(item)} role="button">Editar</div>:""}
                                             </div>
                                             {item.answers && item.answers.length !== 0?
-                                            item.answers.map((answer: Answer)=>{
+                                            item.answers.map((answer: IAnswerView)=>{
                                                 return(
                                                 <div>
                                                     <hr/>
@@ -422,7 +414,7 @@ export default function Timeline(){
                     </div>
                 </div>
             </dialog>
-            {posts.map((post: any, index: number) => (
+            {posts.map((post: IPostsView, index: number) => (
                 <div className="card border-dark bg-white" key={post.Id} style={{ width: "150px;" }}>
                     <div className="d-flex justify-content-between align-items-center card-header">
                         <div className="d-flex flex-column">
@@ -448,11 +440,17 @@ export default function Timeline(){
                     </div>
                     <div className="d-flex card-footer gap-2 ">
                         <div id="interactions">
-                        <div role="button" id="likes" className="d-flex gap-2 align-items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-heart" viewBox="0 0 16 16">
+                        <div role="button" id="likes" className="d-flex gap-2 align-items-center" onClick={()=>LikeState(post.Id)}>
+                        {post.likeViews.find(x=> x.userId == post.user.id)?
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" className="bi bi-suit-heart-fill" viewBox="0 0 16 16">
+                            <path d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1"/>
+                        </svg>:
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-suit-heart-fill"  viewBox="0 0 16 16">
                             <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
-                        </svg>
-                        Likes
+                        </svg>}
+                        
+                        
+                        {post.likeViews.length} Likes
                         </div>
                         <div role="button" id="comments" className="d-flex gap-2 align-items-center pe-auto text-decoration-none" onClick={()=> getPostId(post.Id)}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chat" viewBox="0 0 16 16">
