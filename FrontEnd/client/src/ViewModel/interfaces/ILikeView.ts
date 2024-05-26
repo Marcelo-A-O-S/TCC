@@ -1,6 +1,6 @@
 import { IUserView } from "./IUserView";
 export interface ILikeView{
-    Id:number,
+    id:number,
     Guid:string,
     userId:number,
     postId:number

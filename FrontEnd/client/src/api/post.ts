@@ -66,4 +66,12 @@ export class ApiPost{
     public async AddLike(like: LikeView): Promise<AxiosResponse<any,any>>{
         return this.host.post(`/api/Post/AddLike`, like);
     }
+    public async RemoveLike(like: LikeView): Promise<AxiosResponse<any,any>>{
+        return this.host.delete(`/api/Post/RemoveLike`,{
+            data: like
+        })
+    }
+    public async RemoveLikeById(likeId: number): Promise<AxiosResponse<any,any>>{
+        return this.host.delete(`/api/Post/RemoveLikeById?likeId=${likeId}`)
+    }
 }

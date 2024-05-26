@@ -309,19 +309,28 @@ export default function Timeline(){
         return date.toLocaleDateString()
     }
     const LikeState = async (postId:number) =>{
-        console.log(postId)
-        if(user != null){
-           let responseuser = await apiuser.GetEmail(user?.email)
-           if(responseuser.status === 200){
-                let userData = responseuser.data;
-                let likeview = new LikeView();
-                likeview.postId = postId;
-                likeview.userId = userData.Id;
-                likeview.GenerateGuid()
-                await apipost.AddLike(likeview);
-                await getPosts();
-           }
+        let postCurrent = posts.find(x=> x.Id == postId)
+        if(postCurrent != undefined){
+            if(user != null){
+                let responseuser = await apiuser.GetEmail(user?.email)
+                if(responseuser.status === 200){
+                     let userData = responseuser.data;
+                     let likeCurrent = postCurrent.likeViews.find(x=> x.userId == userData.id)
+                     if(likeCurrent != undefined){
+                        await apipost.RemoveLikeById(likeCurrent.id)
+                        await getPosts();
+                     }else{
+                        let likeview = new LikeView();
+                        likeview.postId = postId;
+                        likeview.userId = userData.id;
+                        likeview.GenerateGuid()
+                        await apipost.AddLike(likeview);
+                        await getPosts();
+                     }
+                }
+             }
         }
+        
         
     }
     return(
@@ -435,8 +444,6 @@ export default function Timeline(){
                             </div>
                         ))}
                         </div>
-                        
-                        
                     </div>
                     <div className="d-flex card-footer gap-2 ">
                         <div id="interactions">
@@ -448,8 +455,6 @@ export default function Timeline(){
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-suit-heart-fill"  viewBox="0 0 16 16">
                             <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
                         </svg>}
-                        
-                        
                         {post.likeViews.length} Likes
                         </div>
                         <div role="button" id="comments" className="d-flex gap-2 align-items-center pe-auto text-decoration-none" onClick={()=> getPostId(post.Id)}>

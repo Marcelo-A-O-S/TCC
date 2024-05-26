@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Tu+SwhdHZScXTXFr9YLMsLtb1cGwsFq3psJ6K8aUVwUMk4aVuucawnjkV8Pemzfh2sk/exjSgOS6P0nJSPuLPg==",
+  "dgSpecHash": "3qoAo358IKSRGSoI5RfqERc1AvOOeqfvu30cCWEVmi5D7lcA1Nho2cm4RodMY3DnCJf6djareFxso1at8HVqFg==",
   "success": true,
-  "projectFilePath": "c:\\TCC\\BackEnd\\Api\\Api.csproj",
+  "projectFilePath": "d:\\TCC\\BackEnd\\Api\\Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\marce\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\marce\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\6.0.26\\microsoft.aspnetcore.authentication.jwtbearer.6.0.26.nupkg.sha512",

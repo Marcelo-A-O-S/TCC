@@ -62,6 +62,17 @@ namespace Api.Controllers
                     }
 
                 }
+                List<Like> likes = await this.likeServices.GetAllLikebyPostId(item.Id);
+                if(likes.Count > 0){
+                    foreach (var like in likes){
+                        var likeview = new LikeViewModel();
+                        likeview.Id = like.Id;
+                        likeview.Guid = like.Guid;
+                        likeview.postId = like.postId;
+                        likeview.userId = like.userId;
+                        postview.likeViews.Add(likeview);
+                    }
+                }
                 postview.description = item.description;
                 postview.dateCreate = item.dateCreate;
                 postview.title = item.title;
@@ -452,6 +463,26 @@ namespace Api.Controllers
             }catch(Exception err){
                 return BadRequest(err.Message);
             }
+        }
+        [Authorize]
+        [HttpDelete, Route("RemoveLike")]
+        public async Task<ActionResult> RemoveLike(LikeRequest likeRequest){
+            return Ok();
+        }
+        [Authorize]
+        [HttpDelete, Route("RemoveLikeById")]
+        public async Task<ActionResult> RemoveLikeById(int likeId){
+            try{
+                var like = await this.likeServices.FindById(likeId);
+                if(like == null){
+                    return NotFound();
+                }
+                await this.likeServices.Delete(like);
+                return Ok("Removido com sucesso");
+            }catch(Exception err){
+                return BadRequest(err.Message);
+            }
+            
         }
         [Authorize]
         [HttpGet, Route("ListLikes")]

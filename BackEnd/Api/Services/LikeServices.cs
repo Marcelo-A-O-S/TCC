@@ -37,6 +37,12 @@ namespace Api.Services
         {
             return await this.likeRepository.FindBy(x=> x.Id == Id);
         }
+
+        public async Task<List<Like>> GetAllLikebyPostId(int postId)
+        {
+            return await this.likeRepository.FindAllBy(x=> x.postId == postId);
+        }
+
         public async Task<List<Like>> List()
         {
             return await this.likeRepository.List();
