@@ -195,6 +195,17 @@ namespace Api.Controllers
                         postview.imagesViews.Add(imageview);
                     }
                 }
+                List<Like> likes = await this.likeServices.GetAllLikebyPostId(post.Id);
+                if(likes.Count > 0){
+                    foreach (var like in likes){
+                        var likeview = new LikeViewModel();
+                        likeview.Id = like.Id;
+                        likeview.Guid = like.Guid;
+                        likeview.postId = like.postId;
+                        likeview.userId = like.userId;
+                        postview.likeViews.Add(likeview);
+                    }
+                }
                 post.comments = await this.commentServices.FindyCommentsByPostId(post.Id);
                 if (post.comments.Count > 0)
                 {
