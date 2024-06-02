@@ -27,7 +27,11 @@ export default  function CreatePost(){
     const [images, setImages] = useState<Array<IImagepost>>([] as Array<IImagepost> )
     const [postState, setPostState] = useState<IPost>({
         description: "",
-        title: ""
+        title: "",
+        comments:[],
+        Id:0,
+        images: [],
+        userId: 0
     })
     useEffect(()=>{
         if(postState.title != "" && postState.description != ""){
@@ -46,10 +50,14 @@ export default  function CreatePost(){
         let response: AxiosResponse;
         response = await apiPost.findPostById(postId);
         let postrequest = response.data;
-        setPostState({
-            description: postrequest.description,
-            title: postrequest.title
-        })
+        setPostState(prevState =>
+            {
+                return {
+                    ...prevState,
+                    description: postrequest.description,
+                    title: postrequest.title    
+                }
+            })
         const updatedImages = postrequest.imagesViews.map((element:any) => {
             const image = new ImagePost();
             image.Id = element.id;

@@ -1,0 +1,95 @@
+.main{
+  height: 100vh;
+}
+.hero{
+  display: flex;
+  height: 800px;
+  border: red solid 1px;
+  align-items: center;
+  padding: 0px 49px 0px 49px;
+  background-color: rgba(233, 157, 41, 1);
+  justify-content: space-between;
+  gap: 20px;
+}
+.hero_content{
+  display: flex;
+  flex-direction: column;
+}
+.hero_title{
+  color: white;
+  font-size: 30px;
+  font-weight: bold;
+  width: 30vw;
+  max-width: 442px;
+}
+.hero_text{
+  color: white;
+  font-size: 23px;
+  width: 35vw;
+  max-width: 550px;
+}
+.img_hero{
+  width: 100%;
+  height: 100%;
+}
+.introduction{
+  display: flex;
+  height: 800px;
+  align-items: center;
+  padding: 0px 49px 0px 49px;
+  justify-content: space-around;
+}
+.introduction_content{
+  display: flex;
+  flex-direction: column;
+ 
+}
+.introduction_title{
+  color: white;
+  font-size: 30px;
+  font-weight: bold;
+  width: 35vw;
+  max-width: 566px;
+}
+.introduction_text{
+  color: white;
+  font-size: 23px;
+  width: 35vw;
+  max-width: 550px;
+}
+.essentials{
+  height: 938px;
+  background-color: rgba(255, 200, 117, 1);
+}
+.essentials_content{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  padding-top: 42px;
+}
+.essentials_title{
+  color: rgba(186, 119, 16, 1);
+}
+.card_group{
+  padding:52px 48px 0px 48px;
+  display: flex;
+  width: 100%;
+  gap: 70px;
+}
+.card{
+  background-color: rgba(252, 185, 81, 1);
+  border-radius: 10px;
+  width: 385px;
+  height: 343px;
+  padding: 32px;
+}
+.card_title{
+  color: white;
+  font-size: 30px;
+  font-weight: bold;
+}
+.main{
+  height: 100%;
+}

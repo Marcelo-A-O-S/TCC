@@ -1,0 +1,9 @@
+.btn_acessar{
+    background-color: rgba(186, 119, 16, 1);
+    width: 167px;
+    height: 47px;
+    border-radius: 4px;
+    color: white;
+    border-color: rgba(186, 119, 16, 1);
+    font-size: 23px;
+}

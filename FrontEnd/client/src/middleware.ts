@@ -4,18 +4,18 @@ import { User } from "./models/User";
 export default function middleware(request: NextRequest){
     const response = NextResponse.next()
     const pathname = request.nextUrl.pathname;
-    console.log(pathname);
-    if(pathname.startsWith("/dashboard")){
-        const userSession = request.cookies.get("user");
-
+    const userSession = request.cookies.get("user");
+    if(pathname.startsWith("/dashboard")){  
         if(userSession == null){
             return NextResponse.redirect(new URL("/login",request.url))
         }
+    }else if(pathname.startsWith("/") && userSession){
+        return NextResponse.redirect(new URL("/dashboard",request.url))
+    }else if(pathname.startsWith("/login") && !userSession){
+        return NextResponse.redirect(new URL("/login",request.url))
     }
-    console.log("Middeware funcionando...")
-    return null;
+    return response;
 }
-
 export const config  = {
     matcher: ["/", "/login", "/about", "/dashboard", '/dashboard/:path*']
 }

@@ -1,0 +1,9 @@
+.btn_register{
+    background-color: white;
+    width: 167px;
+    height: 47px;
+    border-radius: 4px;
+    color: rgba(233, 157, 41, 1);
+    border-color: white;
+    font-size: 23px;
+}

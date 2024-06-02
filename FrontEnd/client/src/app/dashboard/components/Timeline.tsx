@@ -13,7 +13,7 @@ import { IPostsView } from "@/ViewModel/interfaces/IPostsView"
 import { ICommentState } from "@/ViewModel/utils/ICommentState"
 import { ILikeView } from "@/ViewModel/interfaces/ILikeView"
 import { LikeView } from "@/ViewModel/LikeView"
-export default function Timeline(){
+export default  function Timeline(){
     const {user} = useContext(UserContext)
     const modal = useRef<HTMLDialogElement>(null);
     const apipost = new ApiPost()
