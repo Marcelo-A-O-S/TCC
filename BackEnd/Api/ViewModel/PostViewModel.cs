@@ -1,4 +1,6 @@
-﻿namespace Api.ViewModel
+﻿using Api.Models;
+
+namespace Api.ViewModel
 {
     public class PostViewModel
     {
@@ -7,7 +9,7 @@
         public string description { get; set; }
         public List<LikeViewModel> likeViews { get; set; } = new List<LikeViewModel>();
         public List<ImageViewModel> imagesViews { get; set; } = new List<ImageViewModel>();
-        public int userId { get; set; }
+        public UserViewModel userview {get; set;} = new UserViewModel();
         public List<CommentViewModel> commentViews { get; set; } = new List<CommentViewModel>();
         public DateTime dateCreate {get; set;}
     }

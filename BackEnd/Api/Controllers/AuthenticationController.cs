@@ -38,7 +38,7 @@ namespace Api.Controllers
                         {
                             var userview = new UserViewModel();
                             userview.email = user.email;
-                            userview.name = user.username;
+                            userview.username = user.username;
                             userview.token = await this.jwtServices.GenerateJwtToken(user);
                             return Ok(userview);
                         }

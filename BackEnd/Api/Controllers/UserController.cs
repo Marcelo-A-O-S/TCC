@@ -23,7 +23,7 @@ namespace Api.Controllers
         {
             User user = await this.userServices.GetByEmail(email);
             var userview = new UserViewModel();
-            userview.name = user.username;
+            userview.username = user.username;
             userview.email = user.email;
             userview.Id = user.Id;
             return Ok(userview);
@@ -33,7 +33,7 @@ namespace Api.Controllers
         public async Task<ActionResult<UserViewModel>> GetById(int id){
             User user = await this.userServices.FindById(id);
             var userview = new UserViewModel();
-            userview.name = user.username;
+            userview.username = user.username;
             userview.email = user.email;
             userview.Id = user.Id;
             return Ok(userview);

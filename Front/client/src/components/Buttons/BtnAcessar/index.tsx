@@ -1,8 +1,9 @@
+import Link from "next/link"
 import styles from "./btnAcessar.module.css"
 export default function BtnAcessar(){
     return(
     <>
-    <button className={styles.btn_acessar}>Acessar</button>
+    <Link href="login" className={styles.btn_acessar}>Acessar</Link>
     </>
 )
 }

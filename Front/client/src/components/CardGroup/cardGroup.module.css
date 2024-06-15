@@ -1,0 +1,21 @@
+.card_group{
+    padding:52px 48px 16px 48px;
+    display: flex;
+    width: 100%;
+    gap: 70px;
+    overflow: hidden;
+}
+.card{
+    background-color: rgba(252, 185, 81, 1);
+    border-radius: 10px;
+    width: 320px;
+    height: 371px;
+    padding: 32px;
+}
+.card_title{
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    width: 306px;
+    border: red solid 1px;
+}

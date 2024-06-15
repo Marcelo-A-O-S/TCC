@@ -1,4 +1,4 @@
-.btn_acessar{
+ .btn_acessar{
     background-color: rgba(186, 119, 16, 1);
     width: 167px;
     height: 47px;
@@ -6,4 +6,8 @@
     color: white;
     border-color: rgba(186, 119, 16, 1);
     font-size: 23px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

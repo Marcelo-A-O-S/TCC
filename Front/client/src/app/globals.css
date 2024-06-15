@@ -17,7 +17,7 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  max-width: 1440px;
+  max-width: 1480px;
   margin: auto;
   background-color: rgba(244, 195, 101, 1);
   
@@ -54,10 +54,17 @@ body {
   display: flex;
   align-items: center;
 }
-.text-logo{
+.logo .logo-link{
+  display: flex;
+  flex-direction: row;
+  text-decoration: none;
+  align-items: center;
+}
+.logo .logo-link .text-logo{
   color: white;
   text-wrap: wrap;
   width: 100px;
+  
 }
 .img-logo{
   width: 73px;
@@ -69,11 +76,21 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 39px;
+  gap: 35px;
 }
 .list-menu li a{
   text-decoration: none;
   color: white;
+  font-weight: bold;
+  font-size: 23px;
+}
+.burguer{
+  display: none;
+  cursor:pointer;
+}
+.close_burguer{
+  display: none;
+  cursor: pointer;
 }
 .footer{
   height: 359px;
@@ -82,3 +99,31 @@ body {
 .main{
   height: 100%;
 }
+@media (max-width:940px) {
+  .burguer{
+    display: flex;
+  }
+  .list-menu.burguerOpen{
+    display: flex;
+  }
+  .list-menu{
+    display: none;
+    position: fixed;
+    top: 1px;
+    right: 1px;
+    flex-direction: column;
+    
+    align-items: start;
+    height: 100%;
+    width: 70%;
+    padding: 0px 0px 0px 20px;
+    background-color: rgba(252, 185, 81, 1);
+  }
+  .close_burguer{
+    display: flex;
+    position: absolute;
+    top: 4%;
+    right: 4%;
+  }
+}
+

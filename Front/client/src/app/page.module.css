@@ -57,6 +57,72 @@
   width: 35vw;
   max-width: 550px;
 }
+
+.main{
+  height: 100%;
+}
+
+
+@media (max-width:870px) {
+  .hero{
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    
+  }
+  .hero_content{
+    align-items: center;
+    justify-content: center;
+  }
+  .hero_title{
+    width: 100%;
+    text-align: center;
+  }
+  .hero_text{
+    width: 90%;
+    text-align: center;
+  }
+  .img_hero{
+    width: 50vw;
+  }
+
+}
+@media (max-width:500px){
+  .img_hero{
+    width: 60vw;
+  }
+}
+
+@media (max-width:840px) {
+  .introduction{
+    flex-direction: column;
+  }
+  .introduction_title{
+    width: 100%;
+    text-align: center;
+  }
+  .introduction_text{
+    width: 90%;
+    text-align: center;
+  }
+  .introduction_content{
+    align-items: center;
+    justify-content: center;
+  }
+  .essentials_content{
+    align-items: center;
+    justify-content: center;
+  }
+  .essentials_title{
+    width: 90%;
+    text-align: center;
+  }
+}
+
+
+input#radio1:checked ~ div#card_group{
+  background-color: red;
+}
 .essentials{
   height: 938px;
   background-color: rgba(255, 200, 117, 1);
@@ -66,30 +132,95 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   padding-top: 42px;
 }
 .essentials_title{
   color: rgba(186, 119, 16, 1);
 }
 .card_group{
-  padding:52px 48px 0px 48px;
+  padding:30px 48px 16px 48px; 
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   gap: 70px;
+  overflow: hidden;
+  overflow-x: auto ;
+  
 }
 .card{
   background-color: rgba(252, 185, 81, 1);
   border-radius: 10px;
-  width: 385px;
-  height: 343px;
+  width: 320px;
+  height: 371px;
   padding: 32px;
+  transition: .4s;
 }
 .card_title{
   color: white;
   font-size: 30px;
   font-weight: bold;
+  width: 306px;
+  
 }
-.main{
-  height: 100%;
+.card_text{
+  color: white;
+  font-size: 22px;
+  width: 266px;
+  
 }
+.navigation{
+  display: none;
+  gap: 8px;
+  padding-top: 16px;
+}
+
+.navigation_manual{
+  display: flex;
+  gap: 8px;
+  display: none;
+}
+.navigation_manual label{
+  border: 1px solid red;
+  background-color: white;
+  width: 26px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.navigation_manual label:hover{
+  background-color: rgba(252, 185, 81, 1);
+}
+.navigation_manual label.highlight {
+  background-color: rgba(252, 185, 81, 1);
+}
+.essentials_content input{
+  display: none;
+}
+@media (max-width:1200px) {
+
+  .card_group{
+    flex-wrap: nowrap;
+    width: 80%;
+    justify-content: normal;
+    position: relative;
+    padding-top: 30%;
+    
+  }
+  .navigation #radio1:checked{
+    left: 35px;
+    position: relative;
+  }
+
+}
+@media (max-width:780px) {
+  .card_group{
+    width: 420px;
+  }
+}
+@media (max-width:415px) {
+  .card_group{
+    width: 420px;
+  }
+} 

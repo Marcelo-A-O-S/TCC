@@ -76,7 +76,10 @@ namespace Api.Controllers
                 postview.description = item.description;
                 postview.dateCreate = item.dateCreate;
                 postview.title = item.title;
-                postview.userId = item.userId;
+                var user = await this.userServices.FindById(item.userId);
+                postview.userview.Id = user.Id;
+                postview.userview.email = user.email;
+                postview.userview.username = user.username;
                 List<Comment> comments = new List<Comment>();
                 comments  = await this.commentServices.FindyCommentsByPostId(item.Id);
                 if(comments.Count > 0)
@@ -137,7 +140,10 @@ namespace Api.Controllers
             postview.description = post.description;
             postview.dateCreate = post.dateCreate;
             postview.title = post.title;
-            postview.userId = post.userId;
+            var user = await this.userServices.FindById(post.userId);
+            postview.userview.Id = user.Id;
+            postview.userview.email = user.email;
+            postview.userview.username = user.username;
             post.comments = await this.commentServices.FindyCommentsByPostId(post.Id);
             if (post.comments.Count > 0)
             {
@@ -179,7 +185,10 @@ namespace Api.Controllers
                 postview.Id = post.Id;
                 postview.description = post.description;
                 postview.title = post.title;
-                postview.userId = post.userId;
+                var user = await this.userServices.FindById(post.userId);
+                postview.userview.Id = user.Id;
+                postview.userview.email = user.email;
+                postview.userview.username = user.username;
                 postview.dateCreate = post.dateCreate;
                 post.images = await this.imageServices.FindImagesByPostId(post.Id);
                 if (post.images.Count > 0)

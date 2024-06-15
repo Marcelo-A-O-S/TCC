@@ -3,7 +3,12 @@
     width: 167px;
     height: 47px;
     border-radius: 4px;
-    color: rgba(233, 157, 41, 1);
+    color: rgba(233, 157, 41, 1) !important;
     border-color: white;
     font-size: 23px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
 }

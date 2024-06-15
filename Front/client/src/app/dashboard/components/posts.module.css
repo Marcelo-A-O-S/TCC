@@ -1,0 +1,82 @@
+
+.container_posts{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 27px 0px 27px 0px;
+    max-width: 665px;
+}
+.field_search{
+
+}
+.search{
+    width: 660px;
+    height: 74px;
+    border-radius: 12px;
+    box-shadow: 3px 4px 4px rgba(252, 185, 81, 1);
+    border: 1px solid rgba(252, 185, 81, 1);
+}
+.loading{
+    display: flex;
+    justify-content: center;
+    
+}
+.posts{
+
+}
+.post{
+    display: flex;
+    flex-direction: column;
+    width: 660px;
+    height: 617px;
+    border-radius: 5px;
+    box-shadow: 3px 4px 4px rgba(252, 185, 81, 1);
+    border: 1px solid rgba(252, 185, 81, 1);
+    padding: 17px 21px 17px 21px;
+    gap: 9px;
+}
+
+.profile{
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+.username{
+    font-size: 23px;
+    font-weight: bold;
+}
+.email{
+    font-size: 16px;
+    font-weight: normal;
+}
+.content{
+
+}
+.field_images{
+    height: 470px;
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    overflow-x: auto;
+    position: relative;
+    border: 1px solid rgba(252, 185, 81, 1);
+}
+.card_image{
+    width: 616px;
+    height: 429px;
+    position: absolute;
+}
+.image{
+    position: relative;
+    width: 100%;
+    height: 350px;
+    
+}
+.field_description{
+    height: 70px;
+}
+.actions{
+    display: flex;
+    gap: 9px;
+    align-items: center;
+}
