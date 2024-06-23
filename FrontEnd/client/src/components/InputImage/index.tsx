@@ -38,7 +38,6 @@ export default function InputImage(props :IInputImage){
         const files = event.target.files;
         if(files != null){
             const file = files[0]
-
             const reader = new FileReader()
             reader.onload = function(e){
                 const image = e.target?.result;

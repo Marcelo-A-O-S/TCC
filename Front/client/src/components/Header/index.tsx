@@ -26,7 +26,7 @@ export  default function Header(){
                 <header className="header">
                 <nav className="navbar">
                     <div className="logo">
-                        <Link href="/" className="logo-link">
+                        <Link href="/dashboard" className="logo-link">
                             <Image src={ImgLogo} alt="Teste" className="img-logo" />
                             <h2 className="text-logo">Conecta Peças</h2>
                         </Link>
@@ -37,10 +37,10 @@ export  default function Header(){
                             
                             <Image onClick={CloseBurguer} src={Icoclose} alt="" className="close_burguer"/>
                             <li>
-                                <Link href="profile">{user.username}</Link>
+                                <Link href={`/dashboard/profile?email=${user.email}`}>{user.username}</Link>
                             </li>
                             <li>
-                                <Link href="profile">Log out</Link>
+                                <Link href={`/dashboard/profile/${user.email}`}>Log out</Link>
                             </li>
                         </ul>
                     </div>

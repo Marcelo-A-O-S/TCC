@@ -4,7 +4,9 @@ import 'react-multi-carousel/lib/styles.css';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Container from "@/components/Container";
-
+import 'swiper/css';
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {

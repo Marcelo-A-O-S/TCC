@@ -1,11 +1,12 @@
-export interface IImagepost{
+import { v4 as uuidv4 } from 'uuid';
+export interface IImagePost{
     id:number;
     image:string;
     description:string;
     type:string;
     imageGuid:string;
 }
-export class ImagePost implements IImagepost{
+export class ImagePost implements IImagePost{
     id: number;
     image: string;
     description: string;
@@ -18,5 +19,7 @@ export class ImagePost implements IImagepost{
         this.type = "";
         this.imageGuid = ""
     }
-
+    GenerateGuid(){
+        this.imageGuid = uuidv4()
+    }
 }

@@ -6,10 +6,12 @@ import IcoChatBallon from "../../../assets/balaochat.svg"
 import IcoHeartLike from "../../../assets/heartlike.svg"
 import Image from "next/image";
 import { PostView } from "@/ViewModel/PostView";
-
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 export default function ListPosts(){
     const { data, error, isValidating, isLoading } = useGetAllPosts()
     const [ posts, setPosts] = useState<Array<PostView>>([]);
+    
     useEffect(()=>{
         console.log(data)
         setPosts(data)
@@ -47,20 +49,26 @@ export default function ListPosts(){
                             <h1>{item.title}</h1>
                             <p>{item.description}</p>
                         </div>
-                        <div className={styles.field_images}>
-                            {item.imagesViews.map((image)=>{
-                                return(
-                                <div className={styles.card_image} key={image.id}>
-                                    <div>
-                                    <Image className={styles.image} src={image.image} alt="" width={100} height={100}/>
-                                    </div>
-                                    <div className={styles.field_description}>
-                                    <p>{image.description}</p>
-                                    </div>
-                                    
-                                </div>)
-                            })}
-                        </div>
+                        <Swiper
+                            modules={[Navigation, Pagination, Scrollbar, A11y]}
+                            className={styles.field_images}
+                            slidesPerView={1}
+                            scrollbar={{ draggable: true}}
+                            pagination={{clickable:true}}
+                            navigation
+                            >
+                                {item.imagesViews.map((image)=>{
+                                    return(
+                                    <SwiperSlide className={styles.card_image} key={image.id}>
+                                        <div>
+                                        <Image className={styles.image} src={image.image} alt="" width={100} height={100}/>
+                                        </div>
+                                        <div className={styles.field_description}>
+                                        <p>{image.description}</p>
+                                        </div>
+                                    </SwiperSlide>)
+                                })}
+                            </Swiper>
                         <div className={styles.actions}>
                             <div>
                                 <Image src={IcoHeartLike} alt=""/>

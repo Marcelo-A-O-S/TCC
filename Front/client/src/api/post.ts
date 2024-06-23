@@ -1,7 +1,6 @@
 
 import useSWR, { SWRConfiguration } from "swr";
 import { privateApi } from "@/services/api";
-import { useEffect } from "react";
 const configSWR: SWRConfiguration ={
     revalidateOnFocus: false,
 
@@ -19,10 +18,17 @@ function useGetAllPosts(){
         isValidating,
         isLoading
     }
-    
 }
 function useGetPostById(Id: number){
     const {} = useSWR("",)
 }
-
-export {useGetAllPosts }
+function useGetPostByUserId(userId:number){
+    const {data, error, isValidating, isLoading} = useSWR(`/api/Post/FindByUserId?userId=${userId}`, fetcherGet, configSWR)
+    return {
+        data,
+        error,
+        isValidating,
+        isLoading
+    }
+}
+export {useGetAllPosts, useGetPostByUserId}

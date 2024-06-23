@@ -1,0 +1,220 @@
+.main{
+    height: calc(100% + 500px);
+    background-color: rgba(255, 254, 254, 1);
+}
+.modal{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    top: 18%;
+    left: 5%;
+    height: 700px;
+    width: 90vw;
+    border: 2px solid rgba(252, 185, 81, 1);
+    border-radius: 5px;
+    justify-content: center;
+    z-index: 2;
+
+}
+.modal_title{
+    background-color: rgba(252, 185, 81, 1);
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 20px 0px 20px;
+    position: relative;
+}
+.modal_titleText{
+    color: white;
+}
+.modal_body{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    
+    padding: 20px 20px 20px 20px;
+}
+.modal_form{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: relative;
+}
+.modal_fieldForm{
+    display: flex;
+    flex-direction: column;
+    padding: 10px 10px 10px 10px;
+    height: 100%;
+    position: relative;
+    top: 430px;
+    justify-content: flex-end
+
+}
+.modal_labelImage{
+    border: 1px solid rgb(221, 138, 14);
+    height: 450px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% - 20px);
+    position: absolute;
+    z-index: 0;
+    padding: 1px 1px 1px 1px;
+    
+}
+.modal_Image{
+    position: absolute;
+    height: 450px;
+    width: 100%;
+    background-size: cover;
+}
+.modal_inputImage{
+    border: 1px solid red;
+    border-radius: 12px;
+    display: none;
+}
+.modal_fieldDescription{
+    border-color: rgb(168, 104, 8);
+    margin: 0px 2px 0px 2px;
+    height: 70px;
+}
+.modal_footer{
+    width: 100%;
+    height: 50px;
+}
+.btnmodal_close{
+    height: 50px;
+    cursor: pointer;
+}
+
+.new{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.container_new{
+    display: flex;
+    flex-direction: column;
+    max-width: 665px;
+    padding: 27px 0px 27px 0px;
+}
+.form{
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 660px;
+    height: 800px;
+    padding: 17px 21px 17px 21px;
+    border-radius: 5px;
+    box-shadow: 3px 4px 4px rgba(252, 185, 81, 1);
+    border: 2px solid rgba(252, 185, 81, 1);
+}
+.field_form{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 20px;
+}
+.field_label{
+    font-size: 23px;
+    font-weight: bold;
+}
+.field_input{
+    height: 49px;
+    border-radius: 10px;
+    font-size: 16px;
+    padding: 5px 5px 5px 5px;
+}
+.field_textarea{
+    height: 117px;
+    border-radius: 10px;
+    font-size: 16px;
+    padding: 5px 5px 5px 5px;
+}
+.field_managerImagens{
+    border: 1px solid  rgba(252, 185, 81, 1);
+}
+.field_addimagem{
+    display: flex;
+    border: 1px solid  rgba(252, 185, 81, 1);
+    padding: 10px 5px 10px 5px;
+    justify-content: flex-end;
+}
+.btn_addimage{
+    width: 160px;
+    height: 35px;
+    background-color: rgba(252, 185, 81, 1);
+    color: rgba(255, 255, 255, 1);
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+}
+.field_imagens{
+    padding: 10px 10px 10px 10px ;
+}
+.field_images{
+    display: flex;
+    position: relative;
+    z-index: 1;
+}
+.images_notFound{
+    
+    text-align: center;
+}
+.card_image{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border: 1px solid rgb(232, 154, 37);
+    border-radius: 12px;
+    padding: 5px 5px 5px 5px;
+}
+.image{
+    width: 100%;
+    height: 230px;
+    border: 1px solid rgb(177, 112, 15);
+    border-radius: 12px;
+}
+.field_description{
+    height: 50px;
+    width: 100%;
+    max-width: 600px;
+}
+.card_actions{
+    display: flex;
+    gap:5px;
+    padding: 0px 12px 5px 12px;
+}
+.cardBtn_edit{
+    height: 25px;
+    background-color: rgb(232, 154, 37);
+    color: white;
+    width: 100px;
+    border-radius: 3px;
+    border: none;
+
+}
+.cardBtn_delete{
+    height: 25px;
+    background-color: red;
+    color: white;
+    width: 100px;
+    border-radius: 3px;
+    border: none;
+}
+@media (max-width:680px) {
+    .container_new{
+        width: 97vw;
+        max-width: 100vw;
+    }
+    .form{
+        width: 100%;
+    }
+}

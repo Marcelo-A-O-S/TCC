@@ -1,5 +1,6 @@
 :root {
-  
+  --swiper-navigation-color: rgba(252, 185, 81, 1);
+  --swiper-pagination-color: rgba(252, 185, 81, 1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -38,6 +39,7 @@ body {
 
  display: flex;
  align-items: center;
+
   
 }
 .navbar{
@@ -48,6 +50,7 @@ body {
   width: 100vw;
   justify-content: space-between;
   align-items: center;
+  
 }
 
 .logo{
@@ -112,7 +115,7 @@ body {
     top: 1px;
     right: 1px;
     flex-direction: column;
-    
+    z-index: 2;
     align-items: start;
     height: 100%;
     width: 70%;
