@@ -9,9 +9,16 @@ import { Post } from "@/models/Post";
 import { UserAuthentication } from "@/models/UserAuthentication";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
+import Link from "next/link";
 export default function New(){
     const modal = useRef<HTMLDialogElement>(null)
-    const [imgPost , setImgPost] = useState<IImagePost>({} as IImagePost);
+    const [imgPost , setImgPost] = useState<IImagePost>({
+        id:0,
+        description:"",
+        image:"",
+        imageGuid:"",
+        type:""
+    });
     const [openModal, setOpenModal] = useState(false);
     const [modelPost, setModelPost] = useState<Post>({
         images: [],
@@ -80,11 +87,28 @@ export default function New(){
     const AddImage = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const modelImage = new ImagePost();
-        modelImage.description = imgPost.description;
-        modelImage.image = imgPost.image;
-        modelImage.type = imgPost.type;
-        modelPost.images.push(modelImage);
-        setModelPost(modelPost);
+        if(imgPost.imageGuid == ""){
+            modelImage.id = imgPost.id;
+            modelImage.description = imgPost.description;
+            modelImage.image = imgPost.image;
+            modelImage.type = imgPost.type;
+            modelImage.GenerateGuid()
+            modelPost.images.push(modelImage);
+            setModelPost(modelPost);
+        }
+        if(imgPost.imageGuid != ""){
+            const imageUpdate = modelPost.images.find(x=> x.imageGuid == imgPost.imageGuid);
+            if(imageUpdate){
+                imageUpdate.description = imgPost.description;
+                imageUpdate.id = imgPost.id;
+                imageUpdate.image = imgPost.image;
+                imageUpdate.imageGuid = imgPost.imageGuid;
+                imageUpdate.type = imgPost.type;
+            }
+
+        }
+        console.log(modelPost.images)
+        
         setImgPost(prevState =>{
             return{
                 description:"",
@@ -95,6 +119,34 @@ export default function New(){
             }
         })
         CloseModal()
+    }
+    const RemoveCard = (imageGuid: string) =>{
+        const cards = modelPost.images.filter(x => x.imageGuid != imageGuid);
+        setModelPost(prevState =>{
+            return {
+                ...prevState,
+                images: cards
+            }
+        }) 
+        console.log(modelPost.images)
+    }
+    const UpdateCard = (imageGuid: string) =>{
+        const cardCurrent = modelPost.images.find(x=> x.imageGuid == imageGuid);
+        //const cards = modelPost.images.filter(x=> x.imageGuid != imageGuid);
+        if(cardCurrent !== undefined){
+            setImgPost(prevState=>{
+                return{
+                    description:cardCurrent.description,
+                    id:cardCurrent.id,
+                    image: cardCurrent.image,
+                    imageGuid: cardCurrent.imageGuid,
+                    type: cardCurrent.type
+                }
+            })
+            ShowModal()
+        }
+        
+
     }
     return(
         
@@ -165,8 +217,8 @@ export default function New(){
                                         <p>{imageItem.description}</p>
                                         </div>
                                         <div className={styles.card_actions}>
-                                            <button className={styles.cardBtn_edit}>Editar</button>
-                                            <button className={styles.cardBtn_delete}>Deletar</button>
+                                            <button type="button" onClick={()=>UpdateCard(imageItem.imageGuid)} className={styles.cardBtn_edit}>Editar</button>
+                                            <button type="button" onClick={()=> RemoveCard(imageItem.imageGuid)} className={styles.cardBtn_delete}>Deletar</button>
                                         </div>
                                     </SwiperSlide>
                                 </>)
@@ -174,6 +226,10 @@ export default function New(){
                             </Swiper>
                                 
                             </div>
+                        </div>
+                        <div className={styles.form_actions}>
+                            <Link  href={"/dashboard"} className={styles.form_cancel}>Cancelar</Link>
+                            <button className={styles.form_publish}>Publicar</button>
                         </div>
                     </form>
                 </div>

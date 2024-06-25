@@ -165,8 +165,11 @@
     z-index: 1;
 }
 .images_notFound{
-    
+    display: flex;
+    justify-content: center;
+    align-items: center;
     text-align: center;
+    height: 250px;
 }
 .card_image{
     display: flex;
@@ -199,7 +202,7 @@
     width: 100px;
     border-radius: 3px;
     border: none;
-
+    cursor: pointer;
 }
 .cardBtn_delete{
     height: 25px;
@@ -208,6 +211,35 @@
     width: 100px;
     border-radius: 3px;
     border: none;
+    cursor: pointer;
+}
+.form_actions{
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    
+}
+.form_cancel{
+    display: flex;
+    text-decoration: none;
+    justify-content: center;
+    align-items: center;
+    height: 25px;
+    background-color: red;
+    color: white;
+    width: 100px;
+    border-radius: 3px;
+    border: none;
+    cursor: pointer;
+}
+.form_publish{
+    height: 25px;
+    background-color: rgb(231, 171, 79);
+    color: white;
+    width: 100px;
+    border-radius: 3px;
+    border: none;
+    cursor: pointer;
 }
 @media (max-width:680px) {
     .container_new{
