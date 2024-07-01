@@ -11,17 +11,15 @@ const fetcherGet = async( url: string) =>{
     const response = await api.get(url);
     return response.data
 }
+
 function useGetByEmail(email: string):{
     data: UserAuthentication | undefined;
     error: any;
     isValidating: boolean;
     isLoading: boolean;
 } {
-    const { data, error, isValidating, isLoading } = useSWR<UserAuthentication>(
-        `/api/User/GetByEmail?email=${email}`,
-        fetcherGet,
-        configSWR
-    );
+    let url = `/api/User/GetByEmail?email=${email}`;
+    const { data, error, isValidating, isLoading } = useSWR(url,fetcherGet,configSWR);
     if(data != undefined){
         return {
             data,
@@ -37,6 +35,10 @@ function useGetByEmail(email: string):{
         isLoading,
     };
 }
+async function GetUserByEmail(email:string){
+    const data = await fetcherGet(`/api/User/GetByEmail?email=${email}`)
+    return data
+}
 function useGetById(userId: number):
 { data: UserAuthentication | undefined;
     error: any;
@@ -51,4 +53,4 @@ function useGetById(userId: number):
         isLoading
     }
 }
-export {useGetByEmail, useGetById}
+export {useGetByEmail, useGetById, GetUserByEmail}

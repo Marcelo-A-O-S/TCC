@@ -2,6 +2,54 @@
     height: calc(100% + 500px);
     background-color: rgba(255, 254, 254, 1);
 }
+.modalAlert{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border: 2px solid rgba(252, 185, 81, 1);
+    border-radius: 5px;
+    height: 500px;
+    width: 500px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+.modalAlert_result{
+    font-size: 25px;
+}
+.modalAlert_image{
+
+}
+.modalAlert_actions{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.modalAlert_btnNew{
+    background-color: rgba(252, 185, 81, 1);
+    color: white;
+    border: none;
+    height: 25px;
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.modalAlert_btnReturn{
+    display: flex;
+    font-size: 14px;
+    background-color: red;
+    color: white;
+    border: none;
+    height: 25px;
+    width: 100%;
+    text-decoration: none;
+    align-items: center;
+    justify-content: center;
+}
 .modal{
     display: flex;
     flex-direction: column;
@@ -248,5 +296,10 @@
     }
     .form{
         width: 100%;
+    }
+}
+@media (max-width:540px) {
+    .modalAlert{
+        width: 90vw;
     }
 }

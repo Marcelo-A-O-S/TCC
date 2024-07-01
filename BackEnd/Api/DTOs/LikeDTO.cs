@@ -1,6 +1,6 @@
-namespace Api.ViewModel
+namespace Api.DTOs
 {
-    public class LikeRequest
+    public class LikeDTO
     {
         public string Guid { get; set; }
         public int userId { get; set; }

@@ -1,6 +1,6 @@
-﻿namespace Api.ViewModel
+﻿namespace Api.DTOs
 {
-    public class CommentRequest
+    public class CommentDTO
     {
         public int Id { get; set; }
         public string comment { get; set; }

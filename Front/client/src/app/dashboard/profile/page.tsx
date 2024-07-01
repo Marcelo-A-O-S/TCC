@@ -1,10 +1,11 @@
 'use client'
+
 import { PostView } from "@/ViewModel/PostView"
 import styles from "./profile.module.css"
 import { Metadata, ResolvingMetadata } from "next";
-import { useGetByEmail } from "@/api/users";
+import { GetUserByEmail, useGetByEmail } from "@/api/users";
 import { privateApi } from "@/services/api";
-import { useGetAllPosts, useGetPostByUserId } from "@/api/post";
+import { useGetAllPosts, useGetPostByUserId, DeletePostById, PostRemoveLike, PostAddLike } from "@/api/post";
 import { useEffect, useState } from "react";
 import ImgNotFound from "../../../assets/not-found.svg"
 import Image from "next/image";
@@ -15,21 +16,55 @@ import { UserContext } from "@/contexts/UserContext";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
+import ImgHeartSelected from "../../../assets/heartSelected.svg"
+import { LikeDTO } from "@/DTOs/LikeDTO";
 type Props = {
   params: { email: string }
   searchParams: { email: string }
 }
 export default function ProfilePage({ params, searchParams }: Props) {
-  const {user} = useContext(UserContext)
+  const {user: userContext} = useContext(UserContext)
   const { data: userProfile, error, isValidating, isLoading } = useGetByEmail(searchParams.email)
-  const { data: posts, error: postsError, isValidating: postValidating, isLoading: postLoading} = useGetPostByUserId(userProfile?.id)
+  const {data: userCurrent} = useGetByEmail(userContext?.email as string);
+  const { data: posts, error: postsError, isValidating: postValidating, isLoading: postLoading, mutate: MutatePost} = useGetPostByUserId(userProfile?.id as number)
   const [ postsProfile, setPostsProfile] = useState<Array<PostView>>([])
-  
+  const router = useRouter()
   useEffect(()=>{
     setPostsProfile(posts)
     console.log(posts)
   },[posts])
+  const EditPost = (postId: number) =>{
+    router.push(`/dashboard/manage_post?edit=${postId}`)
+  }
+  const DeletePost = async(postId: number) =>{
+    await DeletePostById(postId);
+    await MutatePost()
+  }
+  const LikePost = async(postId: number) =>{
+    const postCurrent = posts.find(x => x.id == postId);
+    if(postCurrent != undefined){
+        if(userContext){
+            const userCurrent = await GetUserByEmail(userContext.email);
+            const likeCurrent = postCurrent.likeViews.find(x => x.userId == userCurrent?.id);
+            if(likeCurrent !== undefined){
+                await PostRemoveLike(likeCurrent.id);
+                MutatePost();
+            }else{
+                const likeDTO = new LikeDTO();
+                likeDTO.postId = postCurrent.id;
+                likeDTO.userId = userCurrent?.id as number;
+                likeDTO.generatedGuid()
+                try{
+                    const response = await PostAddLike(likeDTO);
+                    MutatePost()
+                }catch(err){
+                    console.log("Erro ao adicionar o like:", err)
+                } 
+            }
+        }
+    }
+}
   if(userProfile == undefined){
     return(
       <>
@@ -45,7 +80,6 @@ export default function ProfilePage({ params, searchParams }: Props) {
       </main>          
       </>)
   }
-
   if(!postsProfile){
     return (<>
       <main className={styles.main}>
@@ -71,10 +105,10 @@ export default function ProfilePage({ params, searchParams }: Props) {
                   </div>
               </div>
               <div>
-                  {user?.email == userProfile?.email?<Link href={`new`} className={styles.btn_create}>Criar publicação</Link>:""}
+                  {userContext?.email == userProfile?.email?<Link href={`manage_post`} className={styles.btn_create}>Criar publicação</Link>:""}
               </div>
             </div>
-            <div>
+            <div className={styles.posts}>
                 {postsProfile.length == 0? 
                 <>
                 <div className={styles.not_found}>
@@ -85,9 +119,15 @@ export default function ProfilePage({ params, searchParams }: Props) {
                 </>:postsProfile.map((item)=>{
                   return (
                     <div className={styles.post} key={item.id}>
-                        <div className={styles.profile_post}>
-                            <h3 className={styles.username}>{item.userview.username}</h3>
-                            <p className={styles.email}>{item.userview.email}</p>
+                        <div className={styles.manager_post}>
+                          <div className={styles.profile_post}>
+                              <h3 className={styles.username}>{item.userview.username}</h3>
+                              <p className={styles.email}>{item.userview.email}</p>
+                          </div>
+                          {userContext?.email == item.userview.email?<div className={styles.post_actions}>
+                            <button onClick={()=>EditPost(item.id)} className={styles.post_edit} >Edit</button>
+                            <button onClick={()=>DeletePost(item.id)} className={styles.post_delete}>Delete</button>
+                          </div>:""}
                         </div>
                         <div className={styles.content}>
                             <h1>{item.title}</h1>
@@ -115,11 +155,15 @@ export default function ProfilePage({ params, searchParams }: Props) {
                                 })}
                             </Swiper>
                         <div className={styles.actions}>
-                            <div>
-                                <Image src={IcoHeartLike} alt=""/>
+                            <div className={styles.like} onClick={()=>LikePost(item.id)}>
+                                {item.likeViews.find(x=> x.userId == userCurrent?.id )?
+                                  <Image className={styles.likeSelected} src={ImgHeartSelected} alt=""/>
+                                  :
+                                  <Image src={IcoHeartLike} alt=""/>
+                                  }
                                 {item.likeViews.length}
                             </div>
-                            <div>
+                            <div  className={styles.comment}>
                                 <Image src={IcoChatBallon} alt=""/>
                                 {item.commentViews.length}
                             </div>

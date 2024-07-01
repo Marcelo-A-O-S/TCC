@@ -1,19 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
-export interface ILikeView{
-    id: number;
-    guid: string;
-    userId:number;
-    postId:number;
-}
-export class LikeView implements ILikeView{
-    id: number;
+export class LikeDTO{
     guid: string;
     userId: number;
     postId: number;
     constructor(){
-        this.id = 0;
         this.guid = "";
         this.userId = 0;
         this.postId = 0;
+    }
+    generatedGuid(){
+        this.guid = uuidv4()
     }
 }

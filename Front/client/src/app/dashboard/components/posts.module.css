@@ -22,7 +22,9 @@
     
 }
 .posts{
-
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
 }
 .post{
     display: flex;
@@ -48,6 +50,8 @@
 .email{
     font-size: 16px;
     font-weight: normal;
+    text-decoration: none;
+    color: rgba(0, 0, 0, 1);
 }
 .content{
     height: 100%;
@@ -95,6 +99,25 @@
     display: flex;
     gap: 9px;
     align-items: center;
+}
+.like{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:2px;
+    height:14px;
+    cursor: pointer;
+}
+.likeSelected{
+    height: 35px;
+    cursor: pointer;
+}
+.comment{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:4px;
+    cursor: pointer;
 }
 @media (max-width:710px) {
     .container_posts{

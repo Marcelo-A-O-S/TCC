@@ -1,5 +1,5 @@
 'use client'
-import { ChangeEvent, FormEvent, useEffect, useState } from "react"
+import { ChangeEvent, FormEvent, useEffect, useState, useContext } from "react"
 import { ImagePost, IImagePost } from "@/models/ImagePost";
 import styles from "./new.module.css"
 import { useRef } from "react";
@@ -10,7 +10,22 @@ import { UserAuthentication } from "@/models/UserAuthentication";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import Link from "next/link";
-export default function New(){
+import { PostDTO } from "@/DTOs/PostDTO";
+import { ImageDTO } from "@/DTOs/ImageDTO";
+import { UserContext } from "@/contexts/UserContext";
+import { useGetByEmail, GetUserByEmail } from "@/api/users";
+import { CreatePost,useGetPostById } from "@/api/post";
+import ImgSuccess from "../../../assets/success.svg"
+import ImgFailed from "../../../assets/failed.svg"
+type Props = {
+    params: { edit: string }
+    searchParams: { edit: string }
+  }
+export default function ManagerPost({searchParams}:Props){
+    const { user: userContext } = useContext(UserContext)
+    const email = userContext?.email;
+    const {data: post, error: errorPost} = useGetPostById(parseInt(searchParams.edit))
+    const { data, error } = useGetByEmail(email || "");
     const modal = useRef<HTMLDialogElement>(null)
     const [imgPost , setImgPost] = useState<IImagePost>({
         id:0,
@@ -28,7 +43,29 @@ export default function New(){
         title: "",
         user: {} as UserAuthentication
     } as Post);
-
+    const [modalResponse, setModalResponse] = useState({
+        status:0,
+        message:""
+    })
+    useEffect(()=>{
+        if(post !== undefined){
+            console.log(post)
+            console.log(post.commentViews)
+            setModelPost({
+                comments : post.commentViews,
+                description: post.description,
+                Id: post.id,
+                images: post.imagesViews,
+                title: post.title,
+                user:{
+                    email: post.userview.email,
+                    id: post.userview.id,
+                    username: post.userview.username,
+                    token: post.userview.token
+                }
+            })
+        }
+    },[post])
     const ShowModal = () =>{
         modal.current?.showModal()
         setOpenModal(true)
@@ -145,13 +182,80 @@ export default function New(){
             })
             ShowModal()
         }
-        
-
+    }
+    async function SubmitForm(event: FormEvent<HTMLFormElement>){
+        event.preventDefault();
+        const postDto = new PostDTO()
+        postDto.id = modelPost.Id;
+        postDto.title = modelPost.title;
+        postDto.description = modelPost.description;
+        modelPost.images.map((image) =>{
+            const imageDTO = new ImageDTO();
+            imageDTO.id = image.id;
+            imageDTO.description = image.description;
+            imageDTO.image = image.image;
+            imageDTO.type = image.type;
+            imageDTO.imageGuid = image.imageGuid
+            postDto.images.push(imageDTO)
+        })
+        if(userContext){
+            if(data){
+                postDto.userId = data.id
+            }
+        }
+        try{
+            const response = await CreatePost(postDto);
+            if(response.status == 200){
+                setModalResponse({
+                    status: response.status,
+                    message: response.data
+                })
+            }else{
+                setModalResponse({
+                    status: response.status,
+                    message: response.data
+                })
+            }
+            
+        }catch(err){
+            console.log("Falha ao criar postagem:", err)
+        }
+    }
+    const NewRegister = () =>{
+        setModalResponse({
+            status:0,
+            message:""
+        })
+        setModelPost({
+            comments: [],
+            description: "",
+            Id:0,
+            images: [],
+            title: "",
+            user: {} as UserAuthentication
+        })
     }
     return(
         
         <main className={styles.main}>
             <div>
+            {modalResponse.status !== 0?
+                <dialog id="modal-alert" className={styles.modalAlert}>
+                    <div className={styles.modalAlert_result}>
+                        <p>{modalResponse.message}</p>
+                    </div>
+                    <div className={styles.modalAlert_image}>
+                        {modalResponse.status == 200?
+                        <Image src={ImgSuccess} alt=""/>:
+                        <Image src={ImgFailed} alt=""/>}
+                    </div>
+                    <div className={styles.modalAlert_actions}>
+                        <button onClick={()=> NewRegister()} className={styles.modalAlert_btnNew}>Novo Registro</button>
+                        <Link href={`/dashboard/profile?email=${userContext?.email}`} className={styles.modalAlert_btnReturn}>Retornar</Link>
+                    </div>
+                </dialog>
+            :
+            ""}
             <dialog id="modal" className={openModal?styles.modal:""}>
                 <div className={styles.modal_title}>
                     <h3 className={styles.modal_titleText}>Inserir imagem</h3>
@@ -180,7 +284,7 @@ export default function New(){
             </div>
             <section className={styles.new}>
                 <div className={styles.container_new}>
-                    <form className={styles.form}>
+                    <form onSubmit={SubmitForm} className={styles.form}>
                         <div className={styles.field_form}>
                             <label className={styles.field_label}>Titulo da publicação</label>
                             <input value={modelPost?.title} onChange={InsertTitle} className={styles.field_input} type="text" placeholder="Insira o titulo..."/>
@@ -229,7 +333,7 @@ export default function New(){
                         </div>
                         <div className={styles.form_actions}>
                             <Link  href={"/dashboard"} className={styles.form_cancel}>Cancelar</Link>
-                            <button className={styles.form_publish}>Publicar</button>
+                            <button type="submit" className={styles.form_publish}>Publicar</button>
                         </div>
                     </form>
                 </div>

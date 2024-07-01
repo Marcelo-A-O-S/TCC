@@ -1,6 +1,6 @@
-﻿namespace Api.ViewModel
+﻿namespace Api.DTOs
 {
-    public class AnswerRequest
+    public class AnswerDTO
     {
         public int Id { get; set; }
         public string answer { get; set; }

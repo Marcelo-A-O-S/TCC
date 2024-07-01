@@ -1,4 +1,5 @@
-﻿using Api.Models;
+﻿using Api.DTOs;
+using Api.Models;
 using Api.Services;
 using Api.Services.Interfaces;
 using Api.ViewModel;
@@ -248,7 +249,7 @@ namespace Api.Controllers
         }
         [Authorize]
         [HttpPost, Route("Create")]
-        public async Task<ActionResult> CreatePost(PostRequest postRequest)
+        public async Task<ActionResult> CreatePost(PostDTO postRequest)
         {
             Posts post = new Posts();
             if(postRequest.id == 0){
@@ -377,7 +378,7 @@ namespace Api.Controllers
         }
         [Authorize]
         [HttpPut, Route("UpdateComment")]
-        public async Task<ActionResult> UpdateComment(CommentRequest commentRequest)
+        public async Task<ActionResult> UpdateComment(CommentDTO commentRequest)
         {
             Comment comment = await this.commentServices.FindById(commentRequest.Id);
             comment.comment = commentRequest.comment;
@@ -386,7 +387,7 @@ namespace Api.Controllers
         }
         [Authorize]
         [HttpDelete, Route("DeleteComment")]
-        public async Task<ActionResult> DeleteComment(CommentRequest commentRequest)
+        public async Task<ActionResult> DeleteComment(CommentDTO commentRequest)
         {
             Comment comment = await this.commentServices.FindById(commentRequest.Id);
             await this.commentServices.Delete(comment);
@@ -401,7 +402,7 @@ namespace Api.Controllers
         }
         [Authorize]
         [HttpPost, Route("AddAnswer")]
-        public async Task<ActionResult> AddAnswer(AnswerRequest answerRequest)
+        public async Task<ActionResult> AddAnswer(AnswerDTO answerRequest)
         {
             Comment comment = await this.commentServices.FindById(answerRequest.commentId);
             Answer answer = new Answer();
@@ -435,7 +436,7 @@ namespace Api.Controllers
         }
         [Authorize]
         [HttpPut, Route("UpdateAnswer")]
-        public async Task<ActionResult> UpdateAnswer(AnswerRequest answerRequest)
+        public async Task<ActionResult> UpdateAnswer(AnswerDTO answerRequest)
         {
             Answer answer = await this.answerServices.FindById(answerRequest.Id);
             answer.answer = answerRequest.answer;
@@ -444,7 +445,7 @@ namespace Api.Controllers
         }
         [Authorize]
         [HttpDelete, Route("DeleteAnswer")]
-        public async Task<ActionResult> DeleteAnswer(AnswerRequest answerRequest)
+        public async Task<ActionResult> DeleteAnswer(AnswerDTO answerRequest)
         {
             Answer answer = await this.answerServices.FindById(answerRequest.Id);
             try{
@@ -468,7 +469,7 @@ namespace Api.Controllers
         }
         [Authorize]
         [HttpPost, Route("AddLike")]
-        public async Task<ActionResult> AddLikePost(LikeRequest likeRequest){
+        public async Task<ActionResult> AddLikePost(LikeDTO likeRequest){
             if (likeRequest == null){
                 return BadRequest("Campos inválidos!");
             }
@@ -486,7 +487,7 @@ namespace Api.Controllers
         }
         [Authorize]
         [HttpDelete, Route("RemoveLike")]
-        public async Task<ActionResult> RemoveLike(LikeRequest likeRequest){
+        public async Task<ActionResult> RemoveLike(LikeDTO likeRequest){
             return Ok();
         }
         [Authorize]
