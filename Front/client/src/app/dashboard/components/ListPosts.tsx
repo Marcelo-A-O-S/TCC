@@ -13,13 +13,15 @@ import Link from "next/link";
 import ImgHeartSelected from "../../../assets/heartSelected.svg"
 import { UserContext } from "@/contexts/UserContext";
 import { LikeDTO } from "@/DTOs/LikeDTO";
+import { useRouter } from "next/navigation";
 export default function ListPosts(){
+    const router = useRouter()
     const {user:userContext} = useContext(UserContext)
     const { data, error, isValidating, isLoading,mutate } = useGetAllPosts()
     const [ posts, setPosts] = useState<Array<PostView>>([]);
     const { data: user} = useGetByEmail(userContext?.email || "");
     useEffect(()=>{
-        console.log(userContext)
+        console.log(data)
 
         setPosts(data)
     },[data])
@@ -47,6 +49,9 @@ export default function ListPosts(){
             }
         }
     }
+    const ViewPost = (postId: number) =>{
+        router.push(`/dashboard/post?postId=${postId}`);
+    }
     if (error) {
         return <h1>Erro ao carregar dados: {error.message}</h1>;
     }
@@ -72,11 +77,11 @@ export default function ListPosts(){
                 {posts.map((item: PostView)=>{
                     return (
                     <div className={styles.post} key={item.id} >
-                        <div className={styles.profile} onClick={()=>console.log("Clicado ...")}>
+                        <div className={styles.profile} >
                             <h3 className={styles.username}>{item.userview.username}</h3>
                             <Link href={`/dashboard/profile?email=${item.userview.email}`}  className={styles.email}>{item.userview.email}</Link>
                         </div>
-                        <div className={styles.content}>
+                        <div className={styles.content} onClick={()=>ViewPost(item.id)}>
                             <h1>{item.title}</h1>
                             <p>{item.description}</p>
                         </div>

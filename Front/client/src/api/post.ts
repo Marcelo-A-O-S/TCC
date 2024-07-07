@@ -1,6 +1,6 @@
 
 import useSWR, { KeyedMutator, SWRConfiguration, mutate} from "swr";
-import { privateApi } from "@/services/api";
+import { privateApi, privateServerApi } from "@/services/api";
 import { PostDTO } from "@/DTOs/PostDTO";
 import { Post } from "@/models/Post";
 import { LikeDTO } from "@/DTOs/LikeDTO";
@@ -10,6 +10,11 @@ const configSWR: SWRConfiguration ={
 }
 const fetcherGet = async( url: string) =>{
     const api = privateApi()
+    const response = await api.get(url);
+    return response.data
+}
+const fetcherServerGet = async( url: string) =>{
+    const api = await privateServerApi()
     const response = await api.get(url);
     return response.data
 }
@@ -60,6 +65,10 @@ function useGetPostByUserId(userId:number){
         mutate
     }
 }
+async function GetPostById(postId: number){
+    const response = await fetcherServerGet(`/api/Post/FindById?id=${postId}`);
+    return response
+}
 async function DeletePostById(postId: number){
     const response = await fetcherDelete(`/api/Post/DeleteById?postId=${postId}`);
     return response
@@ -80,10 +89,11 @@ async function PostRemoveLike(likeId: number){
 }
 export {
     useGetAllPosts, 
-    useGetPostByUserId, 
+    useGetPostByUserId,
+    useGetPostById, 
     CreatePost, 
-    useGetPostById,
     DeletePostById, 
     PostAddLike, 
-    PostRemoveLike
+    PostRemoveLike,
+    GetPostById
 }

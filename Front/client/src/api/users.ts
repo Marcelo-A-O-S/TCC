@@ -1,6 +1,6 @@
 
 import useSWR, { SWRConfiguration } from "swr";
-import { privateApi } from "@/services/api";
+import { privateApi, privateServerApi } from "@/services/api";
 import { UserAuthentication } from "@/models/UserAuthentication";
 const configSWR: SWRConfiguration ={
     revalidateOnFocus: false,
@@ -11,7 +11,11 @@ const fetcherGet = async( url: string) =>{
     const response = await api.get(url);
     return response.data
 }
-
+const fetcherServerGet = async( url: string) =>{
+    const api = await privateServerApi()
+    const response = await api.get(url);
+    return response.data
+}
 function useGetByEmail(email: string):{
     data: UserAuthentication | undefined;
     error: any;
@@ -36,7 +40,7 @@ function useGetByEmail(email: string):{
     };
 }
 async function GetUserByEmail(email:string){
-    const data = await fetcherGet(`/api/User/GetByEmail?email=${email}`)
+    const data = await fetcherServerGet(`/api/User/GetByEmail?email=${email}`)
     return data
 }
 function useGetById(userId: number):

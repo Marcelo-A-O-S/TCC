@@ -36,12 +36,14 @@
     border: 1px solid rgba(252, 185, 81, 1);
     padding: 17px 21px 17px 21px;
     gap: 9px;
+    
 }
 
 .profile{
     display: flex;
     align-items: center;
     gap: 9px;
+    
 }
 .username{
     font-size: 23px;
@@ -55,6 +57,7 @@
 }
 .content{
     height: 100%;
+    cursor: pointer;
 }
 .field_images{
     height: 100%;

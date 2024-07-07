@@ -1,72 +1,3 @@
-.main{
-    height: calc(100% + 500px);
-    background-color: rgba(255, 254, 254, 1);
-}
-.profile{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: rgba(255, 254, 254, 1);
-}
-.profile_post{
-    display: flex;
-    align-items: center;
-    gap: 9px;
-}
-.container_profile{
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 27px 0px 27px 0px;
-    max-width: 665px;
-}
-.container_profile .user_notfound{
-    display: flex;
-    gap: 10px;
-    flex-direction: column;
-    padding: 21px 0px 21px 0px;
-    align-items: center;
-    border-radius: 5px;
-    box-shadow: 3px 4px 4px rgba(252, 185, 81, 1);
-    border: 1px solid rgba(252, 185, 81, 1);
-    width: 600px;
-}
-.manager_profile{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 660px;
-    height: 147px;
-    padding: 14px 21px 14px 21px;
-    border-radius: 5px;
-    box-shadow: 3px 4px 4px rgba(252, 185, 81, 1);
-    border: 1px solid rgba(252, 185, 81, 1);
-}
-.data_profile{
-    display: flex;
-    justify-content: space-between;
-}
-.data_posts{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.post_number{
-    font-size: 30px;
-}
-.btn_create{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    width: 160px;
-    height: 41px;
-    background-color: rgba(252, 185, 81, 1);
-    color: rgba(255, 255, 255, 1);
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-}
 .not_found{
     display: flex;
     width: 100%;
@@ -137,7 +68,6 @@
 }
 .content{
     height: 100%;
-    cursor: pointer;
 }
 .field_images{
     height: 100%;
@@ -186,22 +116,8 @@
     gap:4px;
 }
 @media (max-width:675px) {
-    .container_profile{
-        width: 100vw;
-        max-width: 100vw;
-        padding: 27px 10px 27px 10px;
-    }
     .post{
         width: 100%;
-    }
-    .manager_profile{
-        width: 100%;
-    }
-}
-@media (max-width:610px) {
-    .manager_post{
-        flex-direction: column;
-        gap: 10px;
     }
 }
 @media (max-width:400px) {
