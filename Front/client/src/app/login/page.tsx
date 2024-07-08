@@ -8,6 +8,7 @@ import { setUserCookie } from "@/hooks/userCookie"
 import { useRouter } from "next/navigation";
 import { UserContext } from "@/contexts/UserContext"
 import { UserAuthentication } from "@/models/UserAuthentication"
+import { signIn } from "next-auth/react"
 export default function LoginPage(){
     const {login} = useContext(UserContext)
     const router = useRouter();
@@ -112,21 +113,30 @@ export default function LoginPage(){
         if( formValidate.validateEmail.status == 0 ||
             formValidate.validatePassword.status == 0
         ){
+            const formData = new FormData(e.currentTarget);
             const dataLogin = new Login();
             dataLogin.email = formLogin.email;
             dataLogin.password = formLogin.password;
-            try {
+            signIn("credentials",{
+                ...formData,
+                callbackUrl: '/dashboard'
+            })
+            /* try {
                 const dataResponse = await loginPost(dataLogin)
                 const user = new UserAuthentication()
                 user.email = dataResponse.email;
                 user.token = dataResponse.token;
                 user.username = dataResponse.username;
+                signIn("credentials",{
+                    ...user,
+                    callbackUrl: '/dashboard"'
+                })
                 login(user)
                 setUserCookie(dataResponse)
                 router.push("/dashboard")
             } catch (error) {
                 console.log(error)
-            }
+            } */
         }
     }
     return(
@@ -137,11 +147,11 @@ export default function LoginPage(){
                 <h2 className={styles.title}>Comece agora a conhecer e a conectar as suas melhores opções!</h2>
             </div>
             <div className={styles.form_content}>
-                <form onSubmit={SubmitForm} className={styles.form} action="">
+                <form onSubmit={SubmitForm} className={styles.form} >
                     <h2 className={styles.form_title}>Acesse agora:</h2>
                     <div className={styles.form_field}>
                          
-                        <input id="email" onChange={onChangeEmail} placeholder="Email..."  className={styles.form_input}  type="email" />
+                        <input id="email" onChange={onChangeEmail} placeholder="Email..."  className={styles.form_input} name="email"  type="email" />
                         <span className={`${styles.form_span} ${formValidate.validateEmail.status == 1 || 
                             formValidate.validateEmail.status == 2? styles.error: styles.success}`} >
                             {formValidate.validateEmail.message != ""?formValidate.validateEmail.message:""}
@@ -150,13 +160,13 @@ export default function LoginPage(){
                     </div >
                     <div className={styles.form_field}>
                         
-                        <input id="password" onChange={onChangePassword} placeholder="Senha..." className={styles.form_input}  type="password" />
+                        <input id="password" onChange={onChangePassword} placeholder="Senha..." className={styles.form_input} name="password"  type="password" />
                         <span className={`${styles.form_span} ${formValidate.validatePassword.status == 1? styles.error: styles.success}`} >
                             {formValidate.validatePassword.message != ""?formValidate.validatePassword.message:""}
                         </span>
                     </div>
                     <div className={styles.form_actions}>
-                        <button className={styles.form_acessar}>Acessar</button>
+                        <button type="submit" className={styles.form_acessar}>Acessar</button>
                         <p className={styles.form_textactions}>Não tem registro? Crie agora!</p>
                         <Link href="register" className={styles.form_registrar}>Registrar</Link>
                     </div>

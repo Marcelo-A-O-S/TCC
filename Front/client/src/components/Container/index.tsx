@@ -4,6 +4,7 @@ import Header from "../Header"
 import Footer from "../Footer"
 import { UserProvider } from "@/contexts/UserContext";
 import { SWRConfig } from "swr";
+
 export default function Container({
     children,
   }: {
@@ -12,11 +13,12 @@ export default function Container({
     return(
         <>
         <SWRConfig>
+        
           <UserProvider>
-          <Header/>
-          {children}
-          <Footer/>
-          </UserProvider>
+            <Header/>
+            {children}
+            <Footer/>
+            </UserProvider>
         </SWRConfig>
         
         </>

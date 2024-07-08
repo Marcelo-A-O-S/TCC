@@ -2,8 +2,18 @@ import { UserAuthentication } from "@/models/UserAuthentication";
 import { CommentView } from "./CommentView";
 import { ImagesView } from "./ImagesView";
 import { LikeView } from "./LikeView";
+export interface IPostView{
+    id: number;
+    title:string;
+    description:string;
+    likeViews:Array<LikeView>;
+    imagesViews:Array<ImagesView>;
+    userview: UserAuthentication;
+    commentViews: Array<CommentView>;
+    dateCreate:string;
+}
 
-export class PostView{
+export class PostView implements IPostView{
     public id: number;
     public title:string;
     public description:string;

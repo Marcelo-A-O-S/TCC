@@ -238,9 +238,10 @@ namespace Api.Controllers
                         commentview.postId = comment.postId;
                         commentview.userId = comment.userId;
                         //commentview.commentGuid = comment.commentGuid;
-                        if (commentview.answers != null)
+                        var answers = await this.answerServices.FindAnswersByCommentId(comment.Id);
+                        if (answers.Count > 0)
                         {
-                            foreach (var answer in comment.answers)
+                            foreach (var answer in answers)
                             {
                                 var answerview = new AnswerViewModel();
                                 answerview.Id = answer.Id;
@@ -353,7 +354,7 @@ namespace Api.Controllers
         }
         [Authorize]
         [HttpPost, Route("AddComment")]
-        public async Task<ActionResult> AddComent(CommentViewModel commentRequest)
+        public async Task<ActionResult> AddComent(CommentDTO commentRequest)
         {
             Posts post = await this.postServices.FindById(commentRequest.postId);
             Comment comment = new Comment();
@@ -361,6 +362,7 @@ namespace Api.Controllers
                 comment.Id = commentRequest.Id;
                 //comment.commentGuid = new Guid().ToString();
                 comment.comment = commentRequest.comment;
+                
                 var user = await this.userServices.FindById(commentRequest.userId);
                 if(user == null){
                     return BadRequest("Usuário não encontrado");

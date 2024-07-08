@@ -134,6 +134,9 @@
 .email{
     font-size: 16px;
     font-weight: normal;
+    font-style: italic;
+    text-decoration: none;
+    color: rgb(103, 103, 103);
 }
 .content{
     height: 100%;

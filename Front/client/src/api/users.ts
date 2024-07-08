@@ -49,7 +49,7 @@ function useGetById(userId: number):
     isValidating: boolean;
     isLoading: boolean
 }{
-    const {data, error, isValidating, isLoading} = useSWR<UserAuthentication>(`/api/User/GetByEmail?userId=${userId}`, fetcherGet,configSWR)
+    const {data, error, isValidating, isLoading} = useSWR<UserAuthentication>(`/api/User/GetById?id=${userId}`, fetcherGet,configSWR)
     return {   
         data, 
         error,
@@ -57,4 +57,8 @@ function useGetById(userId: number):
         isLoading
     }
 }
-export {useGetByEmail, useGetById, GetUserByEmail}
+async function GetUserById(userId: number){
+    const data = await fetcherGet(`/api/User/GetById?id=${userId}`);
+    return data;
+}
+export {useGetByEmail, useGetById, GetUserByEmail, GetUserById}

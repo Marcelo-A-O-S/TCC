@@ -18,6 +18,10 @@
     padding: 12px 20px 12px 20px;
     gap: 25px;
 }
+.manager_post{
+    display: flex;
+    justify-content: space-between;
+}
 .user_post{
     display: flex;
     align-items: center;
@@ -30,6 +34,37 @@
 .email{
     font-size: 16px;
     font-weight: normal;
+    font-style: italic;
+    text-decoration: none;
+    color: rgb(103, 103, 103);
+}
+.post_actions{
+    display: flex;
+    gap: 5px;
+}
+.post_edit{
+    display: flex;
+    color: white;
+    background-color: rgba(252, 185, 81, 1);
+    border: none;
+    width: 60px;
+    height: 28px;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.post_delete{
+    display: flex;
+    color: white;
+    background-color: red;
+    border: none;
+    width: 60px;
+    height: 28px;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 .post_content{
     display: flex;
@@ -92,10 +127,13 @@
     gap:4px;
 }
 .comments{
+    display: flex;
+    flex-direction: column;
     padding: 10px 5px 10px 5px;
     border: 1px solid rgba(252, 185, 81, 1);
     height: 100%;
     border-radius: 6px;
+    gap: 5px;
 }
 .input_comment{
     padding: 5px 5px 5px 5px;
@@ -106,6 +144,29 @@
     border-radius: 6px;
     height: auto;
 }
+.actions_input{
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    gap: 5px;
+}
+.btn_cancel{
+    width: 70px;
+    color: white;
+    background-color: red;
+    border: none;
+    border-radius: 6px;
+    height: 25px;
+}
+.btn_send{
+    width: 70px;
+    color: white;
+    background-color: rgba(252, 185, 81, 1);
+    border: none;
+    border-radius: 6px;
+    height: 25px;
+    cursor: pointer;
+}
 .comments_notfound{
     display: flex;
     align-items: center;
@@ -113,4 +174,84 @@
     border: 1px solid rgba(252, 185, 81, 1);
     border-radius: 6px;
     height: 80px;
+}
+.commentPost{
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(252, 185, 81, 1);
+    border-radius: 6px;
+    padding: 15px 10px 15px 10px;
+    gap: 5px;
+}
+.userComment{
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.username_comment{
+    font-size: 16px;
+    font-weight: bold;
+    
+}
+.email_comment{
+    font-size: 16px;
+    font-weight: normal;
+    font-style: italic;
+    text-decoration: none;
+    color: rgb(103, 103, 103);
+}
+.comment_comment{
+
+}
+.comment_actions{
+    display: flex;
+    gap: 5px;
+}
+.btn_response{
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    color: rgb(238, 161, 16);
+}
+.btn_delete{
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    color: red;
+}
+.btn_update{
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    color: rgb(162, 112, 20);
+}
+.answer_post{
+    display: flex;
+    flex-direction: column;
+    padding: 10px 5px;
+    border-left: 3px solid orange;
+    gap: 7px;
+}
+.answer_actions{
+    display: flex;
+    gap: 5px;
+}
+@media (max-width:675px) {
+    .post{
+        width: 100%;
+    }
+}
+@media (max-width:413px) {
+    .manager_post{
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0px;
+    }
+}
+@media (max-width:380px) {
+    .userComment{
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0px;
+    }
 }

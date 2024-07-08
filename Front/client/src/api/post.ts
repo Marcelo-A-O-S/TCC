@@ -4,6 +4,8 @@ import { privateApi, privateServerApi } from "@/services/api";
 import { PostDTO } from "@/DTOs/PostDTO";
 import { Post } from "@/models/Post";
 import { LikeDTO } from "@/DTOs/LikeDTO";
+import { CommentDTO } from "@/DTOs/CommentDTO";
+import { AnswerDTO } from "@/DTOs/AnswerDTO";
 const configSWR: SWRConfiguration ={
     revalidateOnFocus: false,
 
@@ -76,17 +78,34 @@ async function DeletePostById(postId: number){
 async function CreatePost(bodyPost : PostDTO){
     const response = await fetcherPost("/api/Post/Create",bodyPost);
     mutate("/api/Post/List");
-    mutate(`/api/Post/FindByUserId?userId=${bodyPost.userId}`)
-    return response
+    mutate(`/api/Post/FindByUserId?userId=${bodyPost.userId}`);
+    return response;
 }
 async function PostAddLike(likeDTO : LikeDTO){
     const response = await fetcherPost("/api/Post/AddLike", likeDTO);
-    return response
+    return response;
 }
 async function PostRemoveLike(likeId: number){
-    const response = await fetcherDelete(`/api/Post/RemoveLikeById?likeId=${likeId}`)
+    const response = await fetcherDelete(`/api/Post/RemoveLikeById?likeId=${likeId}`);
+    return response;
+}
+async function PostAddComment(commentDTO: CommentDTO){
+    const response = await fetcherPost(`/api/Post/AddComment`,commentDTO);
+    return response;
+}
+async function PostDeleteCommentById(commentId: number){
+    const response = await fetcherDelete(`/api/Post/DeleteCommentById?commentId=${commentId}`)
     return response
 }
+async function PostAddAnswer(answerDTO: AnswerDTO){
+    const response = await fetcherPost(`/api/Post/AddAnswer`,answerDTO);
+    return response;
+}
+async function PostDeleteAnswerById(answerId: number){
+    const response = await fetcherDelete(`/api/Post/DeleteAnswerById?answerId=${answerId}`)
+    return response
+}
+
 export {
     useGetAllPosts, 
     useGetPostByUserId,
@@ -95,5 +114,9 @@ export {
     DeletePostById, 
     PostAddLike, 
     PostRemoveLike,
-    GetPostById
+    GetPostById,
+    PostAddComment,
+    PostDeleteCommentById,
+    PostAddAnswer,
+    PostDeleteAnswerById
 }
