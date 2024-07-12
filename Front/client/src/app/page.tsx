@@ -1,4 +1,4 @@
-'use client'
+
 import styles from "./page.module.css";
 import Image from "next/image";
 import ImgHero from "../assets/Imghero.svg"
@@ -6,12 +6,6 @@ import ImgIntroducao from "../assets/tcc2.svg"
 import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
-  const radio1 = useRef<HTMLInputElement>(null);
-  const [checked, setChecked] = useState(false);
-  const [checked2, setChecked2] = useState(false)
-  useEffect(()=>{
-    
-  },[])
   return (
     <main className={styles.main}>
       <section className={styles.hero}>

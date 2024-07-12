@@ -21,8 +21,6 @@ export default function ListPosts(){
     const [ posts, setPosts] = useState<Array<PostView>>([]);
     const { data: user} = useGetByEmail(userContext?.email || "");
     useEffect(()=>{
-        console.log(data)
-
         setPosts(data)
     },[data])
     const LikePost = async(postId: number) =>{
@@ -70,9 +68,6 @@ export default function ListPosts(){
     return(
     <>
     <div className={styles.container_posts}>
-        <div className={styles.field_search}>
-            <input  type="text" className={styles.search}/>
-        </div>
         <div className={styles.posts}>
                 {posts.map((item: PostView)=>{
                     return (

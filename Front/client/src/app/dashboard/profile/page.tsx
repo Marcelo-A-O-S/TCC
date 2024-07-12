@@ -1,6 +1,6 @@
 
-import { Metadata, ResolvingMetadata } from "next";
-import { GetUserByEmail, useGetByEmail } from "@/api/users";
+import { Metadata } from "next";
+import { GetUserByEmail } from "@/api/users";
 import PostsProfile from "./components/PostsProfile";
 type Props = {
   params: { email: string }

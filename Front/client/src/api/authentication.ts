@@ -1,8 +1,13 @@
 import { Login } from "@/models/Login";
 import { Register } from "@/models/Register";
+import https from 'https';
+const agent = new https.Agent({
+    rejectUnauthorized: false
+  });
 import axios from "axios";
 const api = axios.create({
-    baseURL:process.env.NEXT_PUBLIC_HOST
+    baseURL:process.env.NEXT_PUBLIC_HOST,
+    httpsAgent: agent,
 })
 
 export async function register(dataRegister: Register){

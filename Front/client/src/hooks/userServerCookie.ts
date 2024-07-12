@@ -9,3 +9,23 @@ export async function getServerTokenCookie(){
     }
     return ""
 }
+export async function setServerTokenCookie(user: UserAuthentication){
+    const userJson = JSON.stringify(user);
+    cookies().set("user",userJson);
+}
+export async function getServerUserCoookie(){
+    const userCookie = cookies().get("user");
+    if(userCookie != undefined){
+        const user : UserAuthentication = JSON.parse(userCookie.value)
+        return user
+    }
+    return null;
+}
+/* export function getUserCookie(){
+    const userCookie = Cookies.get("user")
+    if(userCookie != undefined){
+        const user : UserAuthentication = JSON.parse(userCookie)
+        return user
+    }
+    return null;
+} */

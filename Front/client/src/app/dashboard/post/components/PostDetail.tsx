@@ -1,18 +1,16 @@
 'use client'
-import { ChangeEvent, useContext, useEffect, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import IcoChatBallon from "../../../../assets/balaochat.svg"
 import IcoHeartLike from "../../../../assets/heartlike.svg"
 import ImgHeartSelected from "../../../../assets/heartSelected.svg"
 import { PostAddLike, PostRemoveLike, useGetPostById, PostAddComment, PostAddAnswer, PostDeleteCommentById, DeletePostById, PostDeleteAnswerById } from "@/api/post"
 import styles from "../post.module.css"
-import { Post } from "@/models/Post"
 import Image from "next/image";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import { UserAuthentication } from "@/models/UserAuthentication"
 import { LikeDTO } from "@/DTOs/LikeDTO"
 import { GetUserByEmail, useGetByEmail, GetUserById } from "@/api/users"
-import { UserContext } from "@/contexts/UserContext"
 import { ICommentState } from "./utils/ICommentState"
 import { CommentDTO } from "@/DTOs/CommentDTO"
 import { AnswerDTO } from "@/DTOs/AnswerDTO"
@@ -21,12 +19,13 @@ import { ICommentView } from "@/ViewModel/CommentView"
 import { AnswerView, IAnswerView } from "@/ViewModel/AnswerView"
 import Link from "next/link"
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react"
 type Props = {
     Id: number
 }
 export default function PostDetail({ Id }: Props) {
-    const { user: userContext } = useContext(UserContext);
-    const { data: userData } = useGetByEmail(userContext?.email || "");
+    const { data: userSession } = useSession();
+    const { data: userData } = useGetByEmail(userSession?.user?.email || "");
     const { data, error, isLoading, isValidating, mutate } = useGetPostById(Id)
     const router = useRouter()
     const [answerState, setAnswerState] = useState({
@@ -117,8 +116,8 @@ export default function PostDetail({ Id }: Props) {
     }
     const LikePost = async (postId: number) => {
         if (postDetail != undefined) {
-            if (userContext) {
-                const userCurrent = await GetUserByEmail(userContext.email);
+            if (userSession) {
+                const userCurrent = await GetUserByEmail(userSession.user?.email as string);
                 const likeCurrent = postDetail.likeViews.find(x => x.userId == userCurrent?.id);
                 if (likeCurrent !== undefined) {
                     await PostRemoveLike(likeCurrent.id);
@@ -363,7 +362,7 @@ export default function PostDetail({ Id }: Props) {
                                 <h3 className={styles.username}>{postDetail.userview.username}</h3>
                                 <Link href={`/dashboard/profile?email=${postDetail.userview.email}`} className={styles.email}>{postDetail.userview.email}</Link>
                             </div>
-                            {userContext?.email == postDetail.userview.email?<div className={styles.post_actions}>
+                            {userSession?.user?.email == postDetail.userview.email?<div className={styles.post_actions}>
                                 <button onClick={()=>EditPost(postDetail.id)} className={styles.post_edit} >Edit</button>
                                 <button onClick={()=>DeletePost(postDetail.id)} className={styles.post_delete}>Delete</button>
                             </div>:""}

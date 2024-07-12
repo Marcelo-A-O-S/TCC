@@ -1,7 +1,5 @@
 import { Metadata } from "next";
-import { getServerTokenCookie } from "@/hooks/userServerCookie";
 import { GetPostById } from "@/api/post";
-import styles from "./post.module.css"
 import PostDetail from "./components/PostDetail";
 type Props = {
     params: { postId: string }

@@ -23,3 +23,6 @@ export function getTokenCookie(){
     }
     return "";
 }
+export function removeUserCookie(){
+    Cookies.remove("user")
+}

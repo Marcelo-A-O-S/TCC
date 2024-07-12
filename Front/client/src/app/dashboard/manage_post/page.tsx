@@ -1,5 +1,5 @@
 'use client'
-import { ChangeEvent, FormEvent, useEffect, useState, useContext } from "react"
+import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import { ImagePost, IImagePost } from "@/models/ImagePost";
 import styles from "./new.module.css"
 import { useRef } from "react";
@@ -12,18 +12,18 @@ import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import Link from "next/link";
 import { PostDTO } from "@/DTOs/PostDTO";
 import { ImageDTO } from "@/DTOs/ImageDTO";
-import { UserContext } from "@/contexts/UserContext";
-import { useGetByEmail, GetUserByEmail } from "@/api/users";
+import { useGetByEmail } from "@/api/users";
 import { CreatePost,useGetPostById } from "@/api/post";
 import ImgSuccess from "../../../assets/success.svg"
 import ImgFailed from "../../../assets/failed.svg"
+import { useSession } from "next-auth/react";
 type Props = {
     params: { edit: string }
     searchParams: { edit: string }
   }
 export default function ManagerPost({searchParams}:Props){
-    const { user: userContext } = useContext(UserContext)
-    const email = userContext?.email;
+    const { data: userSession } = useSession()
+    const email = userSession?.user?.email;
     const {data: post, error: errorPost} = useGetPostById(parseInt(searchParams.edit))
     const { data, error } = useGetByEmail(email || "");
     const modal = useRef<HTMLDialogElement>(null)
@@ -41,7 +41,8 @@ export default function ManagerPost({searchParams}:Props){
         description: "",
         Id: 0,
         title: "",
-        user: {} as UserAuthentication
+        user: {} as UserAuthentication,
+        likes: []
     } as Post);
     const [modalResponse, setModalResponse] = useState({
         status:0,
@@ -62,7 +63,8 @@ export default function ManagerPost({searchParams}:Props){
                     id: post.userview.id,
                     username: post.userview.username,
                     token: post.userview.token
-                }
+                },
+                likes: post.likeViews
             })
         }
     },[post])
@@ -198,7 +200,7 @@ export default function ManagerPost({searchParams}:Props){
             imageDTO.imageGuid = image.imageGuid
             postDto.images.push(imageDTO)
         })
-        if(userContext){
+        if(userSession?.user){
             if(data){
                 postDto.userId = data.id
             }
@@ -232,7 +234,8 @@ export default function ManagerPost({searchParams}:Props){
             Id:0,
             images: [],
             title: "",
-            user: {} as UserAuthentication
+            user: {} as UserAuthentication,
+            likes: []
         })
     }
     return(
@@ -251,7 +254,7 @@ export default function ManagerPost({searchParams}:Props){
                     </div>
                     <div className={styles.modalAlert_actions}>
                         <button onClick={()=> NewRegister()} className={styles.modalAlert_btnNew}>Novo Registro</button>
-                        <Link href={`/dashboard/profile?email=${userContext?.email}`} className={styles.modalAlert_btnReturn}>Retornar</Link>
+                        <Link href={`/dashboard/profile?email=${userSession?.user?.email}`} className={styles.modalAlert_btnReturn}>Retornar</Link>
                     </div>
                 </dialog>
             :

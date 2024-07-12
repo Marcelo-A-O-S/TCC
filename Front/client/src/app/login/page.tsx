@@ -5,10 +5,11 @@ import { ILogin, Login } from "@/models/Login"
 import Link from "next/link"
 import { loginPost } from "@/api/authentication"
 import { setUserCookie } from "@/hooks/userCookie"
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { UserContext } from "@/contexts/UserContext"
 import { UserAuthentication } from "@/models/UserAuthentication"
 import { signIn } from "next-auth/react"
+
 export default function LoginPage(){
     const {login} = useContext(UserContext)
     const router = useRouter();
@@ -113,14 +114,16 @@ export default function LoginPage(){
         if( formValidate.validateEmail.status == 0 ||
             formValidate.validatePassword.status == 0
         ){
-            const formData = new FormData(e.currentTarget);
-            const dataLogin = new Login();
-            dataLogin.email = formLogin.email;
-            dataLogin.password = formLogin.password;
-            signIn("credentials",{
-                ...formData,
-                callbackUrl: '/dashboard'
+            const response = await signIn("credentials",{
+                email: formLogin.email,
+                password: formLogin.password,
+                redirect:false,
+                callbackUrl:'/dashboard'
             })
+            if(response?.ok){
+                router.push("/dashboard")
+            }
+            
             /* try {
                 const dataResponse = await loginPost(dataLogin)
                 const user = new UserAuthentication()
@@ -166,7 +169,7 @@ export default function LoginPage(){
                         </span>
                     </div>
                     <div className={styles.form_actions}>
-                        <button type="submit" className={styles.form_acessar}>Acessar</button>
+                        <button  className={styles.form_acessar}>Acessar</button>
                         <p className={styles.form_textactions}>Não tem registro? Crie agora!</p>
                         <Link href="register" className={styles.form_registrar}>Registrar</Link>
                     </div>
