@@ -42,9 +42,30 @@ namespace Api.Services
         {
             return await this.postRepository.FindAllBy(x=> x.userId == Userid);
         }
+
+        public async Task<List<Posts>> FindByUserIdDescending(int userId)
+        {
+            return await this.postRepository.FindAllAndDescendingBy(search => search.userId == userId, post=> post.dateCreate);
+        }
+
         public async Task<List<Posts>> List()
         {
             return await this.postRepository.List();
+        }
+
+        public async Task<List<Posts>> ListDescending()
+        {
+           return await this.postRepository.ListDescendingBy<int>(post => post.Id);
+        }
+
+        public async Task<List<Posts>> ListDescendingBy<TKey>(Expression<Func<Posts, TKey>> predicate)
+        {
+            return await this.postRepository.ListDescendingBy<TKey>(predicate);
+        }
+
+        public async Task<List<Posts>> ListDescendingByDateCreate(DateTime datecreate)
+        {
+            return await this.postRepository.ListDescendingBy<DateTime>(post => post.dateCreate);
         }
 
         public async Task Save(Posts entidade)

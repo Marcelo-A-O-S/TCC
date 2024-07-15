@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
     "@types/js-cookie": "^3.0.6",
     "@types/swiper": "^6.0.0",
     "@types/uuid": "^10.0.0",

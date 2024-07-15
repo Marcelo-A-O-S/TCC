@@ -3,14 +3,14 @@ import { ChangeEvent, useEffect, useState } from "react"
 import IcoChatBallon from "../../../../assets/balaochat.svg"
 import IcoHeartLike from "../../../../assets/heartlike.svg"
 import ImgHeartSelected from "../../../../assets/heartSelected.svg"
-import { PostAddLike, PostRemoveLike, useGetPostById, PostAddComment, PostAddAnswer, PostDeleteCommentById, DeletePostById, PostDeleteAnswerById } from "@/api/post"
+import { PostAddLike, PostRemoveLike, useGetPostById, PostAddComment, PostAddAnswer, PostDeleteCommentById, DeletePostById, PostDeleteAnswerById } from "@/data/post"
 import styles from "../post.module.css"
 import Image from "next/image";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import { UserAuthentication } from "@/models/UserAuthentication"
 import { LikeDTO } from "@/DTOs/LikeDTO"
-import { GetUserByEmail, useGetByEmail, GetUserById } from "@/api/users"
+import { GetUserByEmail, useGetByEmail, GetUserById } from "@/data/users"
 import { ICommentState } from "./utils/ICommentState"
 import { CommentDTO } from "@/DTOs/CommentDTO"
 import { AnswerDTO } from "@/DTOs/AnswerDTO"
@@ -26,7 +26,7 @@ type Props = {
 export default function PostDetail({ Id }: Props) {
     const { data: userSession } = useSession();
     const { data: userData } = useGetByEmail(userSession?.user?.email || "");
-    const { data, error, isLoading, isValidating, mutate } = useGetPostById(Id)
+    const { data, error, isLoading, isValidating, mutate } = useGetPostById(Id?Id:0)
     const router = useRouter()
     const [answerState, setAnswerState] = useState({
         answerId:0,
@@ -406,7 +406,7 @@ export default function PostDetail({ Id }: Props) {
                             </div>
                         </div>
                         <div className={styles.comments}>
-                            <textarea onChange={(e) => InsertComment(e)} value={commentState.commentUser} className={styles.input_comment}></textarea>
+                            <textarea onChange={(e) => InsertComment(e)} value={commentState.commentUser} placeholder="Comente aqui..." className={styles.input_comment}></textarea>
                             <div className={styles.actions_input}>
                                 {commentState.commentUser !== "" ? <button type="button" onClick={PostComment} className={styles.btn_send}>Send</button> : ""}
                             </div>

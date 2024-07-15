@@ -3,7 +3,7 @@ import styles from "./register.module.css"
 import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import { IRegister, Register } from "@/models/Register"
 import Link from "next/link"
-import { register } from "@/api/authentication"
+import { register } from "@/data/authentication"
 import IcoClose from "../../assets/closeico.svg"
 import Image from "next/image"
 export default function RegisterPage(){

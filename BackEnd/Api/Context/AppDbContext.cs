@@ -15,5 +15,6 @@ namespace Api.Context
         public DbSet<Answer> answers { get; set; }
         public DbSet<Image> images { get; set; }
         public DbSet<Like> likes { get; set; }
+        public DbSet<Notification> notifications {get; set;}
     }
 }

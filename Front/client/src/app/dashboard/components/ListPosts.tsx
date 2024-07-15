@@ -1,6 +1,6 @@
 'use client'
-import { useGetAllPosts, PostRemoveLike, PostAddLike } from "@/api/post";
-import { useGetByEmail ,GetUserByEmail} from "@/api/users";
+import { useGetAllPosts, PostRemoveLike, PostAddLike } from "@/data/post";
+import { useGetByEmail ,GetUserByEmail} from "@/data/users";
 import { useEffect, useState, useContext} from "react";
 import styles from "./posts.module.css"
 import IcoChatBallon from "../../../assets/balaochat.svg"
@@ -48,7 +48,7 @@ export default function ListPosts(){
         }
     }
     const ViewPost = (postId: number) =>{
-        router.push(`/dashboard/post?postId=${postId}`);
+        router.push(`/dashboard/post/${postId}`);
     }
     if (error) {
         return <h1>Erro ao carregar dados: {error.message}</h1>;

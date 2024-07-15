@@ -13,5 +13,7 @@ namespace Api.Services.Interfaces
         Task<List<T>> FindAll();
         Task<List<T>> List();
 
+        Task<List<T>> ListDescendingBy<TKey>(Expression<Func<T, TKey>> predicate);
+
     }
 }

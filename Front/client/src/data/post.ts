@@ -1,35 +1,16 @@
 
 import useSWR, { KeyedMutator, SWRConfiguration, mutate} from "swr";
-import { privateApi, privateServerApi } from "@/services/api";
 import { PostDTO } from "@/DTOs/PostDTO";
 import { Post } from "@/models/Post";
 import { LikeDTO } from "@/DTOs/LikeDTO";
 import { CommentDTO } from "@/DTOs/CommentDTO";
 import { AnswerDTO } from "@/DTOs/AnswerDTO";
+import { fetcherDelete, fetcherGet, fetcherPost, fetcherServerGet } from "@/services/fetchers";
 const configSWR: SWRConfiguration ={
     revalidateOnFocus: false,
 
 }
-const fetcherGet = async( url: string) =>{
-    const api = privateApi()
-    const response = await api.get(url);
-    return response.data
-}
-const fetcherServerGet = async( url: string) =>{
-    const api = await privateServerApi()
-    const response = await api.get(url);
-    return response.data
-}
-const fetcherPost = async(url:string, body:any) =>{
-    const api = privateApi();
-    const response = await api.post(url,body);
-    return response
-}
-const fetcherDelete = async(url:string)=>{
-    const api = privateApi();
-    const response = await api.delete(url);
-    return response
-}
+
 function useGetAllPosts(){
     const {data, error, isValidating, isLoading, mutate} = useSWR("/api/Post/List", fetcherGet,configSWR)
     return {   

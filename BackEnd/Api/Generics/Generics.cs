@@ -52,8 +52,14 @@ namespace Api.Generics
             return await this.context.Set<T>().Where(predicate).ToListAsync(); 
         }
 
+        public async Task<List<T>> FindAllAndDescendingBy<TKey>(Expression<Func<T, bool>> search, Expression<Func<T, TKey>> descending)
+        {
+            return await this.context.Set<T>().Where(search).OrderByDescending(descending).ToListAsync();
+        }
+
         public async Task<T> FindBy(Expression<Func<T, bool>> predicate)
         {
+            
             return await this.context.Set<T>().Where(predicate).FirstOrDefaultAsync();
             
         }
@@ -69,6 +75,19 @@ namespace Api.Generics
             var list = await this.context.Set<T>().ToListAsync();
             return list;
 
+        }
+
+        public async Task<List<T>> ListAscendingBy(Expression<Func<T, bool>> predicate)
+        {
+            var list = await this.context.Set<T>().OrderBy(predicate).ToListAsync();
+            return list;
+        }
+
+        public async Task<List<T>> ListDescendingBy<TKey>(Expression<Func<T, TKey>> predicate)
+        {
+           
+            var list = await this.context.Set<T>().OrderByDescending(predicate).ToListAsync();
+            return list;
         }
 
         public async Task Save(T entity)

@@ -116,9 +116,11 @@
     justify-content: center;
     gap:2px;
     height:14px;
+    cursor: pointer;
 }
 .likeSelected{
     height: 35px;
+    cursor: pointer;
 }
 .comment{
     display: flex;

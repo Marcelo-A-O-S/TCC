@@ -3,7 +3,7 @@ import { ChangeEvent, FormEvent, useContext, useEffect, useState } from "react"
 import styles from "./login.module.css"
 import { ILogin, Login } from "@/models/Login"
 import Link from "next/link"
-import { loginPost } from "@/api/authentication"
+import { loginPost } from "@/data/authentication"
 import { setUserCookie } from "@/hooks/userCookie"
 import { redirect, useRouter } from "next/navigation";
 import { UserContext } from "@/contexts/UserContext"

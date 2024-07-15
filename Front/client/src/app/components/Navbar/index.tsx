@@ -1,20 +1,74 @@
-
+import NotificationComponent from "../NotificationComponent"
 import { useSession, signOut } from "next-auth/react"
 import ImgLogo from "../../../assets/Logo.svg"
 import Image from "next/image"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import BtnRegister from "../../../components/Buttons/BtnRegister"
 import BtnAcessar from "../../../components/Buttons/BtnAcessar"
 import Icoburguer from "../../../assets/burguerico.svg"
 import Icoclose from "../../../assets/closeico.svg"
 import Link from "next/link"
+import { mutate as mutateGlobal } from "swr"
 import { useRouter } from "next/navigation"
 import { removeUserCookie } from "@/hooks/userCookie"
+import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr"
 export  default function Navbar(){
+    const host = process.env.NEXT_PUBLIC_HOST
     const router = useRouter()
     const { data: userSession, status, update} = useSession()
     const MenuList = useRef<HTMLUListElement>(null)
     const [burguerOpen, setBurgueropen] = useState(false)
+    const [connection, setConnection] = useState<HubConnection | null>(null);
+    useEffect(()=>{
+        if(host != undefined && !connection && userSession){
+            const connect = new HubConnectionBuilder()
+                .withUrl(`${host}/notifications`, {withCredentials:false})
+                .withAutomaticReconnect()
+                .configureLogging(LogLevel.Information)
+                .build();
+            setConnection(connect);
+            connect.start()
+                .then(()=>{
+                    console.log("Connection started!")
+                    connect.on("OnConnected",(message)=>{
+                        console.log(message);
+                    })
+                    connect.on("CreatePost",(userId)=>{
+                        mutateGlobal("/api/Post/List");
+                        mutateGlobal(`/api/Post/FindByUserId?userId=${userId}`);
+                    })
+                    connect.on("UpdatePost",(postId, userId)=>{
+                        mutateGlobal("/api/Post/List");
+                        mutateGlobal(`/api/Post/FindById?id=${postId}`);
+                        mutateGlobal(`/api/Post/FindByUserId?userId=${userId}`);
+                    })
+                    connect.on("DeletePost",(userId)=>{
+                        mutateGlobal("/api/Post/List");
+                        mutateGlobal(`/api/Post/FindByUserId?userId=${userId}`);
+                    })
+                    connect.on("AddLike",(postId, userId)=>{
+                        mutateGlobal("/api/Post/List");
+                        mutateGlobal(`/api/Post/FindById?id=${postId}`);
+                        mutateGlobal(`/api/Post/FindByUserId?userId=${userId}`);
+                    })
+                    connect.on("RemoveLike",(postId, userId)=>{
+                        mutateGlobal("/api/Post/List");
+                        mutateGlobal(`/api/Post/FindById?id=${postId}`);
+                        mutateGlobal(`/api/Post/FindByUserId?userId=${userId}`);
+                    })
+                    connect.on("AddComment", (postId,  userId)=>{
+                        mutateGlobal("/api/Post/List");
+                        mutateGlobal(`/api/Post/FindById?id=${postId}`);
+                        mutateGlobal(`/api/Post/FindByUserId?userId=${userId}`);
+                    })
+                    connect.on("RemoveComment", (postId, userId)=>{
+                        mutateGlobal("/api/Post/List");
+                        mutateGlobal(`/api/Post/FindById?id=${postId}`);
+                        mutateGlobal(`/api/Post/FindByUserId?userId=${userId}`);
+                    })
+                })
+        }
+    },[userSession])
     function CloseBurguer(){
         if(window.innerWidth < 940){
             MenuList.current?.classList.toggle("burguerOpen")
@@ -39,7 +93,11 @@ export  default function Navbar(){
                     </Link>
                 </div>
                 {userSession? (
-                    <div className="menu">
+                    
+                <div className="menu">
+                    <div>
+                        <NotificationComponent/>
+                    </div>
                     <Image src={Icoburguer} onClick={CloseBurguer} alt="" className="burguer"/>
                     <ul ref={MenuList} className="list-menu">
                         
@@ -59,9 +117,6 @@ export  default function Navbar(){
                             <Image onClick={CloseBurguer} src={Icoclose} alt="" className="close_burguer"/>
                             <li>
                                 <Link href="/">Home</Link>
-                            </li>
-                            <li>
-                                <Link href="about">Sobre</Link>
                             </li>
                             <li>
                                 <BtnAcessar/>

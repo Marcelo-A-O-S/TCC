@@ -48,6 +48,11 @@ namespace Api.Services
             return await this.imageRepository.List();
         }
 
+        public async Task<List<Image>> ListDescendingBy<TKey>(Expression<Func<Image, TKey>> predicate)
+        {
+            return await this.imageRepository.ListDescendingBy<TKey>(predicate);
+        }
+
         public async Task Save(Image entidade)
         {
             if(entidade.Id == 0)

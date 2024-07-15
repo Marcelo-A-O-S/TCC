@@ -6,6 +6,7 @@ using Api.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Api.Controllers
 {
@@ -19,6 +20,8 @@ namespace Api.Controllers
         private readonly IAnswerServices answerServices;
         private readonly IImageServices imageServices;
         private readonly ILikeServices likeServices;
+        private readonly INotificationServices notificationServices;
+        private readonly IHubContext<NotificationHubService> notificationHubContext;
 
         public PostController(
             IPostServices postServices, 
@@ -26,7 +29,9 @@ namespace Api.Controllers
             ICommentServices commentServices,
             IAnswerServices answerServices,
             IImageServices imageServices,
-            ILikeServices likeServices
+            ILikeServices likeServices,
+            INotificationServices notificationServices,
+            IHubContext<NotificationHubService> notificationHubContext
             )
         {
             this.postServices = postServices;
@@ -35,12 +40,14 @@ namespace Api.Controllers
             this.answerServices = answerServices;
             this.imageServices = imageServices;
             this.likeServices = likeServices;
+            this.notificationServices = notificationServices;
+            this.notificationHubContext = notificationHubContext;
         }
         [Authorize]
         [HttpGet, Route("List")]
         public async Task<ActionResult<List<PostViewModel>>> List()
         {
-            var posts = await this.postServices.List();
+            var posts = await this.postServices.ListDescending();
             var postsViews = new List<PostViewModel>();
             foreach (var item in posts)
             {
@@ -190,7 +197,7 @@ namespace Api.Controllers
         [HttpGet, Route("FindByUserId")]
         public async Task<ActionResult<List<PostViewModel>>> GetPostUserId(int UserId)
         {
-            var posts = await this.postServices.FindByUserId(UserId);
+            var posts = await this.postServices.FindByUserIdDescending(UserId);
             var postsViews = new List<PostViewModel>();
             foreach (var post in posts){
                 var postview = new PostViewModel();
@@ -290,6 +297,7 @@ namespace Api.Controllers
                 post.userId = user.Id;
                 try{
                     await this.postServices.Save(post);
+                    await this.notificationHubContext.Clients.All.SendAsync("CreatePost", post.userId);
                     return Ok("Salvo com sucesso");
                 }catch(Exception err){
                     return BadRequest(err.Message);
@@ -334,15 +342,13 @@ namespace Api.Controllers
                         }
                         post.images.Add(image);
                     }
-                   
-
                 }
                 post.user = await this.userServices.FindById(postRequest.userId);
                 post.userId = post.user.Id;
                 await this.postServices.Save(post);
+                await this.notificationHubContext.Clients.All.SendAsync("UpdatePost", post.Id, post.userId);
                 return Ok("Atualizado com sucesso");
             }
-           
         }
         [Authorize]
         [HttpDelete, Route("DeleteById")]
@@ -350,6 +356,7 @@ namespace Api.Controllers
         {
             Posts post = await this.postServices.FindById(postId);
             await this.postServices.Delete(post);
+            await this.notificationHubContext.Clients.All.SendAsync("DeletePost", post.userId);
             return Ok();
         }
         [Authorize]
@@ -357,37 +364,28 @@ namespace Api.Controllers
         public async Task<ActionResult> AddComent(CommentDTO commentRequest)
         {
             Posts post = await this.postServices.FindById(commentRequest.postId);
+            var user = await this.userServices.FindById(commentRequest.userId);
+            if(user == null){
+                return BadRequest("Usuário não encontrado");
+            }   
             Comment comment = new Comment();
             if(commentRequest.Id != 0){
                 comment.Id = commentRequest.Id;
-                //comment.commentGuid = new Guid().ToString();
                 comment.comment = commentRequest.comment;
-                
-                var user = await this.userServices.FindById(commentRequest.userId);
-                if(user == null){
-                    return BadRequest("Usuário não encontrado");
-                }   
                 comment.userId = user.Id; 
                 comment.postId = post.Id;
             }else{
                 comment.Id = 0;
-                //comment.commentGuid = new Guid().ToString();
                 comment.comment = commentRequest.comment;
-                var user = await this.userServices.FindById(commentRequest.userId);
-                if(user == null){
-                    return BadRequest("Usuário não encontrado");
-                }   
                 comment.userId = user.Id; 
                 comment.postId = post.Id;
             }
-            
             await this.commentServices.Save(comment);
             if(comment.Id != 0){
                 return Ok("Comentário atualizado com sucesso!");
             }else{
                 return Ok("Comentário salvo com sucesso!");
             }
-            
         }
         [Authorize]
         [HttpPut, Route("UpdateComment")]
@@ -493,6 +491,7 @@ namespace Api.Controllers
             like.Id = 0;
             try{
                 await this.likeServices.Save(like);
+                await this.notificationHubContext.Clients.All.SendAsync("AddLike", like.postId, like.userId);
                 return Ok();
             }catch(Exception err){
                 return BadRequest(err.Message);
@@ -512,6 +511,7 @@ namespace Api.Controllers
                     return NotFound();
                 }
                 await this.likeServices.Delete(like);
+                await this.notificationHubContext.Clients.All.SendAsync("RemoveLike", like.postId, like.userId);
                 return Ok("Removido com sucesso");
             }catch(Exception err){
                 return BadRequest(err.Message);
@@ -523,6 +523,24 @@ namespace Api.Controllers
         public async Task<ActionResult> ListLikes(){
 
             return Ok();
+        }
+        [Authorize]
+        [HttpGet, Route("ListNotifications")]
+        public async Task<ActionResult> GetNotifications(){
+            return Ok();
+        }
+        [Authorize]
+        [HttpGet, Route("ListNotificationsByUserId")]
+        public async Task<ActionResult> GetNotficationsByUserId(int userId){
+            
+            var notifications = await this.notificationServices.FindByUserIdDescending(userId);
+            return Ok(notifications);
+        }
+        [Authorize]
+        [HttpDelete, Route("DeleteNotificationById")]
+        public async Task<ActionResult> DeleteNotificationById(int Id){
+            await this.notificationServices.DeleteById(Id);
+            return Ok("Deletado com sucesso!");
         }
 
     }

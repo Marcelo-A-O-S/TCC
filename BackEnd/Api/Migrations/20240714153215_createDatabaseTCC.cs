@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Api.Migrations
 {
-    public partial class initial : Migration
+    public partial class createDatabaseTCC : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -172,6 +172,45 @@ namespace Api.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "notifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Viewed = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    userId = table.Column<int>(type: "int", nullable: false),
+                    postId = table.Column<int>(type: "int", nullable: true),
+                    commentId = table.Column<int>(type: "int", nullable: true),
+                    answerId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_notifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_notifications_answers_answerId",
+                        column: x => x.answerId,
+                        principalTable: "answers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_notifications_comments_commentId",
+                        column: x => x.commentId,
+                        principalTable: "comments",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_notifications_posts_postId",
+                        column: x => x.postId,
+                        principalTable: "posts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_notifications_users_userId",
+                        column: x => x.userId,
+                        principalTable: "users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateIndex(
                 name: "IX_answers_commentId",
                 table: "answers",
@@ -208,6 +247,26 @@ namespace Api.Migrations
                 column: "userId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_notifications_answerId",
+                table: "notifications",
+                column: "answerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_notifications_commentId",
+                table: "notifications",
+                column: "commentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_notifications_postId",
+                table: "notifications",
+                column: "postId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_notifications_userId",
+                table: "notifications",
+                column: "userId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_posts_userId",
                 table: "posts",
                 column: "userId");
@@ -216,13 +275,16 @@ namespace Api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "answers");
-
-            migrationBuilder.DropTable(
                 name: "images");
 
             migrationBuilder.DropTable(
                 name: "likes");
+
+            migrationBuilder.DropTable(
+                name: "notifications");
+
+            migrationBuilder.DropTable(
+                name: "answers");
 
             migrationBuilder.DropTable(
                 name: "comments");

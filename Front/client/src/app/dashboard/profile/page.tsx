@@ -1,6 +1,6 @@
 
 import { Metadata } from "next";
-import { GetUserByEmail } from "@/api/users";
+import { GetUserByEmail } from "@/data/users";
 import PostsProfile from "./components/PostsProfile";
 type Props = {
   params: { email: string }
@@ -9,7 +9,7 @@ type Props = {
 export async function generateMetadata({params,searchParams}: Props){
   const email = searchParams.email;
   const data = await GetUserByEmail(email);
-  
+  console.log(data);
   const metadata : Metadata ={
       title: `Profile - ${data.username}`,
       description: "Description teste"
@@ -17,5 +17,6 @@ export async function generateMetadata({params,searchParams}: Props){
   return metadata
 }
 export default function ProfilePage({ params, searchParams }: Props) {
-  return <PostsProfile email={searchParams.email}/>
+  const email = searchParams.email;
+  return <PostsProfile email={email}/>
 }

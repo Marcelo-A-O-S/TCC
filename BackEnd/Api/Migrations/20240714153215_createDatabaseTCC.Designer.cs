@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240526184112_initial")]
-    partial class initial
+    [Migration("20240714153215_createDatabaseTCC")]
+    partial class createDatabaseTCC
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -128,6 +128,40 @@ namespace Api.Migrations
                     b.ToTable("likes");
                 });
 
+            modelBuilder.Entity("Api.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Viewed")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int?>("answerId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("commentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("postId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("userId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("answerId");
+
+                    b.HasIndex("commentId");
+
+                    b.HasIndex("postId");
+
+                    b.HasIndex("userId");
+
+                    b.ToTable("notifications");
+                });
+
             modelBuilder.Entity("Api.Models.Posts", b =>
                 {
                     b.Property<int>("Id")
@@ -240,6 +274,35 @@ namespace Api.Migrations
                         .HasForeignKey("userId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("post");
+
+                    b.Navigation("user");
+                });
+
+            modelBuilder.Entity("Api.Models.Notification", b =>
+                {
+                    b.HasOne("Api.Models.Answer", "answer")
+                        .WithMany()
+                        .HasForeignKey("answerId");
+
+                    b.HasOne("Api.Models.Comment", "comment")
+                        .WithMany()
+                        .HasForeignKey("commentId");
+
+                    b.HasOne("Api.Models.Posts", "post")
+                        .WithMany()
+                        .HasForeignKey("postId");
+
+                    b.HasOne("Api.Models.User", "user")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("answer");
+
+                    b.Navigation("comment");
 
                     b.Navigation("post");
 

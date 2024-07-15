@@ -12,8 +12,8 @@ import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import Link from "next/link";
 import { PostDTO } from "@/DTOs/PostDTO";
 import { ImageDTO } from "@/DTOs/ImageDTO";
-import { useGetByEmail } from "@/api/users";
-import { CreatePost,useGetPostById } from "@/api/post";
+import { useGetByEmail } from "@/data/users";
+import { CreatePost,useGetPostById } from "@/data/post";
 import ImgSuccess from "../../../assets/success.svg"
 import ImgFailed from "../../../assets/failed.svg"
 import { useSession } from "next-auth/react";

@@ -1,6 +1,6 @@
 'use client'
-import { DeletePostById, PostAddLike, PostRemoveLike, useGetPostByUserId } from "@/api/post";
-import { GetUserByEmail, useGetByEmail } from "@/api/users";
+import { DeletePostById, PostAddLike, PostRemoveLike, useGetPostByUserId } from "@/data/post";
+import { GetUserByEmail, useGetByEmail } from "@/data/users";
 import { UserContext } from "@/contexts/UserContext";
 import { LikeDTO } from "@/DTOs/LikeDTO";
 import { PostView } from "@/ViewModel/PostView";
@@ -16,13 +16,14 @@ import Image from "next/image";
 import NotFoundUser from "../components/NotFoundUser";
 import Link from "next/link";
 import styles from "../profile.module.css"
+import { useSession } from "next-auth/react";
 type Props = {
     email: any
 }
 export default function PostsProfile({email}:Props){
-  const {user: userContext} = useContext(UserContext)
+  const {data: userContext} = useSession()
   const { data: userProfile, error, isValidating, isLoading } = useGetByEmail(email)
-  const {data: userCurrent} = useGetByEmail(userContext?.email as string);
+  const {data: userCurrent} = useGetByEmail(userContext?.user?.email as string);
   const { data: posts, error: postsError, isValidating: postValidating, isLoading: postLoading, mutate: MutatePost} = useGetPostByUserId(userProfile?.id as number)
   const [ postsProfile, setPostsProfile] = useState<Array<PostView>>([])
   const router = useRouter()
@@ -40,7 +41,7 @@ export default function PostsProfile({email}:Props){
     const postCurrent = posts.find((x:any )=> x.id == postId);
     if(postCurrent != undefined){
         if(userContext){
-            const userCurrent = await GetUserByEmail(userContext.email);
+            const userCurrent = await GetUserByEmail(userContext.user?.email as string);
             const likeCurrent = postCurrent.likeViews.find((x:any )=> x.userId == userCurrent?.id);
             if(likeCurrent !== undefined){
                 await PostRemoveLike(likeCurrent.id);
@@ -94,7 +95,7 @@ const ViewPost = (postId: number) =>{
                   </div>
               </div>
               <div>
-                  {userContext?.email == userProfile?.email?<Link href={`manage_post`} className={styles.btn_create}>Criar publicação</Link>:""}
+                  {userContext?.user?.email == userProfile?.email?<Link href={`manage_post`} className={styles.btn_create}>Criar publicação</Link>:""}
               </div>
             </div>
             <div className={styles.posts}>
@@ -113,7 +114,7 @@ const ViewPost = (postId: number) =>{
                               <h3 className={styles.username}>{item.userview.username}</h3>
                               <p className={styles.email}>{item.userview.email}</p>
                           </div>
-                          {userContext?.email == item.userview.email?<div className={styles.post_actions}>
+                          {userContext?.user?.email == item.userview.email?<div className={styles.post_actions}>
                             <button onClick={()=>EditPost(item.id)} className={styles.post_edit} >Edit</button>
                             <button onClick={()=>DeletePost(item.id)} className={styles.post_delete}>Delete</button>
                           </div>:""}

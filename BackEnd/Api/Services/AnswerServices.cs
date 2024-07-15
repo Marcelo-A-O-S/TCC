@@ -59,6 +59,11 @@ namespace Api.Services
             return await this.answerRepository.List();
         }
 
+        public async Task<List<Answer>> ListDescendingBy<TKey>(Expression<Func<Answer, TKey>> predicate)
+        {
+            return await this.answerRepository.ListDescendingBy<TKey>(predicate);
+        }
+
         public async Task Save(Answer entidade)
         {
             if(entidade.Id == 0)

@@ -2,20 +2,12 @@
 import useSWR, { SWRConfiguration } from "swr";
 import { privateApi, privateServerApi } from "@/services/api";
 import { UserAuthentication } from "@/models/UserAuthentication";
+import { fetcherGet, fetcherServerGet } from "@/services/fetchers";
 const configSWR: SWRConfiguration ={
     revalidateOnFocus: false,
 
 }
-const fetcherGet = async( url: string) =>{
-    const api = privateApi()
-    const response = await api.get(url);
-    return response.data
-}
-const fetcherServerGet = async( url: string) =>{
-    const api = await privateServerApi()
-    const response = await api.get(url);
-    return response.data
-}
+
 function useGetByEmail(email: string):{
     data: UserAuthentication | undefined;
     error: any;

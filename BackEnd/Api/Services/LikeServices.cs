@@ -47,6 +47,13 @@ namespace Api.Services
         {
             return await this.likeRepository.List();
         }
+
+        public async Task<List<Like>> ListDescendingBy<TKey>(Expression<Func<Like, TKey>> predicate)
+        {
+            return await this.likeRepository.ListDescendingBy<TKey>(predicate);
+            
+        }
+
         public async Task Save(Like entidade)
         {
             if(entidade.Id == 0){

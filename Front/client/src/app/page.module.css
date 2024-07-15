@@ -4,7 +4,6 @@
 .hero{
   display: flex;
   height: 800px;
-  border: red solid 1px;
   align-items: center;
   padding: 0px 49px 0px 49px;
   background-color: rgba(233, 157, 41, 1);
@@ -182,7 +181,7 @@ input#radio1:checked ~ div#card_group{
   display: none;
 }
 .navigation_manual label{
-  border: 1px solid red;
+  
   background-color: white;
   width: 26px;
   height: 28px;

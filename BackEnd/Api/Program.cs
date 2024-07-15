@@ -73,6 +73,7 @@ builder.Services.AddScoped<ICommentServices, CommentServices>();
 builder.Services.AddScoped<IJwtBearerServices, JwtBearerServices>();
 builder.Services.AddScoped<IImageServices, ImageServices>();
 builder.Services.AddScoped<ILikeServices, LikeServices>();
+builder.Services.AddScoped<INotificationServices, NotificationServices>();
 //Repositorios
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -80,13 +81,15 @@ builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IImageRepository, ImageRepository>();
 builder.Services.AddScoped<ILikeRepository, LikeRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
 //Utilitários
 builder.Services.AddScoped<IGenerics<User>, Generics<User>>();
-
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 InitializeProgram(app);
+app.UseWebSockets();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -99,7 +102,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapHub<NotificationHubService>("/notifications");
 app.Run();
 async Task InitializeProgram(WebApplication web)
 {

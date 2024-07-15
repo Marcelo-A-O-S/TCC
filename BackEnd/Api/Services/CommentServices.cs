@@ -58,6 +58,11 @@ namespace Api.Services
             return await this.commentRepository.List();
         }
 
+        public async Task<List<Comment>> ListDescendingBy<TKey>(Expression<Func<Comment, TKey>> predicate)
+        {
+            return await this.commentRepository.ListDescendingBy<TKey>(predicate);
+        }
+
         public async Task Save(Comment entidade)
         {
             if(entidade.Id == 0)

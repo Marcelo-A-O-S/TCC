@@ -50,6 +50,11 @@ namespace Api.Services
             return await this.repository.List();
         }
 
+        public async Task<List<User>> ListDescendingBy<TKey>(Expression<Func<User, TKey>> predicate)
+        {
+            return await this.repository.ListDescendingBy<TKey>(predicate);
+        }
+
         public async Task Save(User user)
         {
             try

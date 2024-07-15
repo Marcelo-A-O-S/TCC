@@ -1,7 +1,7 @@
 
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { loginPost } from "@/api/authentication";
+import { loginPost } from "@/data/authentication";
 import { Login } from "@/models/Login";
 import { UserAuthentication } from "@/models/UserAuthentication";
 import { setServerTokenCookie, getServerTokenCookie, getServerUserCoookie } from "@/hooks/userServerCookie";

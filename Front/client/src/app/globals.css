@@ -21,26 +21,22 @@ body {
   max-width: 1480px;
   margin: auto;
   background-color: rgba(244, 195, 101, 1);
-  
 }
-
 body {
-  
-
 }
-
-
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
 }
+.menu{
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
 .header{
-
  display: flex;
  align-items: center;
-
-  
 }
 .navbar{
   display: flex;
@@ -50,9 +46,7 @@ body {
   width: 100vw;
   justify-content: space-between;
   align-items: center;
-  
 }
-
 .logo{
   display: flex;
   align-items: center;
@@ -67,19 +61,20 @@ body {
   color: white;
   text-wrap: wrap;
   width: 100px;
-  
+}
+.logo .text-logo{
+  color: white;
 }
 .img-logo{
   width: 73px;
   height: 70px;
 }
-
 .list-menu{
   list-style: none;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 35px;
+  gap: 25px;
 }
 .list-menu li a{
   text-decoration: none;
@@ -97,10 +92,19 @@ body {
 }
 .footer{
   height: 359px;
-  background-color: rgba(186, 119, 16, 1);
+  background-color: rgba(252, 185, 81, 1);
 }
 .main{
   height: 100%;
+}
+.footer_content{
+  padding: 20px 16px 20px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.text-footer{
+  color: white;
 }
 @media (max-width:940px) {
   .burguer{
@@ -129,4 +133,8 @@ body {
     right: 4%;
   }
 }
-
+@media (max-width:530px){
+  .footer_content{
+    flex-direction: column;
+  }
+}

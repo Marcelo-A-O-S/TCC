@@ -13,5 +13,9 @@ namespace Api.Generics.Interfaces
         Task<T> FindBy(Expression<Func<T, bool>> predicate);
         Task<bool> VerifyExists(Expression<Func<T, bool>> predicate);
         Task<List<T>> FindAllBy(Expression<Func<T, bool>> predicate);  
+        Task<List<T>> FindAllAndDescendingBy<TKey>(Expression<Func<T, bool>> search, Expression<Func<T, TKey>> descending);
+        Task<List<T>> ListDescendingBy<TKey>(Expression<Func<T, TKey>> predicate);
+
+        Task<List<T>> ListAscendingBy(Expression<Func<T, bool>> predicate);
     }
 }
