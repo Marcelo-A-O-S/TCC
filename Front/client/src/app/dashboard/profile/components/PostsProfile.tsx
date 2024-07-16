@@ -17,11 +17,13 @@ import NotFoundUser from "../components/NotFoundUser";
 import Link from "next/link";
 import styles from "../profile.module.css"
 import { useSession } from "next-auth/react";
+import { useSignalR } from "@/hooks/useSignalR";
 type Props = {
     email: any
 }
 export default function PostsProfile({email}:Props){
   const {data: userContext} = useSession()
+  const { invokeGlobal} = useSignalR()
   const { data: userProfile, error, isValidating, isLoading } = useGetByEmail(email)
   const {data: userCurrent} = useGetByEmail(userContext?.user?.email as string);
   const { data: posts, error: postsError, isValidating: postValidating, isLoading: postLoading, mutate: MutatePost} = useGetPostByUserId(userProfile?.id as number)
@@ -46,6 +48,7 @@ export default function PostsProfile({email}:Props){
             if(likeCurrent !== undefined){
                 await PostRemoveLike(likeCurrent.id);
                 MutatePost();
+                invokeGlobal("RemoveLike",postCurrent.id,postCurrent.userview.id)
             }else{
                 const likeDTO = new LikeDTO();
                 likeDTO.postId = postCurrent.id;
@@ -54,6 +57,7 @@ export default function PostsProfile({email}:Props){
                 try{
                     const response = await PostAddLike(likeDTO);
                     MutatePost()
+                    invokeGlobal("AddLike",postCurrent.id,postCurrent.userview.id)
                 }catch(err){
                     console.log("Erro ao adicionar o like:", err)
                 } 

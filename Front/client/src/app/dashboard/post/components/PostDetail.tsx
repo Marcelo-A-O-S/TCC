@@ -20,11 +20,13 @@ import { AnswerView, IAnswerView } from "@/ViewModel/AnswerView"
 import Link from "next/link"
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react"
+import { useSignalR } from "@/hooks/useSignalR"
 type Props = {
     Id: number
 }
 export default function PostDetail({ Id }: Props) {
     const { data: userSession } = useSession();
+    const {invokeGlobal} = useSignalR()
     const { data: userData } = useGetByEmail(userSession?.user?.email || "");
     const { data, error, isLoading, isValidating, mutate } = useGetPostById(Id?Id:0)
     const router = useRouter()
@@ -122,6 +124,7 @@ export default function PostDetail({ Id }: Props) {
                 if (likeCurrent !== undefined) {
                     await PostRemoveLike(likeCurrent.id);
                     mutate();
+                    invokeGlobal("RemoveLike",postDetail.id,postDetail.userview.id)
                 } else {
                     const likeDTO = new LikeDTO();
                     likeDTO.postId = postDetail.id;
@@ -130,6 +133,7 @@ export default function PostDetail({ Id }: Props) {
                     try {
                         const response = await PostAddLike(likeDTO);
                         mutate()
+                        invokeGlobal("AddLike",postDetail.id,postDetail.userview.id)
                     } catch (err) {
                         console.log("Erro ao adicionar o like:", err)
                     }

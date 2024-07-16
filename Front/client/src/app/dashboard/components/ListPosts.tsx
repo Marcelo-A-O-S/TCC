@@ -14,24 +14,28 @@ import ImgHeartSelected from "../../../assets/heartSelected.svg"
 import { UserContext } from "@/contexts/UserContext";
 import { LikeDTO } from "@/DTOs/LikeDTO";
 import { useRouter } from "next/navigation";
+import { useSignalR } from "@/hooks/useSignalR";
+import { useSession } from "next-auth/react";
 export default function ListPosts(){
     const router = useRouter()
-    const {user:userContext} = useContext(UserContext)
+    const {invokeGlobal} = useSignalR()
+    const {data:userContext} = useSession()
     const { data, error, isValidating, isLoading,mutate } = useGetAllPosts()
     const [ posts, setPosts] = useState<Array<PostView>>([]);
-    const { data: user} = useGetByEmail(userContext?.email || "");
+    const { data: user} = useGetByEmail(userContext?.user?.email || "");
     useEffect(()=>{
         setPosts(data)
     },[data])
     const LikePost = async(postId: number) =>{
         const postCurrent = posts.find(x=> x.id == postId);
         if(postCurrent != undefined){
-            if(userContext){
-                const userCurrent = await GetUserByEmail(userContext.email);
+            if(userContext && userContext.user && userContext.user.email){
+                const userCurrent = await GetUserByEmail(userContext.user.email);
                 const likeCurrent = postCurrent.likeViews.find(x=> x.userId == user?.id);
                 if(likeCurrent !== undefined){
                     await PostRemoveLike(likeCurrent.id);
                     mutate();
+                    invokeGlobal("RemoveLike",postCurrent.id,postCurrent.userview.id)
                 }else{
                     const likeDTO = new LikeDTO();
                     likeDTO.postId = postCurrent.id;
@@ -40,6 +44,7 @@ export default function ListPosts(){
                     try{
                         const response = await PostAddLike(likeDTO);
                         mutate()
+                        invokeGlobal("AddLike",postCurrent.id,postCurrent.userview.id)
                     }catch(err){
                         console.log("Erro ao adicionar o like:", err)
                     } 
