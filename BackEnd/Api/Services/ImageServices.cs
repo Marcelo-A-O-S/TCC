@@ -33,6 +33,11 @@ namespace Api.Services
             return await this.imageRepository.FindBy(predicate);
         }
 
+        public async Task<Image> FindByGuid(string guid)
+        {
+            return await this.imageRepository.FindBy(image=> image.imageGuid == guid);
+        }
+
         public async Task<Image> FindById(int Id)
         {
             return await this.imageRepository.GetById(Id);

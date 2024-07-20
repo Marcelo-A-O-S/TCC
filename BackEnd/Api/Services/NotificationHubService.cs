@@ -3,7 +3,7 @@ namespace Api.Services
 {
     public class NotificationHubService : Hub
     {
-        public override async Task OnConnectedAsync(){
+        public override async Task OnConnectedAsync (){
             await Clients.All.SendAsync("OnConnected",$"{Context.ConnectionId}: Conectou ao chat");
             await base.OnConnectedAsync();
         }
@@ -32,10 +32,10 @@ namespace Api.Services
                 throw;
             }
         }
-        public async Task UpdatePost(int userId){
+        public async Task UpdatePost(int postId, int userId){
             try
             {
-                await Clients.All.SendAsync("UpdatePost", userId);
+                await Clients.All.SendAsync("UpdatePost",postId, userId);
             }
             catch (Exception ex)
             {
@@ -54,10 +54,10 @@ namespace Api.Services
                 throw;
             }
         }
-        public async Task AddComment(int postId, string comment){
+        public async Task AddComment(int postId, int userId){
             try
             {
-                await Clients.All.SendAsync("AddComment", postId,comment);
+                await Clients.All.SendAsync("AddComment", postId,userId);
             }
             catch (Exception ex)
             {
@@ -65,10 +65,54 @@ namespace Api.Services
                 throw;
             }
         }
-        public async Task AddAnswer(string email, string answer){
+        public async Task UpdateComment(int postId, int userId){
             try
             {
-                await Clients.All.SendAsync("AddAnswer",email,answer);
+                await Clients.All.SendAsync("UpdateComment", postId,userId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in AddPost: {ex.Message}");
+                throw;
+            }
+        }
+        public async Task RemoveComment(int postId, int userId){
+            try
+            {
+                await Clients.All.SendAsync("RemoveComment", postId,userId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in AddPost: {ex.Message}");
+                throw;
+            }
+        }
+        public async Task AddAnswer(int postId, int userId){
+            try
+            {
+                await Clients.All.SendAsync("AddAnswer",postId,userId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in AddPost: {ex.Message}");
+                throw;
+            }
+        }
+        public async Task UpdateAnswer(int postId, int userId){
+            try
+            {
+                await Clients.All.SendAsync("UpdateAnswer",postId,userId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in AddPost: {ex.Message}");
+                throw;
+            }
+        }
+         public async Task RemoveAnswer(int postId, int userId){
+            try
+            {
+                await Clients.All.SendAsync("RemoveAnswer",postId,userId);
             }
             catch (Exception ex)
             {
@@ -79,7 +123,6 @@ namespace Api.Services
         public async Task AddLike(int postId, int userId){
             try
             {
-                Console.WriteLine($"AddLike called with postId: {postId}, userId: {userId}");
                 await Clients.All.SendAsync("AddLike", postId, userId);
             }
             catch (Exception ex)
@@ -91,7 +134,6 @@ namespace Api.Services
         public async Task RemoveLike(int postId, int userId){
             try
             {
-                Console.WriteLine($"RemoveLike called with postId: {postId}, userId: {userId}");
                 await Clients.All.SendAsync("RemoveLike", postId, userId);
             }
             catch (Exception ex)

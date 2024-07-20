@@ -3,7 +3,11 @@ import { ChangeEvent, useEffect, useState } from "react"
 import IcoChatBallon from "../../../../assets/balaochat.svg"
 import IcoHeartLike from "../../../../assets/heartlike.svg"
 import ImgHeartSelected from "../../../../assets/heartSelected.svg"
-import { PostAddLike, PostRemoveLike, useGetPostById, PostAddComment, PostAddAnswer, PostDeleteCommentById, DeletePostById, PostDeleteAnswerById } from "@/data/post"
+import { useGetPostById } from "@/hooks/usePost"
+import commentServices from "@/services/commentServices"
+import answerServices from "@/services/answerServices"
+import postServices from "@/services/postServices"
+import likeServices from "@/services/likeServices"
 import styles from "../post.module.css"
 import Image from "next/image";
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -21,6 +25,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react"
 import { useSignalR } from "@/hooks/useSignalR"
+import PostNotFound from "../../profile/components/PostNotFound"
 type Props = {
     Id: number
 }
@@ -56,7 +61,8 @@ export default function PostDetail({ Id }: Props) {
         id: 0,
         title: "",
         userview: new UserAuthentication(),
-        dateCreate: ""
+        dateCreate: "",
+        guid: ""
     })
     useEffect(() => {
         if (data) {
@@ -76,10 +82,10 @@ export default function PostDetail({ Id }: Props) {
                             answer: itemAnswer.answer,
                             commentId: itemAnswer.commentId,
                             user: responseUserAnswer,
-                            answerGuid: "",
-                            userId: responseUserAnswer
+                            guid: itemAnswer.guid,
+                            userId: responseUserAnswer,
+                            dateCreate: itemAnswer.dateCreate
                         }
-
                         return answer;
                     }
 
@@ -91,9 +97,10 @@ export default function PostDetail({ Id }: Props) {
                     user: responseUserComment,
                     comment: element.comment,
                     answers: answers,
-                    commentGuid: "",
+                    guid: element.guid,
                     postId: element.postId,
-                    userId: responseUserComment.id
+                    userId: responseUserComment.id,
+                    dateCreate: element.dateCreate
                 }
                 return userComment;
             }
@@ -112,7 +119,8 @@ export default function PostDetail({ Id }: Props) {
             likeViews: data.likeViews,
             commentViews: comments,
             imagesViews: data.imagesViews,
-            dateCreate: data.dateCreate
+            dateCreate: data.dateCreate,
+            guid: data.guid,
         }
         setPostDetail(postbody);
     }
@@ -122,7 +130,7 @@ export default function PostDetail({ Id }: Props) {
                 const userCurrent = await GetUserByEmail(userSession.user?.email as string);
                 const likeCurrent = postDetail.likeViews.find(x => x.userId == userCurrent?.id);
                 if (likeCurrent !== undefined) {
-                    await PostRemoveLike(likeCurrent.id);
+                    await likeServices.RemoveLike(likeCurrent.id);
                     mutate();
                     invokeGlobal("RemoveLike",postDetail.id,postDetail.userview.id)
                 } else {
@@ -131,7 +139,7 @@ export default function PostDetail({ Id }: Props) {
                     likeDTO.userId = userCurrent?.id as number;
                     likeDTO.generatedGuid()
                     try {
-                        const response = await PostAddLike(likeDTO);
+                        const response = await likeServices.AddLike(likeDTO);
                         mutate()
                         invokeGlobal("AddLike",postDetail.id,postDetail.userview.id)
                     } catch (err) {
@@ -177,6 +185,7 @@ export default function PostDetail({ Id }: Props) {
                 answerDTO.id = answerState.answerId;
                 answerDTO.commentId = answerState.commentId;
                 answerDTO.answer = answerState.answer;
+                answerDTO.generatedGuid()
                 if (userData !== undefined) {
                     answerDTO.userId = userData.id
                 }
@@ -188,7 +197,7 @@ export default function PostDetail({ Id }: Props) {
                     answerDTO.userId = userData.id
                 }
             }
-            const response = await PostAddAnswer(answerDTO);
+            const response = await answerServices.AddAnswer(answerDTO);
             if (response.status === 200) {
                 mutate()
                 CancelResponse()
@@ -210,7 +219,7 @@ export default function PostDetail({ Id }: Props) {
                     commentDto.userId = userData.id;
                 }
             }
-            const response = await PostAddComment(commentDto);
+            const response = await commentServices.AddComment(commentDto);
             if (response.status == 200) {
                 mutate()
                 CancelResponse()
@@ -218,7 +227,7 @@ export default function PostDetail({ Id }: Props) {
         }
     }
     const DeleteComment = async (commentId: number) => {
-        const response = await PostDeleteCommentById(commentId)
+        const response = await commentServices.DeleteCommentById(commentId)
         if(response.status === 200){
             mutate()
         }
@@ -337,7 +346,7 @@ export default function PostDetail({ Id }: Props) {
         }
     }
     const DeleteAnswer= async(answerId:number)=>{
-        const response = await PostDeleteAnswerById(answerId);
+        const response = await answerServices.DeleteAnswerById(answerId);
         if(response.status === 200){
             mutate()
         }
@@ -346,9 +355,20 @@ export default function PostDetail({ Id }: Props) {
         router.push(`/dashboard/manage_post?edit=${postId}`)
     }
     const DeletePost = async(postId: number) =>{
-        await DeletePostById(postId);
+        await postServices.DeletePostById(postId);
         await mutate()
         router.push(`/dashboard/profile?email=${userData?.email}`)
+    }
+    if(!data){
+        return(
+            <main className={styles.main}>
+                <section className={styles.pagePost}>
+                    <div className={styles.post}>
+                        <PostNotFound/>
+                    </div>
+                </section>
+            </main>
+        )
     }
     if (!postDetail) {
         <main className={styles.main}>

@@ -7,6 +7,7 @@ namespace Api.Models
     {
         [Key]
         public int Id { get; set; }
+        public string guid { get; set; }
         public string comment { get; set; }
         //public string commentGuid {get; set;}
         public User user { get; set; }
@@ -17,5 +18,12 @@ namespace Api.Models
         public int postId { get; set; }
         
         public List<Answer> answers { get; set; }
+
+        public DateTime dateCreate { get; set; }
+
+        public Comment(){
+            this.dateCreate = DateTime.Now;
+            this.answers = new List<Answer>();
+        }
     }
 }

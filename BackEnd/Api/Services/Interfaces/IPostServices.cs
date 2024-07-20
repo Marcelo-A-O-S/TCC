@@ -1,4 +1,5 @@
 ﻿using Api.Models;
+using Api.ViewModel;
 
 namespace Api.Services.Interfaces
 {
@@ -11,6 +12,12 @@ namespace Api.Services.Interfaces
         Task<List<Posts>> ListDescendingByDateCreate(DateTime datecreate);
 
         Task<List<Posts>> ListDescending();
+
+        Task<List<PostViewModel>> GetAllPostViewModelDescendingByUserId(int userId);
+
+        Task<PostViewModel> GetPostViewModelById(int id);
+
+        Task<List<PostViewModel>> GetPostViews();
         
     }
 }

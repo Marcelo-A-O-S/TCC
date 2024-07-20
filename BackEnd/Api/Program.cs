@@ -28,7 +28,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "TCC",
         Version = "v1",
-        Description = "Api feita gerenciamento de dados de uma aplica��o.",
+        Description = "Api feita gerenciamento de dados de uma aplicação.",
         Contact = new OpenApiContact()
         {
 
@@ -38,8 +38,8 @@ builder.Services.AddSwaggerGen(options =>
     });
     options.AddSecurityDefinition("Authentication", new OpenApiSecurityScheme()
     {
-        Description = "Para realizar testes de autentica��o na api",
-        Name = "Autentica��o",
+        Description = "Para realizar testes de autenticação na api",
+        Name = "Autenticação",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey
     });
@@ -57,6 +57,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = false,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("JwtKey:Key").Value))
         };
+/*         options.Events = new JwtBearerEvents{
+            OnMessageReceived = context =>{
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) && 
+                path.StartsWithSegments("/notifications"))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+        }; */
     });
 builder.Services.AddDbContext<AppDbContext>(options => 
 {

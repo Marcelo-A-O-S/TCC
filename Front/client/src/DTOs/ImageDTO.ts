@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 export class ImageDTO{
     id:number;
     image:string;
@@ -11,12 +12,7 @@ export class ImageDTO{
         this.description = "";
         this.imageGuid = "";
     }
+    generatedGuid(){
+        this.imageGuid = uuidv4();
+    }
 }
-/* public class ImageDTO
-{
-    public int Id { get; set; }
-    public string image { get; set; }
-    public string type { get; set; }
-    public string imageGuid { get; set; }
-    public string Description { get; set; }
-} */

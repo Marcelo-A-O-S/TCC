@@ -6,6 +6,7 @@ import { LikeView } from "@/ViewModel/LikeView";
 
 export interface IPost{
     Id: number;
+    guid: string;
     user:UserAuthentication;
     title: string;
     description: string;
@@ -21,6 +22,7 @@ export class Post implements IPost{
     images: ImagePost[];
     comments: CommentPost[];
     likes: LikeView[];
+    guid: string;
     constructor(){
         this.Id = 0;
         this.user = new UserAuthentication();
@@ -29,7 +31,6 @@ export class Post implements IPost{
         this.images = [];
         this.comments = [];
         this.likes = [];
+        this.guid = "";
     }
-    
-
 }

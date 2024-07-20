@@ -5,7 +5,6 @@ import styles from "./new.module.css"
 import { useRef } from "react";
 import IcoClose from "../../../assets/closeico.svg"
 import Image from "next/image";
-import { Post } from "@/models/Post";
 import { UserAuthentication } from "@/models/UserAuthentication";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
@@ -13,10 +12,12 @@ import Link from "next/link";
 import { PostDTO } from "@/DTOs/PostDTO";
 import { ImageDTO } from "@/DTOs/ImageDTO";
 import { useGetByEmail } from "@/data/users";
-import { CreatePost,useGetPostById } from "@/data/post";
+import postServices from "@/services/postServices";
+import { useGetPostById } from "@/hooks/usePost";
 import ImgSuccess from "../../../assets/success.svg"
 import ImgFailed from "../../../assets/failed.svg"
 import { useSession } from "next-auth/react";
+import { PostView } from "@/ViewModel/PostView";
 type Props = {
     params: { edit: string }
     searchParams: { edit: string }
@@ -35,36 +36,38 @@ export default function ManagerPost({searchParams}:Props){
         type:""
     });
     const [openModal, setOpenModal] = useState(false);
-    const [modelPost, setModelPost] = useState<Post>({
-        images: [],
-        comments: [],
+    const [modelPost, setModelPost] = useState<PostView>({
+        imagesViews: [],
+        commentViews: [],
         description: "",
-        Id: 0,
+        id: 0,
         title: "",
-        user: {} as UserAuthentication,
-        likes: []
-    } as Post);
+        userview: {} as UserAuthentication,
+        likeViews: [],
+        dateCreate: "",
+        guid: ""
+    } as PostView);
     const [modalResponse, setModalResponse] = useState({
         status:0,
         message:""
     })
     useEffect(()=>{
         if(post !== undefined){
-            console.log(post)
-            console.log(post.commentViews)
             setModelPost({
-                comments : post.commentViews,
+                commentViews : post.commentViews,
                 description: post.description,
-                Id: post.id,
-                images: post.imagesViews,
+                id: post.id,
+                imagesViews: post.imagesViews,
                 title: post.title,
-                user:{
+                userview:{
                     email: post.userview.email,
                     id: post.userview.id,
                     username: post.userview.username,
                     token: post.userview.token
                 },
-                likes: post.likeViews
+                likeViews: post.likeViews,
+                guid: post.guid,
+                dateCreate:post.dateCreate
             })
         }
     },[post])
@@ -132,11 +135,11 @@ export default function ManagerPost({searchParams}:Props){
             modelImage.image = imgPost.image;
             modelImage.type = imgPost.type;
             modelImage.GenerateGuid()
-            modelPost.images.push(modelImage);
+            modelPost.imagesViews.push(modelImage);
             setModelPost(modelPost);
         }
         if(imgPost.imageGuid != ""){
-            const imageUpdate = modelPost.images.find(x=> x.imageGuid == imgPost.imageGuid);
+            const imageUpdate = modelPost.imagesViews.find(x=> x.imageGuid == imgPost.imageGuid);
             if(imageUpdate){
                 imageUpdate.description = imgPost.description;
                 imageUpdate.id = imgPost.id;
@@ -146,7 +149,7 @@ export default function ManagerPost({searchParams}:Props){
             }
 
         }
-        console.log(modelPost.images)
+        console.log(modelPost.imagesViews)
         
         setImgPost(prevState =>{
             return{
@@ -160,17 +163,17 @@ export default function ManagerPost({searchParams}:Props){
         CloseModal()
     }
     const RemoveCard = (imageGuid: string) =>{
-        const cards = modelPost.images.filter(x => x.imageGuid != imageGuid);
+        const cards = modelPost.imagesViews.filter(x => x.imageGuid != imageGuid);
         setModelPost(prevState =>{
             return {
                 ...prevState,
                 images: cards
             }
         }) 
-        console.log(modelPost.images)
+        console.log(modelPost.imagesViews)
     }
     const UpdateCard = (imageGuid: string) =>{
-        const cardCurrent = modelPost.images.find(x=> x.imageGuid == imageGuid);
+        const cardCurrent = modelPost.imagesViews.find(x=> x.imageGuid == imageGuid);
         //const cards = modelPost.images.filter(x=> x.imageGuid != imageGuid);
         if(cardCurrent !== undefined){
             setImgPost(prevState=>{
@@ -188,10 +191,10 @@ export default function ManagerPost({searchParams}:Props){
     async function SubmitForm(event: FormEvent<HTMLFormElement>){
         event.preventDefault();
         const postDto = new PostDTO()
-        postDto.id = modelPost.Id;
+        postDto.id = modelPost.id;
         postDto.title = modelPost.title;
         postDto.description = modelPost.description;
-        modelPost.images.map((image) =>{
+        modelPost.imagesViews.map((image) =>{
             const imageDTO = new ImageDTO();
             imageDTO.id = image.id;
             imageDTO.description = image.description;
@@ -206,7 +209,7 @@ export default function ManagerPost({searchParams}:Props){
             }
         }
         try{
-            const response = await CreatePost(postDto);
+            const response = await postServices.CreatePost(postDto);
             if(response.status == 200){
                 setModalResponse({
                     status: response.status,
@@ -229,13 +232,15 @@ export default function ManagerPost({searchParams}:Props){
             message:""
         })
         setModelPost({
-            comments: [],
+            commentViews: [],
             description: "",
-            Id:0,
-            images: [],
+            id:0,
+            imagesViews: [],
             title: "",
-            user: {} as UserAuthentication,
-            likes: []
+            userview: {} as UserAuthentication,
+            likeViews: [],
+            dateCreate: "",
+            guid: ""
         })
     }
     return(
@@ -309,11 +314,11 @@ export default function ManagerPost({searchParams}:Props){
                             pagination={{clickable:true}}
                             navigation
                             >
-                              {modelPost.images.length == 0?
+                              {modelPost.imagesViews.length == 0?
                               <SwiperSlide>
                                 <p className={styles.images_notFound}>Não foi adicionada nenhuma imagem! :(</p>
                               </SwiperSlide>
-                              :modelPost.images.map((imageItem=>{
+                              :modelPost.imagesViews.map((imageItem=>{
                                 return(
                                 <>
                                 <SwiperSlide className={styles.card_image} key={imageItem.id}>

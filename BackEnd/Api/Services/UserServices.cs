@@ -34,6 +34,11 @@ namespace Api.Services
             return await this.repository.FindBy(predicate);
         }
 
+        public Task<User> FindByGuid(string guid)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<User> FindById(int Id)
         {
             return await this.repository.GetById(Id);

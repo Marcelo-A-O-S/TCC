@@ -43,6 +43,11 @@ namespace Api.Services
             return await this.answerRepository.FindBy(x => x.commentId == commentId);
         }
 
+        public async Task<Answer> FindByGuid(string guid)
+        {
+            return await this.answerRepository.FindBy(answer => answer.guid == guid);
+        }
+
         public async Task<Answer> FindById(int Id)
         {
             return await this.answerRepository.GetById(Id);

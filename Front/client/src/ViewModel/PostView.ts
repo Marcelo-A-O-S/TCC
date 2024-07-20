@@ -4,6 +4,7 @@ import { ImagesView } from "./ImagesView";
 import { LikeView } from "./LikeView";
 export interface IPostView{
     id: number;
+    guid:string;
     title:string;
     description:string;
     likeViews:Array<LikeView>;
@@ -15,6 +16,7 @@ export interface IPostView{
 
 export class PostView implements IPostView{
     public id: number;
+    public guid: string;
     public title:string;
     public description:string;
     public likeViews:Array<LikeView>;
@@ -30,7 +32,7 @@ export class PostView implements IPostView{
         this.imagesViews = new Array<ImagesView>();
         this.userview = new UserAuthentication();
         this.commentViews = new Array<CommentView>();
-        this.dateCreate = ""
-
+        this.dateCreate = "";
+        this.guid= "";
     }
 }

@@ -7,8 +7,12 @@ const fetcherGet = async( url: string) =>{
 }
 const fetcherServerGet = async( url: string) =>{
     const api = await privateServerApi()
-    const response = await api.get(url);
-    return response.data
+    try{
+        const response = await api.get(url);
+        return response.data
+    }catch(err){
+        console.log(err)
+    }
 }
 const fetcherPost = async(url:string, body:any) =>{
     const api = privateApi();

@@ -38,6 +38,8 @@ namespace Api.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    guid = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     title = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     description = table.Column<string>(type: "longtext", nullable: false)
@@ -63,10 +65,13 @@ namespace Api.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    guid = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     comment = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     userId = table.Column<int>(type: "int", nullable: false),
-                    postId = table.Column<int>(type: "int", nullable: false)
+                    postId = table.Column<int>(type: "int", nullable: false),
+                    dateCreate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -120,7 +125,7 @@ namespace Api.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Guid = table.Column<string>(type: "longtext", nullable: false)
+                    guid = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     userId = table.Column<int>(type: "int", nullable: false),
                     postId = table.Column<int>(type: "int", nullable: false)
@@ -149,10 +154,14 @@ namespace Api.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    guid = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     answer = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    postsId = table.Column<int>(type: "int", nullable: false),
                     userId = table.Column<int>(type: "int", nullable: false),
-                    commentId = table.Column<int>(type: "int", nullable: false)
+                    commentId = table.Column<int>(type: "int", nullable: false),
+                    dateCreate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -161,6 +170,12 @@ namespace Api.Migrations
                         name: "FK_answers_comments_commentId",
                         column: x => x.commentId,
                         principalTable: "comments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_answers_posts_postsId",
+                        column: x => x.postsId,
+                        principalTable: "posts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -178,11 +193,17 @@ namespace Api.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Viewed = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    guid = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     userId = table.Column<int>(type: "int", nullable: false),
-                    postId = table.Column<int>(type: "int", nullable: true),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    SourceUserId = table.Column<int>(type: "int", nullable: false),
+                    postsId = table.Column<int>(type: "int", nullable: false),
                     commentId = table.Column<int>(type: "int", nullable: true),
-                    answerId = table.Column<int>(type: "int", nullable: true)
+                    answerId = table.Column<int>(type: "int", nullable: true),
+                    likeId = table.Column<int>(type: "int", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IsRead = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -198,10 +219,22 @@ namespace Api.Migrations
                         principalTable: "comments",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_notifications_posts_postId",
-                        column: x => x.postId,
-                        principalTable: "posts",
+                        name: "FK_notifications_likes_likeId",
+                        column: x => x.likeId,
+                        principalTable: "likes",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_notifications_posts_postsId",
+                        column: x => x.postsId,
+                        principalTable: "posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_notifications_users_SourceUserId",
+                        column: x => x.SourceUserId,
+                        principalTable: "users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_notifications_users_userId",
                         column: x => x.userId,
@@ -215,6 +248,11 @@ namespace Api.Migrations
                 name: "IX_answers_commentId",
                 table: "answers",
                 column: "commentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_answers_postsId",
+                table: "answers",
+                column: "postsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_answers_userId",
@@ -257,9 +295,19 @@ namespace Api.Migrations
                 column: "commentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_notifications_postId",
+                name: "IX_notifications_likeId",
                 table: "notifications",
-                column: "postId");
+                column: "likeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_notifications_postsId",
+                table: "notifications",
+                column: "postsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_notifications_SourceUserId",
+                table: "notifications",
+                column: "SourceUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_notifications_userId",
@@ -278,13 +326,13 @@ namespace Api.Migrations
                 name: "images");
 
             migrationBuilder.DropTable(
-                name: "likes");
-
-            migrationBuilder.DropTable(
                 name: "notifications");
 
             migrationBuilder.DropTable(
                 name: "answers");
+
+            migrationBuilder.DropTable(
+                name: "likes");
 
             migrationBuilder.DropTable(
                 name: "comments");

@@ -32,12 +32,24 @@ namespace Api.Migrations
                     b.Property<int>("commentId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("dateCreate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("guid")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("postsId")
+                        .HasColumnType("int");
+
                     b.Property<int>("userId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("commentId");
+
+                    b.HasIndex("postsId");
 
                     b.HasIndex("userId");
 
@@ -51,6 +63,13 @@ namespace Api.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("comment")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("dateCreate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("guid")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -107,7 +126,7 @@ namespace Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("Guid")
+                    b.Property<string>("guid")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -132,8 +151,17 @@ namespace Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<bool>("Viewed")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsRead")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("SourceUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.Property<int?>("answerId")
                         .HasColumnType("int");
@@ -141,7 +169,14 @@ namespace Api.Migrations
                     b.Property<int?>("commentId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("postId")
+                    b.Property<string>("guid")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("likeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("postsId")
                         .HasColumnType("int");
 
                     b.Property<int>("userId")
@@ -149,11 +184,15 @@ namespace Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("SourceUserId");
+
                     b.HasIndex("answerId");
 
                     b.HasIndex("commentId");
 
-                    b.HasIndex("postId");
+                    b.HasIndex("likeId");
+
+                    b.HasIndex("postsId");
 
                     b.HasIndex("userId");
 
@@ -170,6 +209,10 @@ namespace Api.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("guid")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -218,6 +261,12 @@ namespace Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Api.Models.Posts", "posts")
+                        .WithMany()
+                        .HasForeignKey("postsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Api.Models.User", "user")
                         .WithMany()
                         .HasForeignKey("userId")
@@ -225,6 +274,8 @@ namespace Api.Migrations
                         .IsRequired();
 
                     b.Navigation("comment");
+
+                    b.Navigation("posts");
 
                     b.Navigation("user");
                 });
@@ -262,7 +313,7 @@ namespace Api.Migrations
             modelBuilder.Entity("Api.Models.Like", b =>
                 {
                     b.HasOne("Api.Models.Posts", "post")
-                        .WithMany()
+                        .WithMany("likes")
                         .HasForeignKey("postId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -280,6 +331,12 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Notification", b =>
                 {
+                    b.HasOne("Api.Models.User", "SourceUser")
+                        .WithMany()
+                        .HasForeignKey("SourceUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Api.Models.Answer", "answer")
                         .WithMany()
                         .HasForeignKey("answerId");
@@ -288,9 +345,15 @@ namespace Api.Migrations
                         .WithMany()
                         .HasForeignKey("commentId");
 
-                    b.HasOne("Api.Models.Posts", "post")
+                    b.HasOne("Api.Models.Like", "like")
                         .WithMany()
-                        .HasForeignKey("postId");
+                        .HasForeignKey("likeId");
+
+                    b.HasOne("Api.Models.Posts", "posts")
+                        .WithMany()
+                        .HasForeignKey("postsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Api.Models.User", "user")
                         .WithMany()
@@ -298,11 +361,15 @@ namespace Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("SourceUser");
+
                     b.Navigation("answer");
 
                     b.Navigation("comment");
 
-                    b.Navigation("post");
+                    b.Navigation("like");
+
+                    b.Navigation("posts");
 
                     b.Navigation("user");
                 });
@@ -328,6 +395,8 @@ namespace Api.Migrations
                     b.Navigation("comments");
 
                     b.Navigation("images");
+
+                    b.Navigation("likes");
                 });
 #pragma warning restore 612, 618
         }

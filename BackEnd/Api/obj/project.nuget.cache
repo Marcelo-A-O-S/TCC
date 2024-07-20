@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "yKqhBFsED5ItXT2pjq19aXJCIBjYpPNrecET2zdG9DwfLIMo3lhSRqsdNXq8yxTAduJE0N1Kds47LOCEYSDE/A==",
+  "dgSpecHash": "AGtBTXVNClNLayi5+xVDWB29kLYoC9rtEnYiaSrFrF+svQJ03P5R8sXSV2wU1/8+dU9UmXQhlLAylMN+lCvkCQ==",
   "success": true,
-  "projectFilePath": "d:\\TCC\\BackEnd\\Api\\Api.csproj",
+  "projectFilePath": "D:\\TCC\\BackEnd\\Api\\Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\marce\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\marce\\.nuget\\packages\\microsoft.aspnetcore.authentication.abstractions\\2.2.0\\microsoft.aspnetcore.authentication.abstractions.2.2.0.nupkg.sha512",

@@ -1,7 +1,8 @@
 'use client'
-import { useGetAllPosts, PostRemoveLike, PostAddLike } from "@/data/post";
+import { useGetAllPosts } from "@/hooks/usePost";
+import LikeServices from "@/services/likeServices"
 import { useGetByEmail ,GetUserByEmail} from "@/data/users";
-import { useEffect, useState, useContext} from "react";
+import { useEffect, useState} from "react";
 import styles from "./posts.module.css"
 import IcoChatBallon from "../../../assets/balaochat.svg"
 import IcoHeartLike from "../../../assets/heartlike.svg"
@@ -11,11 +12,11 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import Link from "next/link";
 import ImgHeartSelected from "../../../assets/heartSelected.svg"
-import { UserContext } from "@/contexts/UserContext";
 import { LikeDTO } from "@/DTOs/LikeDTO";
 import { useRouter } from "next/navigation";
 import { useSignalR } from "@/hooks/useSignalR";
 import { useSession } from "next-auth/react";
+import PostNotFound from "../profile/components/PostNotFound";
 export default function ListPosts(){
     const router = useRouter()
     const {invokeGlobal} = useSignalR()
@@ -24,7 +25,9 @@ export default function ListPosts(){
     const [ posts, setPosts] = useState<Array<PostView>>([]);
     const { data: user} = useGetByEmail(userContext?.user?.email || "");
     useEffect(()=>{
-        setPosts(data)
+        if(data != undefined){
+            setPosts(data)
+        }
     },[data])
     const LikePost = async(postId: number) =>{
         const postCurrent = posts.find(x=> x.id == postId);
@@ -33,7 +36,7 @@ export default function ListPosts(){
                 const userCurrent = await GetUserByEmail(userContext.user.email);
                 const likeCurrent = postCurrent.likeViews.find(x=> x.userId == user?.id);
                 if(likeCurrent !== undefined){
-                    await PostRemoveLike(likeCurrent.id);
+                    await LikeServices.RemoveLike(likeCurrent.id);
                     mutate();
                     invokeGlobal("RemoveLike",postCurrent.id,postCurrent.userview.id)
                 }else{
@@ -42,7 +45,7 @@ export default function ListPosts(){
                     likeDTO.userId = userCurrent?.id as number;
                     likeDTO.generatedGuid()
                     try{
-                        const response = await PostAddLike(likeDTO);
+                        const response = await LikeServices.AddLike(likeDTO);
                         mutate()
                         invokeGlobal("AddLike",postCurrent.id,postCurrent.userview.id)
                     }catch(err){
@@ -70,6 +73,17 @@ export default function ListPosts(){
             </>
             )
         }
+    if(posts.length == 0){
+        return(
+            <div className={styles.container_posts}>
+                <div className={styles.posts}>
+                    <div className={styles.post}>
+                        <PostNotFound/>
+                    </div>
+                </div>
+            </div>
+        )
+    }
     return(
     <>
     <div className={styles.container_posts}>

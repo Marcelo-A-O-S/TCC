@@ -1,17 +1,27 @@
 import { Metadata } from "next";
-import { GetPostById } from "@/data/post";
+import postServices from "@/services/postServices";
 import PostDetail from "../components/PostDetail";
 type Props = {
     params: { postId: number }
 }
 export async function generateMetadata({params}: Props){
     const postId = params.postId;
-    const response = await GetPostById(postId);
-    const metadata : Metadata ={
-        title: response.title,
-        description: response.description
+    const response = await postServices.GetPostById(postId);
+    if(response != undefined){
+        const metadata : Metadata ={
+            title: response.title,
+            description: response.description
+        }
+        return metadata
+    }else{
+        const metadata : Metadata ={
+            title: "Not found",
+            description: "Nada encontrado"
+        }
+        return metadata
     }
-    return metadata
+    
+    
 }
 export default function PostPage({params}:Props){
     const postId = params.postId;

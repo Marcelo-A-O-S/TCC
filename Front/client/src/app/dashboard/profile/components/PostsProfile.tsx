@@ -1,5 +1,7 @@
 'use client'
-import { DeletePostById, PostAddLike, PostRemoveLike, useGetPostByUserId } from "@/data/post";
+import { useGetPostByUserId } from "@/hooks/usePost";
+import postServices from "@/services/postServices";
+import likeServices from "@/services/likeServices";
 import { GetUserByEmail, useGetByEmail } from "@/data/users";
 import { UserContext } from "@/contexts/UserContext";
 import { LikeDTO } from "@/DTOs/LikeDTO";
@@ -13,11 +15,14 @@ import IcoHeartLike from "../../../../assets/heartlike.svg"
 import ImgHeartSelected from "../../../../assets/heartSelected.svg"
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import Image from "next/image";
+import ManagerProfile from "./ManagerProfile";
 import NotFoundUser from "../components/NotFoundUser";
 import Link from "next/link";
 import styles from "../profile.module.css"
 import { useSession } from "next-auth/react";
 import { useSignalR } from "@/hooks/useSignalR";
+import PostNotFound from "./PostNotFound";
+import PostDetailProfile from "./PostDetailProfile";
 type Props = {
     email: any
 }
@@ -30,23 +35,25 @@ export default function PostsProfile({email}:Props){
   const [ postsProfile, setPostsProfile] = useState<Array<PostView>>([])
   const router = useRouter()
   useEffect(()=>{
-    setPostsProfile(posts)
+    if(posts != undefined){
+      setPostsProfile(posts)
+    }
   },[posts])
-  const EditPost = (postId: number) =>{
+  const EditPost = async (postId: number) =>{
     router.push(`/dashboard/manage_post?edit=${postId}`)
   }
   const DeletePost = async(postId: number) =>{
-    await DeletePostById(postId);
+    await postServices.DeletePostById(postId);
     await MutatePost()
   }
   const LikePost = async(postId: number) =>{
-    const postCurrent = posts.find((x:any )=> x.id == postId);
+    const postCurrent = postsProfile.find(x=> x.id == postId);
     if(postCurrent != undefined){
         if(userContext){
             const userCurrent = await GetUserByEmail(userContext.user?.email as string);
             const likeCurrent = postCurrent.likeViews.find((x:any )=> x.userId == userCurrent?.id);
             if(likeCurrent !== undefined){
-                await PostRemoveLike(likeCurrent.id);
+                await likeServices.RemoveLike(likeCurrent.id);
                 MutatePost();
                 invokeGlobal("RemoveLike",postCurrent.id,postCurrent.userview.id)
             }else{
@@ -55,7 +62,7 @@ export default function PostsProfile({email}:Props){
                 likeDTO.userId = userCurrent?.id as number;
                 likeDTO.generatedGuid()
                 try{
-                    const response = await PostAddLike(likeDTO);
+                    const response = await likeServices.AddLike(likeDTO);
                     MutatePost()
                     invokeGlobal("AddLike",postCurrent.id,postCurrent.userview.id)
                 }catch(err){
@@ -65,7 +72,7 @@ export default function PostsProfile({email}:Props){
         }
     }
 }
-const ViewPost = (postId: number) =>{
+const ViewPost = async (postId: number) =>{
   router.push(`/dashboard/post?postId=${postId}`);
 }
   if(userProfile == undefined){
@@ -87,7 +94,14 @@ const ViewPost = (postId: number) =>{
       <main className={styles.main}>
         <section className={styles.profile}>
           <div className={styles.container_profile}>
-            <div className={styles.manager_profile}>
+            <ManagerProfile
+            userProfile={{
+              email: userProfile.email,
+              username: userProfile.username
+            }}
+            postsQuantity={postsProfile.length}
+            />
+            {/* <div className={styles.manager_profile}>
               <div className={styles.data_profile}>
                 <div >
                     <h1>{userProfile?.username}</h1>
@@ -101,18 +115,24 @@ const ViewPost = (postId: number) =>{
               <div>
                   {userContext?.user?.email == userProfile?.email?<Link href={`manage_post`} className={styles.btn_create}>Criar publicação</Link>:""}
               </div>
-            </div>
+            </div> */}
             <div className={styles.posts}>
                 {postsProfile.length == 0? 
                 <>
-                <div className={styles.not_found}>
-                  <h1>Nada encontrado!</h1>
-                  <Image src={ImgNotFound} alt=""/>
-                  <p>Publique alguma coisa para começar a interagir!:)</p>
-                </div>
+                  <div className={styles.post} >
+                    <PostNotFound/>
+                  </div>
                 </>:postsProfile.map((item)=>{
                   return (
-                    <div className={styles.post} key={item.id}>
+                    <PostDetailProfile
+                    post={item}
+                    DeletePost={DeletePost}
+                    EditPost={EditPost}
+                    LikePost={LikePost}
+                    ViewPost={ViewPost}
+                    userCurrent={userCurrent}
+                    />
+                    /* <div className={styles.post} key={item.id}>
                         <div className={styles.manager_post}>
                           <div className={styles.profile_post}>
                               <h3 className={styles.username}>{item.userview.username}</h3>
@@ -164,7 +184,7 @@ const ViewPost = (postId: number) =>{
                             
                         </div>
                         
-                    </div>)
+                    </div> */)
                 })}
             </div>
           </div>

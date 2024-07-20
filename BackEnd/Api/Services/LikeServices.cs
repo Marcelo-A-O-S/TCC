@@ -30,7 +30,7 @@ namespace Api.Services
 
         public async Task<Like> FindByGuid(string guid)
         {
-            return await this.likeRepository.FindBy(x=> x.Guid == guid);
+            return await this.likeRepository.FindBy(x=> x.guid == guid);
         }
 
         public async Task<Like> FindById(int Id)

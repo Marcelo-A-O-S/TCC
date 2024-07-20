@@ -2,6 +2,7 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { mutate as mutateGlobal } from "swr";
 import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
+import { ROUTE_POST } from "@/utils/constants";
 type ProviderProps = {
     children: ReactNode
 }
@@ -21,7 +22,9 @@ export const SignalRProvider = ({ children }: ProviderProps) => {
     const InitializeConnection = () => {
         if (host != undefined && !connection && data && data.user) {
             const connect = new HubConnectionBuilder()
-                .withUrl(`${host}/notifications`, { withCredentials: false })
+                .withUrl(`${host}/notifications`, { 
+                    withCredentials: false,
+                 })
                 .withAutomaticReconnect()
                 .configureLogging(LogLevel.Information)
                 .build();
@@ -31,45 +34,44 @@ export const SignalRProvider = ({ children }: ProviderProps) => {
                     console.log("Connection started!")
                     connect.on("OnConnected", (message) => {
                         console.log(message);
-                        mutateGlobal("/api/Post/List");
+                        mutateGlobal(ROUTE_POST.LIST);
                     })
                     connect.on("CreatePost", (userId) => {
-                        mutateGlobal("/api/Post/List");
-                        mutateGlobal(`/api/Post/FindByUserId?userId=${userId}`);
+                        mutateGlobal(ROUTE_POST.LIST);
+                        mutateGlobal(ROUTE_POST.FIND_BY_USERID + userId);
                     })
                     connect.on("UpdatePost", (postId, userId) => {
-                        mutateGlobal("/api/Post/List");
-                        mutateGlobal(`/api/Post/FindById?id=${postId}`);
-                        mutateGlobal(`/api/Post/FindByUserId?userId=${userId}`);
+                        mutateGlobal(ROUTE_POST.LIST);
+                        mutateGlobal(ROUTE_POST.FIND_BY_ID + postId);
+                        mutateGlobal(ROUTE_POST.FIND_BY_USERID + userId);
                     })
                     connect.on("DeletePost", (userId) => {
-                        mutateGlobal("/api/Post/List");
-                        mutateGlobal(`/api/Post/FindByUserId?userId=${userId}`);
+                        mutateGlobal(ROUTE_POST.LIST);
+                        mutateGlobal(ROUTE_POST.FIND_BY_USERID + userId);
                     })
                     connect.on("AddLike", (postId, userId) => {
-                        console.log("AddLike triggered", { postId, userId });
                         try {
-                            mutateGlobal("/api/Post/List");
-                            mutateGlobal(`/api/Post/FindById?id=${postId}`);
-                            mutateGlobal(`/api/Post/FindByUserId?userId=${userId}`);
+                            mutateGlobal(ROUTE_POST.LIST);
+                            mutateGlobal(ROUTE_POST.FIND_BY_ID + postId);
+                            mutateGlobal(ROUTE_POST.FIND_BY_USERID + userId);
                         } catch (error) {
                             console.error("Error in AddLike client handler:", error);
                         }
                     })
                     connect.on("RemoveLike", (postId, userId) => {
-                        mutateGlobal("/api/Post/List");
-                        mutateGlobal(`/api/Post/FindById?id=${postId}`);
-                        mutateGlobal(`/api/Post/FindByUserId?userId=${userId}`);
+                        mutateGlobal(ROUTE_POST.LIST);
+                        mutateGlobal(ROUTE_POST.FIND_BY_ID + postId);
+                        mutateGlobal(ROUTE_POST.FIND_BY_USERID + userId);
                     })
                     connect.on("AddComment", (postId, userId) => {
-                        mutateGlobal("/api/Post/List");
-                        mutateGlobal(`/api/Post/FindById?id=${postId}`);
-                        mutateGlobal(`/api/Post/FindByUserId?userId=${userId}`);
+                        mutateGlobal(ROUTE_POST.LIST);
+                        mutateGlobal(ROUTE_POST.FIND_BY_ID + postId);
+                        mutateGlobal(ROUTE_POST.FIND_BY_USERID + userId);
                     })
                     connect.on("RemoveComment", (postId, userId) => {
-                        mutateGlobal("/api/Post/List");
-                        mutateGlobal(`/api/Post/FindById?id=${postId}`);
-                        mutateGlobal(`/api/Post/FindByUserId?userId=${userId}`);
+                        mutateGlobal(ROUTE_POST.LIST);
+                        mutateGlobal(ROUTE_POST.FIND_BY_ID + postId);
+                        mutateGlobal(ROUTE_POST.FIND_BY_USERID + userId);
                     })
                 })
         }
@@ -77,9 +79,13 @@ export const SignalRProvider = ({ children }: ProviderProps) => {
     const insertConnection = (_connection: HubConnection) => {
         setConnection(_connection);
     }
-    const invokeGlobal = (nameFunction: string, ...args: any[]) => {
+    const invokeGlobal = async (nameFunction: string, ...args: any[]) => {
         if (connection) {
-            connection.invoke(nameFunction, args)
+            try{
+                await connection.invoke(nameFunction, ...args)
+            }catch(err){
+                console.log(err)
+            }
         }
     }
     return (

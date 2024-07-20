@@ -4,7 +4,7 @@ export interface ICommentPost{
      id: number;
      userId: number;
      postId: number;
-     commentGuid:string;
+     guid:string;
      comment: string;
      answers: Array<AnswerPost>
 
@@ -13,7 +13,7 @@ export class CommentPost implements ICommentPost{
     public id: number;
     public userId: number;
     public postId: number;
-    public commentGuid:string;
+    public guid:string;
     public comment: string;
     public answers: Array<AnswerPost>
     constructor(){
@@ -21,7 +21,7 @@ export class CommentPost implements ICommentPost{
         this.userId = 0;
         this.postId = 0;
         this.comment = "";
-        this.commentGuid = "";
+        this.guid = "";
         this.answers = new Array<AnswerPost>()
     }
 }

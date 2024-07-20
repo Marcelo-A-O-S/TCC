@@ -33,6 +33,11 @@ namespace Api.Services
             return await this.commentRepository.FindBy(predicate);
         }
 
+        public async Task<Comment> FindByGuid(string guid)
+        {
+           return await this.commentRepository.FindBy(answer => answer.guid == guid);
+        }
+
         public async Task<Comment> FindById(int Id)
         {
             return await this.commentRepository.GetById(Id);

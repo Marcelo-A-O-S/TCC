@@ -12,8 +12,9 @@ namespace Api.Services.Interfaces
         Task<T> FindBy(Expression<Func<T, bool>> predicate);
         Task<List<T>> FindAll();
         Task<List<T>> List();
-
         Task<List<T>> ListDescendingBy<TKey>(Expression<Func<T, TKey>> predicate);
+
+        Task<T> FindByGuid(string guid);
 
     }
 }

@@ -1,7 +1,8 @@
 import { ImageDTO } from "./ImageDTO";
-
+import { v4 as uuidv4 } from 'uuid';
 export class PostDTO{
     id:number;
+    guid: string;
     title:string;
     description:string;
     images: ImageDTO[];
@@ -12,14 +13,9 @@ export class PostDTO{
         this.description = "";
         this.userId = 0
         this.images = []
-    } 
-
+        this.guid = "";
+    }
+    generatedGuid(){
+        this.guid = uuidv4()
+    }
 }
-/* public class PostDTO
-{
-    public int id { get; set; }
-    public string title { get; set; }
-    public string description { get; set; }
-    public List<ImageDTO> images { get; set; }
-    public int userId { get; set; }
-} */

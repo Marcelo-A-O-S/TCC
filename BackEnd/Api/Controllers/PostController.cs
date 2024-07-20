@@ -22,10 +22,9 @@ namespace Api.Controllers
         private readonly ILikeServices likeServices;
         private readonly INotificationServices notificationServices;
         private readonly IHubContext<NotificationHubService> notificationHubContext;
-
         public PostController(
-            IPostServices postServices, 
-            IUserServices userServices, 
+            IPostServices postServices,
+            IUserServices userServices,
             ICommentServices commentServices,
             IAnswerServices answerServices,
             IImageServices imageServices,
@@ -47,149 +46,16 @@ namespace Api.Controllers
         [HttpGet, Route("List")]
         public async Task<ActionResult<List<PostViewModel>>> List()
         {
-            var posts = await this.postServices.ListDescending();
-            var postsViews = new List<PostViewModel>();
-            foreach (var item in posts)
-            {
-                var postview = new PostViewModel();
-                postview.Id = item.Id;
-                postview.imagesViews = new List<ImageViewModel>(); // Inicializa imagesViews como uma lista vazia
-                postview.commentViews = new List<CommentViewModel>();
-                List<Image> images = await this.imageServices.FindImagesByPostId(item.Id);
-                if(images.Count > 0)
-                {
-                    foreach (var image in images)
-                    {
-                        var imageview = new ImageViewModel();
-                        imageview.Id = image.Id;
-                        imageview.type = image.type;
-                        imageview.Description = image.Description;
-                        imageview.image = image.image;
-                        imageview.imageGuid = image.imageGuid;
-                        postview.imagesViews.Add(imageview);
-                    }
-
-                }
-                List<Like> likes = await this.likeServices.GetAllLikebyPostId(item.Id);
-                if(likes.Count > 0){
-                    foreach (var like in likes){
-                        var likeview = new LikeViewModel();
-                        likeview.Id = like.Id;
-                        likeview.Guid = like.Guid;
-                        likeview.postId = like.postId;
-                        likeview.userId = like.userId;
-                        postview.likeViews.Add(likeview);
-                    }
-                }
-                postview.description = item.description;
-                postview.dateCreate = item.dateCreate;
-                postview.title = item.title;
-                var user = await this.userServices.FindById(item.userId);
-                postview.userview.Id = user.Id;
-                postview.userview.email = user.email;
-                postview.userview.username = user.username;
-                List<Comment> comments = new List<Comment>();
-                comments  = await this.commentServices.FindyCommentsByPostId(item.Id);
-                if(comments.Count > 0)
-                {
-                    foreach (var comment in comments)
-                    {
-                        var commentview = new CommentViewModel();
-                        commentview.Id = comment.Id;
-                        commentview.comment = comment.comment;
-                        commentview.postId = comment.postId;
-                        commentview.userId = comment.userId;
-                        commentview.answers = new List<AnswerViewModel>();
-                        List<Answer> answers = new List<Answer>();
-                        answers = await this.answerServices.FindAnswersByCommentId(comment.Id);
-                        if(answers.Count > 0)
-                        {
-                            foreach (var answer in answers)
-                            {
-                                var answerview = new AnswerViewModel();
-                                answerview.Id = answer.Id;
-                                answerview.answer = answer.answer;
-                                answerview.userId = answer.userId;
-                                answerview.commentId = answer.commentId;
-                                commentview.answers.Add(answerview);
-                            }
-                        }
-                        postview.commentViews.Add(commentview);
-                    }
-                }
-                postsViews.Add(postview);
-            }
-            return Ok(postsViews);
+            var postviews = await this.postServices.GetPostViews();
+            return Ok(postviews);
         }
         [Authorize]
         [HttpGet, Route("FindById")]
         public async Task<ActionResult<PostViewModel>> GetPost(int id)
         {
-            Posts post = await this.postServices.FindById(id);
-            var postview = new PostViewModel();
-            postview.Id = post.Id;
-            postview.imagesViews = new List<ImageViewModel>(); // Inicializa imagesViews como uma lista vazia
-            postview.commentViews = new List<CommentViewModel>();
-            post.images = await this.imageServices.FindImagesByPostId(post.Id);
-            if (post.images != null)
-            {
-                foreach (var image in post.images)
-                {
-                    var imageview = new ImageViewModel();
-                    imageview.Id = image.Id;
-                    imageview.Description = image.Description;
-                    imageview.imageGuid = image.imageGuid;
-                    imageview.image = image.image;
-                    imageview.type = image.type;
-                    postview.imagesViews.Add(imageview);
-                }
-
-            }
-            postview.description = post.description;
-            postview.dateCreate = post.dateCreate;
-            postview.title = post.title;
-            var user = await this.userServices.FindById(post.userId);
-            postview.userview.Id = user.Id;
-            postview.userview.email = user.email;
-            postview.userview.username = user.username;
-            List<Like> likes = await this.likeServices.GetAllLikebyPostId(post.Id);
-            if(likes.Count > 0){
-                foreach (var like in likes){
-                        var likeview = new LikeViewModel();
-                        likeview.Id = like.Id;
-                        likeview.Guid = like.Guid;
-                        likeview.postId = like.postId;
-                        likeview.userId = like.userId;
-                        postview.likeViews.Add(likeview);
-                    }
-            }
-            post.comments = await this.commentServices.FindyCommentsByPostId(post.Id);
-            if (post.comments.Count > 0)
-            {
-                foreach (var comment in post.comments)
-                {
-                    var commentview = new CommentViewModel();
-                    commentview.Id = comment.Id;
-                    commentview.comment = comment.comment;
-                    commentview.postId = comment.postId;
-                    commentview.userId = comment.userId;
-                    commentview.answers = new List<AnswerViewModel>();
-                    List<Answer> answers = new List<Answer>();
-                    answers = await this.answerServices.FindAnswersByCommentId(comment.Id);
-                    if (answers.Count > 0)
-                    {
-                        foreach (var answer in answers)
-                        {
-                            var answerview = new AnswerViewModel();
-                            answerview.Id = answer.Id;
-                            answerview.answer = answer.answer;
-                            answerview.userId = answer.userId;
-                            answerview.commentId = answer.commentId;
-                            commentview.answers.Add(answerview);
-                        }
-                    }
-                    postview.commentViews.Add(commentview);
-                }
+            var postview = await this.postServices.GetPostViewModelById(id);
+            if(postview == null){
+                return NotFound("Nada encontrado");
             }
             return Ok(postview);
         }
@@ -197,73 +63,7 @@ namespace Api.Controllers
         [HttpGet, Route("FindByUserId")]
         public async Task<ActionResult<List<PostViewModel>>> GetPostUserId(int UserId)
         {
-            var posts = await this.postServices.FindByUserIdDescending(UserId);
-            var postsViews = new List<PostViewModel>();
-            foreach (var post in posts){
-                var postview = new PostViewModel();
-                postview.Id = post.Id;
-                postview.description = post.description;
-                postview.title = post.title;
-                var user = await this.userServices.FindById(post.userId);
-                postview.userview.Id = user.Id;
-                postview.userview.email = user.email;
-                postview.userview.username = user.username;
-                postview.dateCreate = post.dateCreate;
-                post.images = await this.imageServices.FindImagesByPostId(post.Id);
-                if (post.images.Count > 0)
-                {
-                    foreach (var image in post.images)
-                    {
-                        var imageview = new ImageViewModel();
-                        imageview.Id = image.Id;
-                        imageview.Description = image.Description;
-                        imageview.image = image.image;
-                        imageview.imageGuid = image.imageGuid;
-                        imageview.type = image.type;
-                        postview.imagesViews.Add(imageview);
-                    }
-                }
-                List<Like> likes = await this.likeServices.GetAllLikebyPostId(post.Id);
-                if(likes.Count > 0){
-                    foreach (var like in likes){
-                        var likeview = new LikeViewModel();
-                        likeview.Id = like.Id;
-                        likeview.Guid = like.Guid;
-                        likeview.postId = like.postId;
-                        likeview.userId = like.userId;
-                        postview.likeViews.Add(likeview);
-                    }
-                }
-                post.comments = await this.commentServices.FindyCommentsByPostId(post.Id);
-                if (post.comments.Count > 0)
-                {
-                    foreach (var comment in post.comments)
-                    {
-                        var commentview = new CommentViewModel();
-                        commentview.Id = comment.Id;
-                        commentview.comment = comment.comment;
-                        commentview.postId = comment.postId;
-                        commentview.userId = comment.userId;
-                        //commentview.commentGuid = comment.commentGuid;
-                        var answers = await this.answerServices.FindAnswersByCommentId(comment.Id);
-                        if (answers.Count > 0)
-                        {
-                            foreach (var answer in answers)
-                            {
-                                var answerview = new AnswerViewModel();
-                                answerview.Id = answer.Id;
-                                answerview.answer = answer.answer;
-                                answerview.userId = answer.userId;
-                                answerview.commentId = answer.commentId;
-                                //answerview.answerGuid = answer.answerGuid;
-                                commentview.answers.Add(answerview);
-                            }
-                        }
-                        postview.commentViews.Add(commentview);
-                    }
-                }
-                postsViews.Add(postview);
-            }
+            var postsViews = await this.postServices.GetAllPostViewModelDescendingByUserId(UserId);
             return Ok(postsViews);
         }
         [Authorize]
@@ -271,8 +71,10 @@ namespace Api.Controllers
         public async Task<ActionResult> CreatePost(PostDTO postRequest)
         {
             Posts post = new Posts();
-            if(postRequest.id == 0){
+            if (postRequest.id == 0)
+            {
                 post.Id = 0;
+                post.guid = postRequest.guid;
                 post.title = postRequest.title;
                 post.description = postRequest.description;
                 post.images = new List<Image>();
@@ -295,15 +97,20 @@ namespace Api.Controllers
                     return BadRequest("Usuário inválido.");
                 }
                 post.userId = user.Id;
-                try{
+                try
+                {
                     await this.postServices.Save(post);
                     await this.notificationHubContext.Clients.All.SendAsync("CreatePost", post.userId);
                     return Ok("Salvo com sucesso");
-                }catch(Exception err){
+                }
+                catch (Exception err)
+                {
                     return BadRequest(err.Message);
                 }
-                
-            }else{
+
+            }
+            else
+            {
                 post.Id = postRequest.id;
                 post.title = postRequest.title;
                 post.description = postRequest.description;
@@ -311,17 +118,21 @@ namespace Api.Controllers
                 {
                     //Responsavel por deletar as ocorrencias deletadas no front end
                     var imagesPost = await this.imageServices.FindImagesByPostId(postRequest.id);
-                    for (int i = 0; i < imagesPost.Count; i++){
+                    for (int i = 0; i < imagesPost.Count; i++)
+                    {
                         var imagepost = imagesPost[i];
-                        var imageview = postRequest.images.Find(x=> x.imageGuid == imagepost.imageGuid);
-                        if(imageview == null){
+                        var imageview = postRequest.images.Find(x => x.imageGuid == imagepost.imageGuid);
+                        if (imageview == null)
+                        {
                             await this.imageServices.DeleteById(imagepost.Id);
                         }
                     }
                     //Responsavel por atualizar ou salvar ocorrencias de imagens na lista 
-                    foreach (var imageview in postRequest.images){
-                        var image = await this.imageServices.FindBy(x=> x.imageGuid == imageview.imageGuid);
-                        if(image == null){
+                    foreach (var imageview in postRequest.images)
+                    {
+                        var image = await this.imageServices.FindBy(x => x.imageGuid == imageview.imageGuid);
+                        if (image == null)
+                        {
                             image = new Image();
                             image.Id = 0;
                             image.Description = imageview.Description;
@@ -331,8 +142,10 @@ namespace Api.Controllers
                             image.posts = post;
                             image.postsId = post.Id;
                             await this.imageServices.Save(image);
-                            image = await this.imageServices.FindBy(x=> x.imageGuid == imageview.imageGuid);
-                        }else{
+                            image = await this.imageServices.FindBy(x => x.imageGuid == imageview.imageGuid);
+                        }
+                        else
+                        {
                             image.Description = imageview.Description;
                             image.type = imageview.type;
                             image.image = imageview.image;
@@ -359,191 +172,7 @@ namespace Api.Controllers
             await this.notificationHubContext.Clients.All.SendAsync("DeletePost", post.userId);
             return Ok();
         }
-        [Authorize]
-        [HttpPost, Route("AddComment")]
-        public async Task<ActionResult> AddComent(CommentDTO commentRequest)
-        {
-            Posts post = await this.postServices.FindById(commentRequest.postId);
-            var user = await this.userServices.FindById(commentRequest.userId);
-            if(user == null){
-                return BadRequest("Usuário não encontrado");
-            }   
-            Comment comment = new Comment();
-            if(commentRequest.Id != 0){
-                comment.Id = commentRequest.Id;
-                comment.comment = commentRequest.comment;
-                comment.userId = user.Id; 
-                comment.postId = post.Id;
-            }else{
-                comment.Id = 0;
-                comment.comment = commentRequest.comment;
-                comment.userId = user.Id; 
-                comment.postId = post.Id;
-            }
-            await this.commentServices.Save(comment);
-            if(comment.Id != 0){
-                return Ok("Comentário atualizado com sucesso!");
-            }else{
-                return Ok("Comentário salvo com sucesso!");
-            }
-        }
-        [Authorize]
-        [HttpPut, Route("UpdateComment")]
-        public async Task<ActionResult> UpdateComment(CommentDTO commentRequest)
-        {
-            Comment comment = await this.commentServices.FindById(commentRequest.Id);
-            comment.comment = commentRequest.comment;
-            await this.commentServices.Save(comment);
-            return Ok("Comentário atualizado com sucesso!");
-        }
-        [Authorize]
-        [HttpDelete, Route("DeleteComment")]
-        public async Task<ActionResult> DeleteComment(CommentDTO commentRequest)
-        {
-            Comment comment = await this.commentServices.FindById(commentRequest.Id);
-            await this.commentServices.Delete(comment);
-            return Ok("Comentário deletado com sucesso!");
-        }
-        [Authorize]
-        [HttpDelete, Route("DeleteCommentById")]
-        public async Task<ActionResult> DeleteCommentById(int commentId){
-            Comment comment = await this.commentServices.FindById(commentId);
-            await this.commentServices.Delete(comment);
-            return Ok("Comentário deletado com sucesso!");
-        }
-        [Authorize]
-        [HttpPost, Route("AddAnswer")]
-        public async Task<ActionResult> AddAnswer(AnswerDTO answerRequest)
-        {
-            Comment comment = await this.commentServices.FindById(answerRequest.commentId);
-            Answer answer = new Answer();
-            if(answerRequest.Id != 0){
-                answer.Id = answerRequest.Id;
-                answer.answer = answerRequest.answer;
-                var user = await this.userServices.FindById(answerRequest.userId);
-                if(user != null){
-                    answer.userId = user.Id;
-                }
-                var commentCurrent = await this.commentServices.FindById(answerRequest.commentId);
-                if(commentCurrent != null ){
-                    answer.commentId = commentCurrent.Id;
-                }
-            }else{
-                answer.Id = 0;
-                answer.answer = answerRequest.answer;
-                var user = await this.userServices.FindById(answerRequest.userId);
-                if(user != null){
-                    answer.userId = user.Id;
-                }
-                var commentCurrent = await this.commentServices.FindById(answerRequest.commentId);
-                if(commentCurrent != null ){
-                    answer.commentId = commentCurrent.Id;
-                }
-            }
-            
-            await this.answerServices.Save(answer);
-            //await this.commentServices.Save(comment);
-            return Ok("Salvo com sucesso!");
-        }
-        [Authorize]
-        [HttpPut, Route("UpdateAnswer")]
-        public async Task<ActionResult> UpdateAnswer(AnswerDTO answerRequest)
-        {
-            Answer answer = await this.answerServices.FindById(answerRequest.Id);
-            answer.answer = answerRequest.answer;
-            await this.answerServices.Save(answer);
-            return Ok("O Comentário foi atualizado com sucesso!");
-        }
-        [Authorize]
-        [HttpDelete, Route("DeleteAnswer")]
-        public async Task<ActionResult> DeleteAnswer(AnswerDTO answerRequest)
-        {
-            Answer answer = await this.answerServices.FindById(answerRequest.Id);
-            try{
-                await this.answerServices.Delete(answer);
-                return Ok("Comentário deletado com sucesso");
-            }catch(Exception err){
-                return BadRequest(err.Message);
-            }
-        }
-        [Authorize]
-        [HttpDelete,Route("DeleteAnswerById")]
-        public async Task<ActionResult> DeleteAnswerById(int answerId){
-            Answer answer = await this.answerServices.FindById(answerId);
-            try{
-                await this.answerServices.Delete(answer);
-                return Ok("Comentário deletado com sucesso");
-            }catch(Exception err){
-                return BadRequest(err.Message);
-            }
-            
-        }
-        [Authorize]
-        [HttpPost, Route("AddLike")]
-        public async Task<ActionResult> AddLikePost(LikeDTO likeRequest){
-            if (likeRequest == null){
-                return BadRequest("Campos inválidos!");
-            }
-            var like = new Like();
-            like.postId = likeRequest.postId;
-            like.userId = likeRequest.userId;
-            like.Guid = likeRequest.Guid;
-            like.Id = 0;
-            try{
-                await this.likeServices.Save(like);
-                await this.notificationHubContext.Clients.All.SendAsync("AddLike", like.postId, like.userId);
-                return Ok();
-            }catch(Exception err){
-                return BadRequest(err.Message);
-            }
-        }
-        [Authorize]
-        [HttpDelete, Route("RemoveLike")]
-        public async Task<ActionResult> RemoveLike(LikeDTO likeRequest){
-            return Ok();
-        }
-        [Authorize]
-        [HttpDelete, Route("RemoveLikeById")]
-        public async Task<ActionResult> RemoveLikeById(int likeId){
-            try{
-                var like = await this.likeServices.FindById(likeId);
-                if(like == null){
-                    return NotFound();
-                }
-                await this.likeServices.Delete(like);
-                await this.notificationHubContext.Clients.All.SendAsync("RemoveLike", like.postId, like.userId);
-                return Ok("Removido com sucesso");
-            }catch(Exception err){
-                return BadRequest(err.Message);
-            }
-            
-        }
-        [Authorize]
-        [HttpGet, Route("ListLikes")]
-        public async Task<ActionResult> ListLikes(){
-
-            return Ok();
-        }
-        [Authorize]
-        [HttpGet, Route("ListNotifications")]
-        public async Task<ActionResult> GetNotifications(){
-            return Ok();
-        }
-        [Authorize]
-        [HttpGet, Route("ListNotificationsByUserId")]
-        public async Task<ActionResult> GetNotficationsByUserId(int userId){
-            
-            var notifications = await this.notificationServices.FindByUserIdDescending(userId);
-            return Ok(notifications);
-        }
-        [Authorize]
-        [HttpDelete, Route("DeleteNotificationById")]
-        public async Task<ActionResult> DeleteNotificationById(int Id){
-            await this.notificationServices.DeleteById(Id);
-            return Ok("Deletado com sucesso!");
-        }
 
     }
 
-    
 }

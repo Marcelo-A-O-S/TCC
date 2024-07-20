@@ -9,12 +9,20 @@ type Props = {
 export async function generateMetadata({params,searchParams}: Props){
   const email = searchParams.email;
   const data = await GetUserByEmail(email);
-  console.log(data);
-  const metadata : Metadata ={
+  if(data != undefined){
+    const metadata : Metadata ={
       title: `Profile - ${data.username}`,
       description: "Description teste"
+    }
+    return metadata
+  }else{
+    const metadata : Metadata ={
+      title: `Profile - Not found`,
+      description: "Description teste"
+    }
+    return metadata
   }
-  return metadata
+  
 }
 export default function ProfilePage({ params, searchParams }: Props) {
   const email = searchParams.email;

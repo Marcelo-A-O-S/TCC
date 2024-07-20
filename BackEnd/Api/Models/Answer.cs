@@ -7,8 +7,12 @@ namespace Api.Models
     {
         [Key]
         public int Id { get; set; }
+        public string guid {get; set;}
         public string answer { get; set; }
-        //public string answerGuid {get;set;}
+        
+        public Posts posts {get;set;}
+        [ForeignKey("Posts")]
+        public int postsId {get; set;}
         public User user { get; set; }
         [ForeignKey("User")]
         public int userId { get; set; }
@@ -16,5 +20,11 @@ namespace Api.Models
         public Comment comment { get; set; }
         [ForeignKey("Comment")]
         public int commentId { get; set; }
+
+        public DateTime dateCreate { get; set; }
+
+        public Answer(){
+            this.dateCreate = DateTime.Now;
+        }
     }
 }

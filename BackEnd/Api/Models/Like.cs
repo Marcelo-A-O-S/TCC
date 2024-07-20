@@ -7,13 +7,17 @@ namespace Api.Models
     {
         [Key]
         public int Id { get; set; }
-        public string Guid { get; set; }
+        public string guid { get; set; }
         public User user { get; set; }
         [ForeignKey("User")]
         public int userId { get; set; }
         public Posts post { get; set; }
         [ForeignKey("Posts")]
         public int postId { get; set; }
+
+        public Like(){
+        
+        }
     
     }
 }
