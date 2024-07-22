@@ -6,7 +6,7 @@ async function AddLike(likeDTO : LikeDTO){
     return response;
 }
 async function RemoveLike(likeId: number){
-    const response = await fetcherDelete(ROUTE_LIKE.REMOVE_LIKE_BY_ID + likeId);
+    const response = await fetcherDelete(ROUTE_LIKE.DELETE_LIKE_BY_ID + likeId);
     return response;
 }
 

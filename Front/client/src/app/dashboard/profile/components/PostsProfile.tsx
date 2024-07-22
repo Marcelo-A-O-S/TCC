@@ -2,7 +2,8 @@
 import { useGetPostByUserId } from "@/hooks/usePost";
 import postServices from "@/services/postServices";
 import likeServices from "@/services/likeServices";
-import { GetUserByEmail, useGetByEmail } from "@/data/users";
+import { useGetByEmail } from "@/hooks/useUser";
+import userServices from "@/services/userServices";
 import { UserContext } from "@/contexts/UserContext";
 import { LikeDTO } from "@/DTOs/LikeDTO";
 import { PostView } from "@/ViewModel/PostView";
@@ -50,7 +51,7 @@ export default function PostsProfile({email}:Props){
     const postCurrent = postsProfile.find(x=> x.id == postId);
     if(postCurrent != undefined){
         if(userContext){
-            const userCurrent = await GetUserByEmail(userContext.user?.email as string);
+            const userCurrent = await userServices.GetByEmail(userContext.user?.email as string);
             const likeCurrent = postCurrent.likeViews.find((x:any )=> x.userId == userCurrent?.id);
             if(likeCurrent !== undefined){
                 await likeServices.RemoveLike(likeCurrent.id);

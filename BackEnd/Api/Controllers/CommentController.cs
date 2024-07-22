@@ -57,17 +57,10 @@ namespace Api.Controllers
                 comment.guid = commentRequest.guid;
             }
             await this.commentServices.Save(comment);
-            if(comment.Id != 0){
-                var notification = await this.notificationServices.FindByCommentId(commentRequest.Id);
-                notification.CreatedAt = DateTime.Now;
-                await this.notificationServices.Save(notification);
-                await this.notificationHubContext.Clients.All.SendAsync("UpdateComment", post.Id, post.userId);
-                return Ok("Comentário atualizado com sucesso!");
-
-            }else{
+            if(commentRequest.Id == 0){
                 comment = await this.commentServices.FindByGuid(comment.guid);
                 var notification = new Notification();
-                notification.Type = NotificationType.Comment;
+                notification.notificationType = NotificationType.Comment;
                 notification.postsId = post.Id;
                 notification.userId = post.userId;
                 notification.SourceUserId = user.Id;
@@ -75,6 +68,13 @@ namespace Api.Controllers
                 await this.notificationServices.Save(notification);
                 await this.notificationHubContext.Clients.All.SendAsync("AddComment", post.Id, post.userId);
                 return Ok("Comentário salvo com sucesso!");
+
+            }else{
+                var notification = await this.notificationServices.FindByCommentId(commentRequest.Id);
+                notification.dateCreate = DateTime.Now;
+                await this.notificationServices.Save(notification);
+                await this.notificationHubContext.Clients.All.SendAsync("UpdateComment", post.Id, post.userId);
+                return Ok("Comentário atualizado com sucesso!");
             }
         }
         [Authorize]
@@ -86,7 +86,7 @@ namespace Api.Controllers
             comment.comment = commentRequest.comment;
             await this.commentServices.Save(comment);
             var notification = await this.notificationServices.FindByCommentId(commentRequest.Id);
-            notification.CreatedAt = DateTime.Now;
+            notification.dateCreate = DateTime.Now;
             await this.notificationServices.Save(notification);
             await this.notificationHubContext.Clients.All.SendAsync("UpdateComment", post.Id, post.userId);
             return Ok("Comentário atualizado com sucesso!");

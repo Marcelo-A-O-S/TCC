@@ -14,7 +14,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import { UserAuthentication } from "@/models/UserAuthentication"
 import { LikeDTO } from "@/DTOs/LikeDTO"
-import { GetUserByEmail, useGetByEmail, GetUserById } from "@/data/users"
+import userServices from "@/services/userServices"
+import { useGetByEmail } from "@/hooks/useUser"
 import { ICommentState } from "./utils/ICommentState"
 import { CommentDTO } from "@/DTOs/CommentDTO"
 import { AnswerDTO } from "@/DTOs/AnswerDTO"
@@ -26,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react"
 import { useSignalR } from "@/hooks/useSignalR"
 import PostNotFound from "../../profile/components/PostNotFound"
+import notificationService from "@/services/notificationService"
 type Props = {
     Id: number
 }
@@ -39,7 +41,9 @@ export default function PostDetail({ Id }: Props) {
         answerId:0,
         answer:"",
         commentId:0,
-        user: new UserAuthentication()
+        user: new UserAuthentication(),
+        guid: "",
+        postId: 0
     })
     const [commentState, setCommentState] = useState<ICommentState>({
         commentId: 0,
@@ -51,7 +55,8 @@ export default function PostDetail({ Id }: Props) {
             email: "",
             token: ""
         },
-        answer: false
+        answer: false,
+        guid:""
     })
     const [postDetail, setPostDetail] = useState<PostView>({
         likeViews: [],
@@ -71,10 +76,10 @@ export default function PostDetail({ Id }: Props) {
     }, [data])
     const LoadingPost = async (data: any) => {
         let fetchComments = await Promise.all(data.commentViews.map(async (element: any) => {
-            let responseUserComment = await GetUserById(element.userId);
+            let responseUserComment = await userServices.GetById(element.userId);
             if (responseUserComment) {
                 let fetchAnswer = await Promise.all(element.answers.map(async (itemAnswer: any) => {
-                    let responseUserAnswer = await GetUserById(itemAnswer.userId)
+                    let responseUserAnswer = await userServices.GetById(itemAnswer.userId)
                     if (responseUserAnswer) {
                         console.log(itemAnswer);
                         let answer: IAnswerView = {
@@ -84,7 +89,8 @@ export default function PostDetail({ Id }: Props) {
                             user: responseUserAnswer,
                             guid: itemAnswer.guid,
                             userId: responseUserAnswer,
-                            dateCreate: itemAnswer.dateCreate
+                            dateCreate: itemAnswer.dateCreate,
+                            postId: itemAnswer.postId
                         }
                         return answer;
                     }
@@ -127,7 +133,7 @@ export default function PostDetail({ Id }: Props) {
     const LikePost = async (postId: number) => {
         if (postDetail != undefined) {
             if (userSession) {
-                const userCurrent = await GetUserByEmail(userSession.user?.email as string);
+                const userCurrent = await userServices.GetByEmail(userSession.user?.email as string);
                 const likeCurrent = postDetail.likeViews.find(x => x.userId == userCurrent?.id);
                 if (likeCurrent !== undefined) {
                     await likeServices.RemoveLike(likeCurrent.id);
@@ -166,7 +172,8 @@ export default function PostDetail({ Id }: Props) {
                 answerId: 0,
                 commentId: 0,
                 answer: false,
-                commentUser: ""
+                commentUser: "",
+                guid:""
             }
         })
     }
@@ -175,7 +182,9 @@ export default function PostDetail({ Id }: Props) {
             answer:"",
             answerId: 0,
             commentId: 0,
-            user: new UserAuthentication()
+            user: new UserAuthentication(),
+            guid: "",
+            postId:0
         })
     }
     const PostComment = async () => {
@@ -185,7 +194,8 @@ export default function PostDetail({ Id }: Props) {
                 answerDTO.id = answerState.answerId;
                 answerDTO.commentId = answerState.commentId;
                 answerDTO.answer = answerState.answer;
-                answerDTO.generatedGuid()
+                answerDTO.guid = answerState.guid;
+                answerDTO.postId = answerState.postId;
                 if (userData !== undefined) {
                     answerDTO.userId = userData.id
                 }
@@ -193,6 +203,8 @@ export default function PostDetail({ Id }: Props) {
                 answerDTO.id = 0;
                 answerDTO.commentId = answerState.commentId;
                 answerDTO.answer = answerState.answer;
+                answerDTO.postId = postDetail.id;
+                answerDTO.generatedGuid();
                 if (userData !== undefined) {
                     answerDTO.userId = userData.id
                 }
@@ -208,6 +220,7 @@ export default function PostDetail({ Id }: Props) {
                 commentDto.id = commentState.commentId;
                 commentDto.comment = answerState.answer;
                 commentDto.postId = postDetail.id;
+                commentDto.guid = commentState.guid;
                 if (userData !== undefined) {
                     commentDto.userId = userData.id;
                 }
@@ -215,6 +228,7 @@ export default function PostDetail({ Id }: Props) {
                 commentDto.id = 0;
                 commentDto.comment = commentState.commentUser;
                 commentDto.postId = postDetail.id;
+                commentDto.generatedGuid();
                 if (userData !== undefined) {
                     commentDto.userId = userData.id;
                 }
@@ -236,7 +250,7 @@ export default function PostDetail({ Id }: Props) {
         const commentCurrent = postDetail.commentViews.find(x=> x.id === commentId);
         if(commentCurrent !== undefined){
             if(userData != undefined){
-                const userCurrent = await GetUserByEmail(userData?.email);
+                const userCurrent = await userServices.GetByEmail(userData?.email);
                 setCommentState(prevState=>{
                     return{
                         ...prevState,
@@ -258,13 +272,14 @@ export default function PostDetail({ Id }: Props) {
         const commentCurrent = postDetail.commentViews.find(x=> x.id === commentId);
         if(commentCurrent !== undefined){
             if(userData != undefined){
-                const userCurrent = await GetUserByEmail(userData?.email);
+                const userCurrent = await userServices.GetByEmail(userData?.email);
                 setCommentState(prevState=>{
                     return{
                         ...prevState,
                         commentId: commentCurrent.id,
                         user:commentCurrent.user,
-                        answer:false
+                        answer:false,
+                        guid: commentCurrent.guid
                     }
                 })
                 setAnswerState(prevState=>{
@@ -296,7 +311,7 @@ export default function PostDetail({ Id }: Props) {
         if(commentCurrent!== undefined){
             if(answerCurrent != undefined){
                 if(userData != undefined){
-                    const userCurrent = await GetUserByEmail(userData?.email);
+                    const userCurrent = await userServices.GetByEmail(userData?.email);
                     setCommentState(prevState=>{
                         return{
                             ...prevState,
@@ -323,7 +338,7 @@ export default function PostDetail({ Id }: Props) {
         if(commentCurrent!== undefined){
             if(answerCurrent != undefined){
                 if(userData != undefined){
-                    const userCurrent = await GetUserByEmail(userData?.email);
+                    const userCurrent = await userServices.GetByEmail(userData?.email);
                     setCommentState(prevState=>{
                         return{
                             ...prevState,
@@ -338,7 +353,9 @@ export default function PostDetail({ Id }: Props) {
                             commentId: commentCurrent.id,
                             answerId: answer.id,
                             answer: answer.answer,
-                            user: userCurrent
+                            user: userCurrent,
+                            guid: answerCurrent.guid,
+                            postId: answerCurrent.postId
                         }
                     })
                 }

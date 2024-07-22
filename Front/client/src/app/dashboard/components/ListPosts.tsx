@@ -1,8 +1,9 @@
 'use client'
 import { useGetAllPosts } from "@/hooks/usePost";
 import LikeServices from "@/services/likeServices"
-import { useGetByEmail ,GetUserByEmail} from "@/data/users";
-import { useEffect, useState} from "react";
+import { useGetByEmail } from "@/hooks/useUser";
+import userServices from "@/services/userServices";
+import { useContext, useEffect, useState} from "react";
 import styles from "./posts.module.css"
 import IcoChatBallon from "../../../assets/balaochat.svg"
 import IcoHeartLike from "../../../assets/heartlike.svg"
@@ -17,24 +18,34 @@ import { useRouter } from "next/navigation";
 import { useSignalR } from "@/hooks/useSignalR";
 import { useSession } from "next-auth/react";
 import PostNotFound from "../profile/components/PostNotFound";
+import { UserContext } from "@/contexts/UserContext";
+import { UserAuthentication } from "@/models/UserAuthentication";
 export default function ListPosts(){
     const router = useRouter()
     const {invokeGlobal} = useSignalR()
     const {data:userContext} = useSession()
+    const {user } = useContext(UserContext)
     const { data, error, isValidating, isLoading,mutate } = useGetAllPosts()
     const [ posts, setPosts] = useState<Array<PostView>>([]);
-    const { data: user} = useGetByEmail(userContext?.user?.email || "");
+    const [ userAuthentication, setUserAuthentication ] = useState<UserAuthentication>({} as UserAuthentication);
     useEffect(()=>{
         if(data != undefined){
+            console.log("Posts:", data)
             setPosts(data)
         }
     },[data])
+    useEffect(()=>{
+        if(user){
+            setUserAuthentication(user)
+        }
+    }, [user])
     const LikePost = async(postId: number) =>{
+        console.log("Clicado")
         const postCurrent = posts.find(x=> x.id == postId);
         if(postCurrent != undefined){
-            if(userContext && userContext.user && userContext.user.email){
-                const userCurrent = await GetUserByEmail(userContext.user.email);
-                const likeCurrent = postCurrent.likeViews.find(x=> x.userId == user?.id);
+            if(userAuthentication){
+                const userCurrent = await userServices.GetByEmail(userAuthentication.email);
+                const likeCurrent = postCurrent.likeViews.find(x=> x.userId == userAuthentication.id);
                 if(likeCurrent !== undefined){
                     await LikeServices.RemoveLike(likeCurrent.id);
                     mutate();

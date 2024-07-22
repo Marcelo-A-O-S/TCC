@@ -35,7 +35,7 @@ namespace Api.Models
         public Notification()
         {
             this.guid = Guid.NewGuid().ToString();
-            this.dateCreate = DateTime.UtcNow;
+            this.dateCreate = DateTime.Now;
             this.IsRead = false;
         }
     }

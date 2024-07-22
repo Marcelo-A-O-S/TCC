@@ -1,7 +1,8 @@
 
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { loginPost } from "@/data/authentication";
+
+import authenticationService from "@/services/authenticationService";
 import { Login } from "@/models/Login";
 import { UserAuthentication } from "@/models/UserAuthentication";
 import { setServerTokenCookie, getServerTokenCookie, getServerUserCoookie } from "@/hooks/userServerCookie";
@@ -22,7 +23,7 @@ export const authOptions: NextAuthOptions = {
                 const login = new Login();
                 login.email = credentials.email;
                 login.password = credentials.password;
-                const dataResponse = await loginPost(login);
+                const dataResponse = await authenticationService.loginPost(login);
                 if(dataResponse){
     
                     const user = new UserAuthentication();

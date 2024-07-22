@@ -1,0 +1,160 @@
+.field_notification{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.toggle{
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    top: 10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+.bell{
+    display: flex;
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    position: relative;
+}
+
+.modal_notification{
+    display: flex;
+/*     position: absolute;
+    left: calc(100% - 580px);
+    top: 80px; */
+    top: 200px;
+    position: relative;
+    height: 350px;
+    width: 300px;
+    border-radius: 8px;
+    background-color: white;
+    border: 3px solid orange;
+    border-color: orange;
+    z-index: 2;
+    padding: 10px 10px;
+}
+.modal_notification:after{
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    top: -20px;
+    left: 250px;
+    border-top: 41px solid transparent;
+    border-bottom: 41px solid transparent;
+    border-left: 42px solid white;
+    transform: rotate(46deg);
+    border-radius: 50%;
+    border-right: 72px solid transparent;
+
+}
+.notifications{
+    width: 100%;
+    border: 2px solid orange;
+    overflow-y: scroll;
+}
+.notification{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px 5px;
+    border: 2px solid orange;
+}
+.notification_text{
+    font-size: 14px;
+}
+.notification_textIsRead{
+    font-size: 14px;
+    font-weight: bold;
+}
+.user_action{
+    font-style: italic;
+    font-size: 14px;
+    font-weight: normal;
+    color: rgb(103, 103, 103);
+    text-decoration: none;
+}
+.actions_notification{
+    display: flex;
+    width: 100%;
+    height: 40px;
+    align-items: center;
+    padding: 2px 0px;
+    gap: 2px;
+}
+.notification_view{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    text-align: center;
+    font-size: 14px;
+    width: 81px;
+    height: 100%;
+    padding: 5px 0px;
+    background-color: orange;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+.notification_delete{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background-color: red;
+    color: white;
+    font-size: 14px;
+    width: 81px;
+    height: 100%;
+    padding: 2px 0px;
+    cursor: pointer;
+}
+.notification_read{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    width: 81px;
+    height: 100%;
+    padding: 2px 0px;
+}
+.isRead{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+@media (max-width:654px) {
+    .modal_notification{
+        position: absolute;
+        top: 80px;
+        left: calc(100% - 450px);
+    }
+}
+@media (max-width:454px) {
+    .modal_notification{
+        position: absolute;
+        top: 80px;
+        left: calc(100% - 370px);
+    }
+    .modal_notification:after{
+        left: 180px;
+    }
+}
+@media (max-width:361px) {
+    .modal_notification{
+        position: absolute;
+        top: 80px;
+        left: calc(100% - 340px);
+    }
+    .modal_notification:after{
+        left: 180px;
+    }
+}

@@ -10,7 +10,7 @@ import Icoclose from "../../../assets/closeico.svg"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { removeUserCookie } from "@/hooks/userCookie"
-import { useSignalR } from "@/hooks/useSignalR"
+
 export  default function Navbar(){
     const host = process.env.NEXT_PUBLIC_HOST
     const router = useRouter()

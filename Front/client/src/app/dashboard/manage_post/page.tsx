@@ -1,5 +1,5 @@
 'use client'
-import { ChangeEvent, FormEvent, useEffect, useState } from "react"
+import { ChangeEvent, FormEvent, useContext, useEffect, useState } from "react"
 import { ImagePost, IImagePost } from "@/models/ImagePost";
 import styles from "./new.module.css"
 import { useRef } from "react";
@@ -11,23 +11,26 @@ import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import Link from "next/link";
 import { PostDTO } from "@/DTOs/PostDTO";
 import { ImageDTO } from "@/DTOs/ImageDTO";
-import { useGetByEmail } from "@/data/users";
+import { useGetByEmail } from "@/hooks/useUser";
 import postServices from "@/services/postServices";
 import { useGetPostById } from "@/hooks/usePost";
 import ImgSuccess from "../../../assets/success.svg"
 import ImgFailed from "../../../assets/failed.svg"
 import { useSession } from "next-auth/react";
 import { PostView } from "@/ViewModel/PostView";
+import { UserContext } from "@/contexts/UserContext";
 type Props = {
     params: { edit: string }
     searchParams: { edit: string }
   }
 export default function ManagerPost({searchParams}:Props){
     const { data: userSession } = useSession()
+    const {user} = useContext(UserContext)
     const email = userSession?.user?.email;
     const {data: post, error: errorPost} = useGetPostById(parseInt(searchParams.edit))
-    const { data, error } = useGetByEmail(email || "");
+    const { data, error } = useGetByEmail(email?email:"");
     const modal = useRef<HTMLDialogElement>(null)
+    const [userAuthentication, setUserAuthentication] = useState<UserAuthentication>()
     const [imgPost , setImgPost] = useState<IImagePost>({
         id:0,
         description:"",
@@ -71,6 +74,11 @@ export default function ManagerPost({searchParams}:Props){
             })
         }
     },[post])
+    useEffect(()=>{
+        if(user){
+            setUserAuthentication(user)
+        }
+    }, [user])
     const ShowModal = () =>{
         modal.current?.showModal()
         setOpenModal(true)
@@ -192,6 +200,7 @@ export default function ManagerPost({searchParams}:Props){
         event.preventDefault();
         const postDto = new PostDTO()
         postDto.id = modelPost.id;
+        postDto.generatedGuid()
         postDto.title = modelPost.title;
         postDto.description = modelPost.description;
         modelPost.imagesViews.map((image) =>{
@@ -204,8 +213,8 @@ export default function ManagerPost({searchParams}:Props){
             postDto.images.push(imageDTO)
         })
         if(userSession?.user){
-            if(data){
-                postDto.userId = data.id
+            if(userAuthentication){
+                postDto.userId = userAuthentication.id
             }
         }
         try{

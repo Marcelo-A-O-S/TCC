@@ -61,7 +61,7 @@ namespace Api.Controllers
                 }
                 await this.answerServices.Save(answer);
                 var notification = await this.notificationServices.FindByAnswerId(answerRequest.Id);
-                notification.CreatedAt = DateTime.Now;
+                notification.dateCreate = DateTime.Now;
                 await this.notificationServices.Save(notification);
                 await this.notificationHubContext.Clients.All.SendAsync("UpdateAnswer",notification.postsId, answer.userId);
                 return Ok("Atualzado com sucesso!");

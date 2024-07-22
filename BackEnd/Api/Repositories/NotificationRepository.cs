@@ -54,6 +54,7 @@ namespace Api.Repositories
             .Include(modelAnswer => modelAnswer.answer)
             .Include(modelSource => modelSource.SourceUser)
             .Where(x=> x.userId == userId)
+            .OrderByDescending(x=> x.dateCreate)
             .ToListAsync();
             return notifications;
         }

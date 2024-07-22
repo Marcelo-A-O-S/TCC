@@ -196,13 +196,13 @@ namespace Api.Migrations
                     guid = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     userId = table.Column<int>(type: "int", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
+                    notificationType = table.Column<int>(type: "int", nullable: false),
                     SourceUserId = table.Column<int>(type: "int", nullable: false),
                     postsId = table.Column<int>(type: "int", nullable: false),
                     commentId = table.Column<int>(type: "int", nullable: true),
                     answerId = table.Column<int>(type: "int", nullable: true),
                     likeId = table.Column<int>(type: "int", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    dateCreate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     IsRead = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>

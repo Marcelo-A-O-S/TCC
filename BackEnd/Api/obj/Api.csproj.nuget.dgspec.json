@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\TCC\\BackEnd\\Api\\Api.csproj": {}
+    "d:\\TCC\\BackEnd\\Api\\Api.csproj": {}
   },
   "projects": {
-    "D:\\TCC\\BackEnd\\Api\\Api.csproj": {
+    "d:\\TCC\\BackEnd\\Api\\Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\TCC\\BackEnd\\Api\\Api.csproj",
+        "projectUniqueName": "d:\\TCC\\BackEnd\\Api\\Api.csproj",
         "projectName": "Api",
-        "projectPath": "D:\\TCC\\BackEnd\\Api\\Api.csproj",
+        "projectPath": "d:\\TCC\\BackEnd\\Api\\Api.csproj",
         "packagesPath": "C:\\Users\\marce\\.nuget\\packages\\",
-        "outputPath": "D:\\TCC\\BackEnd\\Api\\obj\\",
+        "outputPath": "d:\\TCC\\BackEnd\\Api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\marce\\AppData\\Roaming\\NuGet\\NuGet.Config"

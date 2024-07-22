@@ -1,3 +1,4 @@
+import { url } from "inspector";
 import { privateApi, privateServerApi } from "./api";
 
 const fetcherGet = async( url: string) =>{
@@ -24,9 +25,15 @@ const fetcherDelete = async(url:string)=>{
     const response = await api.delete(url);
     return response
 }
+const fetcherUpdate = async(url:string)=>{
+    const api = privateApi()
+    const response = await api.put(url);
+    return response
+}
 export {
     fetcherGet,
     fetcherServerGet,
     fetcherPost,
-    fetcherDelete
+    fetcherDelete,
+    fetcherUpdate
 }

@@ -28,7 +28,7 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in AddPost: {ex.Message}");
+                Console.WriteLine($"Error in CreatePost: {ex.Message}");
                 throw;
             }
         }
@@ -39,7 +39,7 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in AddPost: {ex.Message}");
+                Console.WriteLine($"Error in UpdatePost: {ex.Message}");
                 throw;
             }
         }
@@ -50,7 +50,7 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in AddPost: {ex.Message}");
+                Console.WriteLine($"Error in DeletePost: {ex.Message}");
                 throw;
             }
         }
@@ -61,7 +61,7 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in AddPost: {ex.Message}");
+                Console.WriteLine($"Error in AddComment: {ex.Message}");
                 throw;
             }
         }
@@ -72,7 +72,7 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in AddPost: {ex.Message}");
+                Console.WriteLine($"Error in UpdateComment: {ex.Message}");
                 throw;
             }
         }
@@ -83,7 +83,7 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in AddPost: {ex.Message}");
+                Console.WriteLine($"Error in RemoveComment: {ex.Message}");
                 throw;
             }
         }
@@ -94,7 +94,7 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in AddPost: {ex.Message}");
+                Console.WriteLine($"Error in AddAnswer: {ex.Message}");
                 throw;
             }
         }
@@ -105,7 +105,7 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in AddPost: {ex.Message}");
+                Console.WriteLine($"Error in UpdateAnswer: {ex.Message}");
                 throw;
             }
         }
@@ -116,7 +116,7 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in AddPost: {ex.Message}");
+                Console.WriteLine($"Error in RemoveAnswer: {ex.Message}");
                 throw;
             }
         }
@@ -127,7 +127,7 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in AddPost: {ex.Message}");
+                Console.WriteLine($"Error in AddLike: {ex.Message}");
                 throw;
             }
         }
@@ -135,6 +135,17 @@ namespace Api.Services
             try
             {
                 await Clients.All.SendAsync("RemoveLike", postId, userId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in RemoveLike: {ex.Message}");
+                throw;
+            }
+        }
+        public async Task UpdateNotification(int userId){
+            try
+            {
+                await Clients.All.SendAsync("UpdateNotification",  userId);
             }
             catch (Exception ex)
             {

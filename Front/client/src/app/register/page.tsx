@@ -3,7 +3,7 @@ import styles from "./register.module.css"
 import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import { IRegister, Register } from "@/models/Register"
 import Link from "next/link"
-import { register } from "@/data/authentication"
+import authenticationService from "@/services/authenticationService"
 import IcoClose from "../../assets/closeico.svg"
 import Image from "next/image"
 export default function RegisterPage(){
@@ -205,7 +205,7 @@ export default function RegisterPage(){
             dataRegister.password = formRegister.password;
             dataRegister.passwordConfirm = formRegister.passwordConfirm;
             try {
-                const dataResponse = await register(dataRegister);
+                const dataResponse = await authenticationService.register(dataRegister);
                 setReturnResponse({
                     status:0,
                     message:dataResponse

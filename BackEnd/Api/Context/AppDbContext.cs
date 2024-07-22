@@ -17,5 +17,10 @@ namespace Api.Context
         public DbSet<Like> likes { get; set; }
         public DbSet<Notification> notifications {get; set;}
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            
+        }
+
     }
 }

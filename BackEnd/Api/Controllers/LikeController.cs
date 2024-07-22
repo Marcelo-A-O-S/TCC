@@ -17,7 +17,6 @@ namespace Api.Controllers{
 
         public LikeController(
             IPostServices postServices, 
-
             ICommentServices commentServices,
             ILikeServices likeServices,
             INotificationServices notificationServices,
@@ -41,7 +40,6 @@ namespace Api.Controllers{
             if(post == null){
                 return NotFound("Publicação não encontrada!");
             }
-
             like.postId = likeRequest.postId;
             like.userId = likeRequest.userId;
             like.guid = likeRequest.Guid;
@@ -51,7 +49,7 @@ namespace Api.Controllers{
                 var likeData = await this.likeServices.FindByGuid(like.guid);
                 notification.userId = post.userId;
                 notification.postsId = post.Id;
-                notification.Type = NotificationType.Like;
+                notification.notificationType = NotificationType.Like;
                 notification.SourceUserId = like.userId;
                 notification.likeId = likeData.Id;
                 await this.notificationServices.Save(notification);
@@ -82,7 +80,6 @@ namespace Api.Controllers{
             }catch(Exception err){
                 return BadRequest(err.Message);
             }
-            
         }
         [Authorize]
         [HttpGet, Route("List")]

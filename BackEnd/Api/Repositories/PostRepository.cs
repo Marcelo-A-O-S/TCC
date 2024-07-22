@@ -23,6 +23,7 @@ namespace Api.Repositories
             var posts = await this.context.posts
             .Include(imagesPost => imagesPost.images)
             .Include(userPost => userPost.user)
+            .Include(likePost => likePost.likes)
             .Include(commentsPost => commentsPost.comments)
                 .ThenInclude(comments=> comments.answers)
             .OrderByDescending(modelPost => modelPost.dateCreate)
@@ -35,6 +36,7 @@ namespace Api.Repositories
             var posts = await this.context.posts
             .Include(imagesPost => imagesPost.images)
             .Include(userPost => userPost.user)
+            .Include(likePost => likePost.likes)
             .Include(commentsPost => commentsPost.comments)
                 .ThenInclude(comments=> comments.answers)
             .Where(modelPost => modelPost.userId == userId)
@@ -48,6 +50,7 @@ namespace Api.Repositories
             var posts = await this.context.posts
             .Include(imagesPost => imagesPost.images)
             .Include(userPost => userPost.user)
+            .Include(likePost => likePost.likes)
             .Include(commentsPost => commentsPost.comments)
                 .ThenInclude(comments=> comments.answers)
             .Where(modelPost => modelPost.userId == userId)
@@ -62,12 +65,10 @@ namespace Api.Repositories
             var post = await this.context.posts
             .Include(imagesPost => imagesPost.images)
             .Include(userPost => userPost.user)
+            .Include(likePost => likePost.likes)
             .Include(commentsPost => commentsPost.comments)
                 .ThenInclude(comments=> comments.answers)
             .FirstOrDefaultAsync(modelpost => modelpost.Id == id);
-            if(post == null){
-                return null;
-            }
             return post;
         }
     }

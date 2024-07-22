@@ -8,6 +8,7 @@ export interface IAnswerView{
     commentId:number;
     user: UserAuthentication;
     dateCreate:string;
+    postId:number;
 }
 export class AnswerView implements IAnswerView{
     id: number;
@@ -17,6 +18,7 @@ export class AnswerView implements IAnswerView{
     commentId: number;
     user: UserAuthentication;
     dateCreate: string;
+    postId: number;
     constructor(){
         this.id = 0;
         this.answer = "";
@@ -24,8 +26,7 @@ export class AnswerView implements IAnswerView{
         this.userId = 0;
         this.commentId = 0;
         this.user = new UserAuthentication();
-        this.dateCreate = ""
+        this.dateCreate = "";
+        this.postId = 0
     }
-    
-    
 }

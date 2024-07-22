@@ -5,5 +5,6 @@ export interface ICommentState {
     commentUser:string,
     answerId:number,
     user:UserAuthentication,
-    answer:boolean
+    answer:boolean,
+    guid:string
 }

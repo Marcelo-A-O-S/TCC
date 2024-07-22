@@ -2,7 +2,7 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { mutate as mutateGlobal } from "swr";
 import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
-import { ROUTE_POST } from "@/utils/constants";
+import { ROUTE_POST, ROUTE_NOTIFICATION } from "@/utils/constants";
 type ProviderProps = {
     children: ReactNode
 }
@@ -33,10 +33,10 @@ export const SignalRProvider = ({ children }: ProviderProps) => {
                 .then(() => {
                     console.log("Connection started!")
                     connect.on("OnConnected", (message) => {
-                        console.log(message);
                         mutateGlobal(ROUTE_POST.LIST);
                     })
                     connect.on("CreatePost", (userId) => {
+                        console.log("CreatePost:",userId)
                         mutateGlobal(ROUTE_POST.LIST);
                         mutateGlobal(ROUTE_POST.FIND_BY_USERID + userId);
                     })
@@ -51,27 +51,39 @@ export const SignalRProvider = ({ children }: ProviderProps) => {
                     })
                     connect.on("AddLike", (postId, userId) => {
                         try {
+                            console.log(postId, userId)
                             mutateGlobal(ROUTE_POST.LIST);
                             mutateGlobal(ROUTE_POST.FIND_BY_ID + postId);
                             mutateGlobal(ROUTE_POST.FIND_BY_USERID + userId);
+                            mutateGlobal(ROUTE_NOTIFICATION.LIST_BY_USERID+ userId);
+                            
                         } catch (error) {
                             console.error("Error in AddLike client handler:", error);
                         }
                     })
                     connect.on("RemoveLike", (postId, userId) => {
+                        console.log(postId, userId)
                         mutateGlobal(ROUTE_POST.LIST);
                         mutateGlobal(ROUTE_POST.FIND_BY_ID + postId);
                         mutateGlobal(ROUTE_POST.FIND_BY_USERID + userId);
+                        mutateGlobal(ROUTE_NOTIFICATION.LIST_BY_USERID+ userId);
                     })
                     connect.on("AddComment", (postId, userId) => {
+                        console.log(postId, userId)
                         mutateGlobal(ROUTE_POST.LIST);
                         mutateGlobal(ROUTE_POST.FIND_BY_ID + postId);
                         mutateGlobal(ROUTE_POST.FIND_BY_USERID + userId);
+                        mutateGlobal(ROUTE_NOTIFICATION.LIST_BY_USERID+ userId);
                     })
                     connect.on("RemoveComment", (postId, userId) => {
+                        console.log(postId, userId)
                         mutateGlobal(ROUTE_POST.LIST);
                         mutateGlobal(ROUTE_POST.FIND_BY_ID + postId);
                         mutateGlobal(ROUTE_POST.FIND_BY_USERID + userId);
+                        mutateGlobal(ROUTE_NOTIFICATION.LIST_BY_USERID+ userId);
+                    })
+                    connect.on("UpdateNotification", (userId) => {
+                        mutateGlobal(ROUTE_NOTIFICATION.LIST_BY_USERID+ userId);
                     })
                 })
         }

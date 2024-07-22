@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240720192430_createDatabaseTCC")]
+    [Migration("20240721182338_createDatabaseTCC")]
     partial class createDatabaseTCC
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -153,16 +153,10 @@ namespace Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<bool>("IsRead")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<int>("SourceUserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.Property<int?>("answerId")
@@ -171,11 +165,17 @@ namespace Api.Migrations
                     b.Property<int?>("commentId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("dateCreate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("guid")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int?>("likeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("notificationType")
                         .HasColumnType("int");
 
                     b.Property<int>("postsId")
