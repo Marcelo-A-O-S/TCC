@@ -71,6 +71,7 @@ export default function PostDetail({ Id }: Props) {
     })
     useEffect(() => {
         if (data) {
+            console.log("Postdetail:",data)
             LoadingPost(data);
         }
     }, [data])

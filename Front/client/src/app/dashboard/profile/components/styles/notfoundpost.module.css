@@ -6,6 +6,7 @@
     border-radius: 5px;
     padding: 17px 21px 17px 21px;
     gap: 9px;
+    
 }
 .not_found{
     display: flex;
@@ -15,5 +16,16 @@
     padding: 21px 0px 21px 0px;
     align-items: center;
     border-radius: 5px;
-
+    
+}
+.text_notFound{
+    text-align: center;
+}
+.imageNotFound{
+    width: 90%;
+}
+@media (max-width:690px) {
+    .post_notfound{
+        width: 100%;
+    }
 }

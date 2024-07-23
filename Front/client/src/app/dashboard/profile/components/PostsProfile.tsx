@@ -79,7 +79,11 @@ const ViewPost = async (postId: number) =>{
   if(userProfile == undefined){
     return(
       <>
-        <NotFoundUser/>        
+      <main className={styles.main}>
+      <section className={styles.profile}>
+        <NotFoundUser/> 
+      </section>
+      </main>       
       </>)
   }
   if(!postsProfile){
@@ -102,21 +106,7 @@ const ViewPost = async (postId: number) =>{
             }}
             postsQuantity={postsProfile.length}
             />
-            {/* <div className={styles.manager_profile}>
-              <div className={styles.data_profile}>
-                <div >
-                    <h1>{userProfile?.username}</h1>
-                    <p>{userProfile?.email}</p>
-                  </div>
-                  <div className={styles.data_posts}>
-                    <h3 className={styles.post_number}>{postsProfile.length}</h3>
-                    <p className={styles.number_text}>Publicações</p>
-                  </div>
-              </div>
-              <div>
-                  {userContext?.user?.email == userProfile?.email?<Link href={`manage_post`} className={styles.btn_create}>Criar publicação</Link>:""}
-              </div>
-            </div> */}
+
             <div className={styles.posts}>
                 {postsProfile.length == 0? 
                 <>
@@ -126,6 +116,7 @@ const ViewPost = async (postId: number) =>{
                 </>:postsProfile.map((item)=>{
                   return (
                     <PostDetailProfile
+                    key={item.id}
                     post={item}
                     DeletePost={DeletePost}
                     EditPost={EditPost}
@@ -133,59 +124,7 @@ const ViewPost = async (postId: number) =>{
                     ViewPost={ViewPost}
                     userCurrent={userCurrent}
                     />
-                    /* <div className={styles.post} key={item.id}>
-                        <div className={styles.manager_post}>
-                          <div className={styles.profile_post}>
-                              <h3 className={styles.username}>{item.userview.username}</h3>
-                              <p className={styles.email}>{item.userview.email}</p>
-                          </div>
-                          {userContext?.user?.email == item.userview.email?<div className={styles.post_actions}>
-                            <button onClick={()=>EditPost(item.id)} className={styles.post_edit} >Edit</button>
-                            <button onClick={()=>DeletePost(item.id)} className={styles.post_delete}>Delete</button>
-                          </div>:""}
-                        </div>
-                        <div className={styles.content} onClick={()=>ViewPost(item.id)}>
-                            <h1>{item.title}</h1>
-                            <p>{item.description}</p>
-                        </div>
-                        <Swiper
-                            modules={[Navigation, Pagination, Scrollbar, A11y]}
-                            className={styles.field_images}
-                            slidesPerView={1}
-                            scrollbar={{ draggable: true}}
-                            pagination={{clickable:true}}
-                            navigation
-                            >
-                                {item.imagesViews.map((image)=>{
-                                    return(
-                                    <SwiperSlide className={styles.card_image} key={image.id}>
-                                        <div>
-                                        <Image className={styles.image} src={image.image} alt="" width={100} height={100}/>
-                                        </div>
-                                        <div className={styles.field_description}>
-                                        <p>{image.description}</p>
-                                        </div>
-                                        
-                                    </SwiperSlide>)
-                                })}
-                            </Swiper>
-                        <div className={styles.actions}>
-                            <div className={styles.like} onClick={()=>LikePost(item.id)}>
-                                {item.likeViews.find(x=> x.userId == userCurrent?.id )?
-                                  <Image className={styles.likeSelected} src={ImgHeartSelected} alt=""/>
-                                  :
-                                  <Image src={IcoHeartLike} alt=""/>
-                                  }
-                                {item.likeViews.length}
-                            </div>
-                            <div  className={styles.comment}>
-                                <Image src={IcoChatBallon} alt=""/>
-                                {item.commentViews.length}
-                            </div>
-                            
-                        </div>
-                        
-                    </div> */)
+                  )
                 })}
             </div>
           </div>

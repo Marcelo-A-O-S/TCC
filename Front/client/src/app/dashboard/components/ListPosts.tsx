@@ -30,7 +30,6 @@ export default function ListPosts(){
     const [ userAuthentication, setUserAuthentication ] = useState<UserAuthentication>({} as UserAuthentication);
     useEffect(()=>{
         if(data != undefined){
-            console.log("Posts:", data)
             setPosts(data)
         }
     },[data])
