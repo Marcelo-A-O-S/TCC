@@ -3,5 +3,5 @@ Projeto de uma rede social criada para solucionar dúvidas sobre peças e outros
 
 # Apresentação
 
-https://github.com/user-attachments/assets/c29dd093-a4e2-4b39-9a7e-ac798aefc419
+https://github.com/user-attachments/assets/a1fba8b7-4777-4759-aac5-789420599daa
 
