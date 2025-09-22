@@ -71,7 +71,6 @@ O sistema segue arquitetura **cliente-servidor**, separando responsabilidades:
   - MySQL relacional para armazenar usuários, postagens, interações e notificações.  
   - Integração com EF Core para queries e migrations.  
 
----
 
 
 
